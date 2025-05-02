@@ -1,5 +1,0 @@
-[{
-  "file": "D:\\C UDMEY\\C UDMEY\\PROJECT1\\main.c",
-  "directory": "D:\\C UDMEY\\C UDMEY\\PROJECT1",
-  "command": "C:/cygwin64/bin/x86_64-pc-cygwin-gcc.exe -c \"D:\\C UDMEY\\C UDMEY\\PROJECT1\\main.c\" -o \"D:\\C UDMEY\\C UDMEY\\PROJECT1\\main.c\".o  -I. -I.  -O0  -gdwarf-2  -std=c99  -Wall"
- }]

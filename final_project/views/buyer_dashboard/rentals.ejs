@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveBidRent - Rentals</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "montserrat", sans-serif;
+}
+
+body {
+    background-color: #ffffff; /* Changed to white */
+    color: #333333; /* Changed to dark gray for better contrast */
+}
+
+/* Navbar */
+.navbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff; /* Changed to white */
+    padding: 1rem 0;
+    box-shadow: 0 2px 20px rgba(255, 107, 0, 0.2); /* Orange shadow */
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.logo a {
+    color: #ff6b00; /* Orange */
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: #333333; /* Dark gray */
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding-bottom: 5px;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    border-bottom: 3px solid #ff6b00; /* Orange */
+}
+
+/* Logout Button */
+.logout-btn {
+    background-color: #ff6b00; /* Orange */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 0.5rem;
+}
+
+.logout-btn:hover {
+    background-color: #e65c00; /* Darker orange */
+    transform: translateY(-1px);
+}
+
+/* Adjust profile container to accommodate the new button */
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap; /* Allow items to wrap if needed */
+}
+
+.profile img {
+    height: 40px;
+    border-radius: 50%; /* Make the profile image round */
+}
+
+.profile-text {
+    color: #ff6b00; /* Orange */
+    text-decoration: none;
+    font-weight: 600; /* Bold */
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 1px; /* Add spacing between letters */
+    transition: color 0.3s ease;
+}
+
+.profile-text:hover {
+    color: #e65c00; /* Darker orange on hover */
+}
+
+/* Heading Section */
+.heading1 {
+    width: 800px;
+    height: 400px;
+    padding-top: 250px;
+    padding-left: 500px;
+    padding-right: 20px;
+    margin: 150px auto 85px auto;
+    border: 3px solid #ff6b00; /* Orange */
+    border-radius: 15px;
+    box-shadow: 10px 10px 50px rgba(255, 107, 0, 0.3); /* Orange shadow */
+    background: linear-gradient(135deg, #ff6b00, #ff9a44, #ffffff);
+    opacity: 1;
+    border: none;
+}
+
+
+.heading1 h1 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 29px;
+    transition: text-shadow 0.3s ease-in-out;
+    margin-bottom: 10px;
+    color: #ff6b00; /* Orange */
+}
+
+.heading1 p {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.5;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333333; /* Dark gray */
+}
+
+.heading1 h1:hover {
+    text-shadow: 0px 0px 15px #ff6b00; /* Orange */
+}
+
+.oneL {
+    color: #ff6b00; /* Orange */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sections */
+section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+section h2 {
+    color: #ff6b00; /* Orange */
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.more-btn {
+    align-content: flex-end;
+}
+
+/* Auctions Section Heading */
+.auctions h2 {
+    color: #ff6b00; /* Orange */
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-top: 1rem; /* Add padding to the top */
+    padding-bottom: 1rem; /* Add padding to the bottom */
+    line-height: 1.5; /* Ensure proper line height */
+}
+
+/* Rentals and Drivers Section Headings */
+.rentals h2,
+.drivers h2 {
+    color: #ff6b00; /* Orange */
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-top: 1rem; /* Add padding to the top */
+    padding-bottom: 1rem; /* Add padding to the bottom */
+    line-height: 1.5; /* Ensure proper line height */
+}
+
+/* Car Cards */
+.car-card {
+    background-color: #ffffff; /* White */
+    border-radius: 1rem;
+    padding: 1.5rem;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #ff6b00; /* Orange */
+    height: 550px;
+}
+
+.car-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
+}
+
+.hot-tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: #ff6b00; /* Orange */
+    color: white;
+    padding: 2px 15px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 400;
+    margin-top: 50%;
+    margin-left: 4%;
+}
+
+.heart-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #ff6b00; /* Orange */
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.car-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.car-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: #ff6b00; /* Orange */
+}
+
+.auction-date, .rental-cost, .costperday {
+    color: #666666; /* Gray */
+    margin-bottom: 1rem;
+}
+
+.car-details {
+    background-color: #f9f9f9; /* Light gray */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.car-details p {
+    margin-bottom: 0.5rem;
+    color: #333333; /* Dark gray */
+}
+
+.details-btn {
+    display: inline-block;
+    background-color: #ff6b00; /* Orange */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.placebid-btn {
+    display: inline;
+    background-color: #ff6b00; /* Orange */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin-left: 35px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.placebid-btn:hover {
+    background-color: #e65c00; /* Darker orange */
+}
+
+.bid-btn {
+    display: inline;
+    background-color: #ff6b00; /* Orange */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin-left: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.bid-btn:hover {
+    background-color: #e65c00; /* Darker orange */
+}
+
+.details-btn:hover {
+    background-color: #e65c00; /* Darker orange */
+}
+
+/* More Button Container */
+.more-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem; /* Adjust spacing as needed */
+}
+
+/* More Button */
+.more-btn {
+    display: inline-block;
+    background-color: #ff6b00; /* Orange */
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.more-btn:hover {
+    background-color: #e65c00; /* Darker orange */
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, #ff6b00, #ff9a44); /* Gradient background */
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+    color: white; /* White text for better contrast */
+    border-top: none; /* Remove the orange border */
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    gap: 3rem;
+}
+
+.footer-section h3 {
+    color: white; /* White text for headings */
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-section a {
+    color: white; /* White text for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section p {
+    margin-top: 0.8rem;
+    color: white; /* White text for paragraphs */
+}
+
+.footer-section a:hover {
+    color: #f0f0f0; /* Light gray on hover */
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-icons img {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1); /* Make icons white */
+    transition: transform 0.3s ease;
+}
+
+.social-icons img:hover {
+    transform: scale(1.2); /* Scale icons on hover */
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Light white border */
+    color: white; /* White text for copyright */
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero {
+        margin-top: 8rem;
+    }
+}
+
+section {
+    position: relative;
+    overflow: hidden;
+}
+
+section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #ff6b00, #ff9a44, transparent);
+}
+
+    </style>>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo"><a href="/proj">DriveBidRent</a></div>
+        <div class="nav-links">
+            <a href="/purchase">My Purchases</a>
+            <a href="/wishlist">Wishlist</a>
+            <a href="#notifications">Notifications</a>
+            <a href="/Aboutus">About Us</a>
+        </div>
+        <div class="profile">
+            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="profile symbol" style="height: 40px;">
+            <a href="/profile" class="profile-text">My Profile</a>
+            <button class="logout-btn" onclick="location.href='/'">Logout</button>
+        </div>
+    </div>
+</nav>
+
+    <!-- Rentals Section -->
+    <section class="rentals">
+        <h2>Rentals</h2>
+        <div class="card-container">
+            <!-- Rental 1 -->
+            <div class="car-card">
+                <button class="heart-btn" data-liked="false">❤</button>
+                <img src="https://www.pngfind.com/pngs/m/73-734475_force-toofan-hd-png-download.png" alt="Toofan">
+                <h3>Trax Toofan</h3>
+                <p class="rental-cost">Cost/km: <strong>15 rupees</strong></p>
+                <div class="car-details">
+                    <p><strong>Mileage:</strong> 15km/liter</p>
+                    <p><strong>AC:</strong> No</p>
+                    <p><strong>Driver:</strong> Yes</p>
+                    <p><strong>Capacity:</strong> 13</p>
+                </div>
+                <a href="/rental?id=1" class="placebid-btn">Rent it</a>
+                <a href="/rental?id=1" class="details-btn">More Details</a>
+            </div>
+
+            <!-- Rental 2 -->
+            <div class="car-card">
+                <button class="heart-btn" data-liked="false">❤</button>
+                <img src="https://www.91trucks.com/_next/image?url=https%3A%2F%2Fimages.91trucks.com%2Fbuses%2Fmodels%2F71%2F1548%2Fforce-traveller-3350-super-796998490.jpg%3Fw%3D350%26h%3D180&w=640&q=75" alt="Traveller">
+                <h3>Trax Traveller</h3>
+                <p class="rental-cost">Cost/km: <strong>18 rupees</strong></p>
+                <div class="car-details">
+                    <p><strong>Mileage:</strong> 13km/liter</p>
+                    <p><strong>AC:</strong> Yes</p>
+                    <p><strong>Driver:</strong> Yes</p>
+                    <p><strong>Capacity:</strong> 26</p>
+                </div>
+                <a href="/rental?id=2" class="details-btn">More Details</a>
+                <a href="/rental?id=2" class="placebid-btn">Rent it</a>
+            </div>
+
+            <!-- Rental 3 -->
+            <div class="car-card">
+                <button class="heart-btn" data-liked="false">❤</button>
+                <img src="https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/ExtraImages/20230405103153_Innova_1.jpg&w=700&c=1" alt="Innova">
+                <h3>Toyota Innova</h3>
+                <p class="rental-cost">Cost/km: <strong>17 rupees</strong></p>
+                <div class="car-details">
+                    <p><strong>Mileage:</strong> 14km/liter</p>
+                    <p><strong>AC:</strong> Yes</p>
+                    <p><strong>Driver:</strong> Yes</p>
+                    <p><strong>Capacity:</strong> 8</p>
+                </div>
+                <a href="/rental?id=2" class="details-btn">More Details</a>
+                <a href="/rental?id=2" class="placebid-btn">Rent it</a>
+            </div>
+
+            <!-- Rental 4 -->
+            <div class="car-card">
+                <button class="heart-btn" data-liked="false">❤</button>
+                <img src="https://trident-group.s3.ap-south-1.amazonaws.com/hyundai/models/colors/1705922962.png" alt="Hyundai Creta">
+                <h3>Hyundai Creta</h3>
+                <p class="rental-cost">Cost/km: <strong>20 rupees</strong></p>
+                <div class="car-details">
+                    <p><strong>Mileage:</strong> 16km/liter</p>
+                    <p><strong>AC:</strong> Yes</p>
+                    <p><strong>Driver:</strong> Yes</p>
+                    <p><strong>Capacity:</strong> 5</p>
+                </div>
+                <a href="/rental?id=4" class="details-btn">More Details</a>
+                <a href="/rental?id=4" class="placebid-btn">Rent it</a>
+            </div>
+
+            <!-- Rental 5 -->
+            <div class="car-card">
+                <button class="heart-btn" data-liked="false">❤</button>
+                <img src="https://akm-img-a-in.tosshub.com/indiatoday/images/story/201609/toyota-fortuner_story_647_091416044216.jpg?VersionId=PPZmXaEGWYlavAlxVYwgTxA1OJQm6rSi&size=690:388" alt="Toyota Fortuner">
+                <h3>Toyota Fortuner</h3>
+                <p class="rental-cost">Cost/km: <strong>25 rupees</strong></p>
+                <div class="car-details">
+                    <p><strong>Mileage:</strong> 12km/liter</p>
+                    <p><strong>AC:</strong> Yes</p>
+                    <p><strong>Driver:</strong> Yes</p>
+                    <p><strong>Capacity:</strong> 7</p>
+                </div>
+                <a href="/rental?id=5" class="details-btn">More Details</a>
+                <a href="/rental?id=5" class="placebid-btn">Rent it</a>
+            </div>
+
+            <!-- Rental 6 -->
+            <div class="car-card">
+                <button class="heart-btn" data-liked="false">❤</button>
+                <img src="https://offers.caimahindra.com/uploads/product/Thar%20Deep%20Grey.png" alt="Mahindra Thar">
+                <h3>Mahindra Thar</h3>
+                <p class="rental-cost">Cost/km: <strong>22 rupees</strong></p>
+                <div class="car-details">
+                    <p><strong>Mileage:</strong> 10km/liter</p>
+                    <p><strong>AC:</strong> Yes</p>
+                    <p><strong>Driver:</strong> Yes</p>
+                    <p><strong>Capacity:</strong> 4</p>
+                </div>
+                <a href="/rental?id=6" class="details-btn">More Details</a>
+                <a href="/rental?id=6" class="placebid-btn">Rent it</a>
+            </div>
+        </div>
+    </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/purchase">My Purchases</a></li>
+                        <li><a href="/wishlist">Wishlist</a></li>
+                        <li><a href="index.html#notifications">Notifications</a></li>
+                        <li><a href="/Aboutus">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><strong>Email:</strong> <a href="mailto:jeevanvankadara@gmail.com">jeevanvankadara@gmail.com</a></p>
+                    <p><strong>Phone:</strong> <a href="tel:9876543210">9876543210</a></p>
+                    <p><strong>Address:</strong> sb-2, sagar colony, hyderabad</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#instagram"><img src="./images/instagram.png" alt="Instagram"></a>
+                        <a href="#facebook"><img src="./images/facebook.png" alt="Facebook"></a>
+                        <a href="#twitter"><img src="./images/X.png" alt="X"></a>
+                    </div>
+                </div>
+            </div>
+            <p class="copyright">© 2025 DriveBidRent | All rights reserved.</p>
+        </footer>
+
+    <script>
+        // Heart button functionality
+        document.querySelectorAll('.heart-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const isLiked = button.getAttribute('data-liked') === 'true';
+                button.setAttribute('data-liked', !isLiked);
+                button.style.color = !isLiked ? '#ff6b00' : '#ffffff';
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const savedProfile = JSON.parse(localStorage.getItem('profile')) || {};
+        if (savedProfile.name) {
+            document.getElementById('profile-name').textContent = savedProfile.name;
+        }
+    });
+    </script>
+</body>
+</html>

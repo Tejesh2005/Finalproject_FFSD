@@ -32,16 +32,20 @@ const Aboutus = require("./routes/Buyer/Aboutus.js"); // Import the Aboutus rout
 // const AuctionRoute = require('./routes/Buyer/Auction.js'); // Old import
 
 // New Buyer Route Imports
-const BuyerDashboardRoute = require("./routes/Buyer/BuyerDashboard.js");
-const BuyerAuctionRoute = require("./routes/Buyer/Auction.js");
-const BuyerDriverRoute = require("./routes/Buyer/Driver.js");
-const BuyerRentalRoute = require("./routes/Buyer/Rental.js");
-const BuyerPurchaseRoute = require("./routes/Buyer/Purchase.js");
-const BuyerWishlistRoute = require("./routes/Buyer/Wishlist.js");
+const BuyerDashboardRoute = require('./routes/Buyer/BuyerDashboard.js');
+const BuyerAuctionRoute = require('./routes/Buyer/Auction.js');
+const BuyerDriverRoute = require('./routes/Buyer/Driver.js');
+const BuyerRentalRoute = require('./routes/Buyer/Rental.js');
+const BuyerPurchaseRoute = require('./routes/Buyer/Purchase.js');
+const BuyerWishlistRoute = require('./routes/Buyer/Wishlist.js');
 
 const app = express();
 
-const DriverDashboard = require("./routes/Driver/Dashboard.js"); // Import the DriverDashboard route
+const DriverDashboard = require('./routes/Driver/Dashboard.js'); // Import the DriverDashboard route
+
+app.get('/proj',(req,res)=>{
+  res.render('buyer_dashboard/proj.ejs');
+});
 
 // Connect to MongoDB
 mongoose

@@ -5,28 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRIVBIDRENT - Assign Mechanic</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Montserrat', sans-serif;
+      }
 
       body {
-        background-color: #ffffff; /* White background */
+        background-color: #ffffff;
       }
 
       /* Header Styles */
       .header {
-        background-color: #ff6b00; /* Orange header */
+        background-color: #ff6b00;
         color: white;
         padding: 15px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 80px;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
       }
 
       .logo {
@@ -52,22 +56,32 @@
       }
 
       .nav-links a:hover {
-        opacity: 0.8; /* Hover effect */
+        opacity: 0.8;
       }
 
       /* Car Details Container */
       .car-details-container {
-        max-width: 1000px;
-        margin: 120px auto 20px; /* Adjusted for fixed header */
+        max-width: 1200px;
+        margin: 120px auto 20px;
         padding: 30px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+
+      /* Left Column - Car Image */
+      .car-left-column {
+        flex: 1;
+        min-width: 300px;
       }
 
       .car-image-container {
         width: 100%;
-        height: 300px;
+        height: 350px;
         overflow: hidden;
         border-radius: 10px;
         margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       .car-image {
@@ -79,43 +93,54 @@
       .car-name {
         font-size: 28px;
         font-weight: bold;
-        color: #333; /* Dark text for car name */
-        margin-bottom: 10px;
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      /* Right Column - Car Info */
+      .car-right-column {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .car-info-section {
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ff6b00;
+        padding-bottom: 5px;
       }
 
       .car-info {
         font-size: 18px;
-        color: #666; /* Gray text for car info */
+        color: #666;
         margin-bottom: 10px;
+        padding: 5px 0;
       }
 
       .car-info strong {
-        color: #333; /* Dark text for labels */
+        color: #333;
+        display: inline-block;
+        width: 130px;
       }
 
       .seller-details {
-        margin-top: 20px;
-      }
-
-      .seller-details h3 {
-        font-size: 22px;
-        color: #333; /* Dark text for heading */
-        margin-bottom: 10px;
-      }
-
-      .seller-details p {
-        font-size: 16px;
-        color: #666; /* Gray text for seller info */
-        margin-bottom: 5px;
+        margin-top: 10px;
       }
 
       .assign-mechanic {
-        margin-top: 20px;
+        margin-top: 30px;
       }
 
       .assign-mechanic button {
-        padding: 10px 20px;
-        background-color: #ff6b00; /* Orange button */
+        padding: 12px 24px;
+        background-color: #ff6b00;
         color: white;
         border: none;
         border-radius: 5px;
@@ -131,73 +156,94 @@
 
       .mechanic-dropdown {
         display: none;
-        margin-top: 10px;
+        margin-top: 15px;
       }
 
       .mechanic-dropdown select {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         border-radius: 5px;
         border: 1px solid #ddd;
         font-size: 16px;
       }
 
       .mechanic-assigned {
-        padding: 10px 20px;
-        background-color: #4caf50; /* Green for assigned */
+        padding: 12px 24px;
+        background-color: #4caf50;
         color: white;
         border-radius: 5px;
         font-size: 16px;
         font-weight: bold;
-        margin-top: 10px;
+        margin-top: 15px;
         display: none;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .car-details-container {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
   <body>
     <!-- Header -->
     <div class="header">
-        <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
-        <div class="nav-links">
-          <a href="/auctionmanager/requests">REQUESTS</a>
-          <a href="/auctionmanager/pending">PENDINGCARS</a>
-          <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
-        </div>
+      <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
+      <div class="nav-links">
+        <a href="/auctionmanager/requests">REQUESTS</a>
+        <a href="/auctionmanager/pending">PENDINGCARS</a>
+        <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
       </div>
+    </div>
 
     <!-- Car Details Container -->
     <div class="car-details-container">
-      <div class="car-image-container">
-        <img src="<%= request.vehicleImage %>" alt="<%= request.vehicleName %>" class="car-image" />
-      </div>
-      <div class="car-name"><%= request.vehicleName %></div>
-      <div class="car-info"><strong>Mileage:</strong> <%= request.vehicleMileage || 'Not specified' %> km</div>
-      <div class="car-info"><strong>Condition:</strong> <%= request.status || 'Pending' %></div>
-
-      <!-- Seller Details -->
-      <div class="seller-details">
-        <h3>Seller Details</h3>
-        <p><strong>Name:</strong> <%= request.sellerId.firstName %> <%= request.sellerId.lastName %></p>
-        <p><strong>Contact:</strong> <%= request.sellerId.phoneNumber || 'Not provided' %></p>
-        <p><strong>Location:</strong> <%= request.sellerId.address || '' %>, <%= request.sellerId.city || '' %>, <%= request.sellerId.country || '' %></p>
-      </div>
-
-      <!-- Assign Mechanic Section -->
-      <div class="assign-mechanic">
-        <button id="assign-button" onclick="showMechanicDropdown()">
-          Assign Mechanic
-        </button>
-        <div class="mechanic-dropdown" id="mechanic-dropdown">
-          <select id="mechanic-select">
-            <option value="">Select a Mechanic</option>
-            <option value="Mechanic 1">Mechanic 1</option>
-            <option value="Mechanic 2">Mechanic 2</option>
-            <option value="Mechanic 3">Mechanic 3</option>
-            <option value="Mechanic 4">Mechanic 4</option>
-          </select>
+      <!-- Left Column - Car Image -->
+      <div class="car-left-column">
+        <div class="car-image-container">
+          <img src="<%= request.vehicleImage %>" alt="<%= request.vehicleName %>" class="car-image" />
         </div>
-        <div id="mechanic-assigned" class="mechanic-assigned">
-          Mechanic Assigned
+        <div class="car-name"><%= request.vehicleName %></div>
+      </div>
+
+      <!-- Right Column - Car Info -->
+      <div class="car-right-column">
+        <div class="car-info-section">
+          <div class="section-title">Vehicle Information</div>
+          <div class="car-info"><strong>Fuel Type:</strong> <%= request.fuelType || 'Not specified' %></div>
+          <div class="car-info"><strong>Mileage:</strong> <%= request.mileage || 'Not specified' %> km</div>
+          <div class="car-info"><strong>Condition:</strong> <%= request.status || 'Pending' %></div>
+          <div class="car-info"><strong>Year:</strong> <%= request.year || 'Not specified' %></div>
+          <div class="car-info"><strong>Transmission:</strong> <%= request.transmission || 'Not specified' %></div>
+          <div class="car-info"><strong>Starting Bid:</strong> <%= request.startingBid? '$' + request.startingBid: 'Not specified' %></div>
+        </div>
+
+        <!-- Seller Details -->
+        <div class="car-info-section">
+          <div class="section-title">Seller Details</div>
+          <div class="car-info"><strong>Name:</strong> <%= request.sellerId.firstName %> <%= request.sellerId.lastName %></div>
+          <div class="car-info"><strong>Contact:</strong> <%= request.sellerId.phoneNumber || 'Not provided' %></div>
+          <div class="car-info"><strong>Location:</strong> <%= request.sellerId.doorNo || '' %>,<%= request.sellerId.street || '' %>, <%= request.sellerId.city || '' %>, <%= request.sellerId.state || '' %></div>
+        </div>
+
+        <!-- Assign Mechanic Section -->
+        <div class="assign-mechanic">
+          <button id="assign-button" onclick="showMechanicDropdown()">
+            Assign Mechanic
+          </button>
+          <div class="mechanic-dropdown" id="mechanic-dropdown">
+            <select id="mechanic-select">
+              <option value="">Select a Mechanic</option>
+              <option value="Mechanic 1">Mechanic 1</option>
+              <option value="Mechanic 2">Mechanic 2</option>
+              <option value="Mechanic 3">Mechanic 3</option>
+              <option value="Mechanic 4">Mechanic 4</option>
+            </select>
+          </div>
+          <div id="mechanic-assigned" class="mechanic-assigned">
+            Mechanic Assigned
+          </div>
         </div>
       </div>
     </div>

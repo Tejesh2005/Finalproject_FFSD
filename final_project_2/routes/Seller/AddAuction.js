@@ -28,7 +28,7 @@ router.get('/add-auction', isSellerLoggedIn, async (req, res) => {
 
 
 // POST: Handle Auction Submission
-router.post('/add-auction', isSellerLoggedIn,async (req, res) => {
+router.post('/add-auction', isSellerLoggedIn, async (req, res) => {
 
   console.log('POST request received to /add-auction');
     try {
@@ -38,8 +38,11 @@ router.post('/add-auction', isSellerLoggedIn,async (req, res) => {
         vehicleImage: req.body['vehicle-image'],
         year: req.body['vehicle-year'],
         mileage: req.body['vehicle-mileage'],
+        fuelType: req.body['fuel-type'],         // New field for fuel type
+        transmission: req.body['transmission'],  // New field for transmission
         condition: req.body['vehicle-condition'],
         auctionDate: req.body['auction-date'],
+        estimatedPrice: req.body['estimated-price'], // New field for estimated price
         startingBid: req.body['starting-bid'],
         sellerId: req.session.userId || null, // Replace with actual user ID in real use
         status: 'pending'
@@ -53,4 +56,5 @@ router.post('/add-auction', isSellerLoggedIn,async (req, res) => {
       res.status(500).send('Failed to submit auction');
     }
   });
+  
 module.exports = router;

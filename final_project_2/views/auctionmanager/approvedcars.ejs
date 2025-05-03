@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DRIVBIDRENT - Approved Cars</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+      body {
+        background-color: #ffffff; /* White background */
+      }
+
+      /* Header Styles */
+      .header {
+        background-color: #ff6b00; /* Orange header */
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 80px;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .logo a {
+        color: white;
+        text-decoration: none;
+      }
+
+      .nav-links {
+        display: flex;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: bold;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        opacity: 0.8; /* Hover effect */
+      }
+
+      /* Cards Container */
+      .cards-container {
+        max-width: 1000px;
+        margin: 120px auto 20px; /* Adjusted for fixed header */
+        padding: 30px 20px;
+      }
+
+      /* Car Card Styles */
+      .car-card {
+        background-color: #ffffff; /* White card background */
+        border-radius: 15px;
+        margin-bottom: 20px;
+        padding: 20px;
+        display: flex;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+      }
+
+      .car-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .car-image-container {
+        width: 300px;
+        height: 180px;
+        overflow: hidden;
+        border-radius: 10px;
+        margin-right: 30px;
+      }
+
+      .car-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .car-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .car-name {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333; /* Dark text for car name */
+        margin-bottom: 10px;
+      }
+
+      .car-condition {
+        font-size: 18px;
+        color: #ff6b00; /* Orange text for condition */
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
+        <div class="nav-links">
+          <a href="/auctionmanager/requests">REQUESTS</a>
+          <a href="/auctionmanager/pending">PENDINGCARS</a>
+          <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
+        </div>
+      </div>
+
+    <!-- Cards Container -->
+    <div class="cards-container">
+      <!-- Car Card 1 -->
+      <div class="car-card" onclick="window.location.href='approvedcars.html'">
+        <div class="car-image-container">
+          <img src="/images/tata_harrier.png" alt="Tata Harrier" class="car-image" />
+        </div>
+        <div class="car-details">
+          <div class="car-name">Tata Harrier</div>
+          <div class="car-condition">Condition: Excellent</div>
+        </div>
+      </div>
+
+      <!-- Car Card 2 -->
+      <div class="car-card" onclick="window.location.href='approvedcars.html'">
+        <div class="car-image-container">
+          <img src="/images/land_rover.png" alt="Land Rover" class="car-image" />
+        </div>
+        <div class="car-details">
+          <div class="car-name">Land Rover</div>
+          <div class="car-condition">Condition: Good</div>
+        </div>
+      </div>
+
+      <!-- Car Card 3 -->
+      <div class="car-card" onclick="window.location.href='approvedcars.html'">
+        <div class="car-image-container">
+          <img src="/images/toyota_innova.png" alt="Toyota Innova" class="car-image" />
+        </div>
+        <div class="car-details">
+          <div class="car-name">Toyota Innova</div>
+          <div class="car-condition">Condition: Fair</div>
+        </div>
+      </div>
+
+      <!-- Car Card 4 -->
+      <div class="car-card" onclick="window.location.href='approvedcars.html'">
+        <div class="car-image-container">
+          <img src="/images/ford_mus.png" alt="Ford Mustang" class="car-image" />
+        </div>
+        <div class="car-details">
+          <div class="car-name">Ford Mustang</div>
+          <div class="car-condition">Condition: Excellent</div>
+        </div>
+      </div>
+
+      <!-- Car Card 5 -->
+      <div class="car-card" onclick="window.location.href='approvedcars.html'">
+        <div class="car-image-container">
+          <img src="/images/honda_civic.png" alt="Honda Civic" class="car-image" />
+        </div>
+        <div class="car-details">
+          <div class="car-name">Honda Civic</div>
+          <div class="car-condition">Condition: Good</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

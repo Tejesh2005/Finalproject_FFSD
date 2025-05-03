@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Profile - DriveBidRent</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      nav {
+        background-color: #ffffff;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+      .logo a {
+        color: #ff6b00;
+        text-decoration: none;
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+      .nav-links a {
+        color: #333333;
+        text-decoration: none;
+      }
+      .nav-links a.active {
+        font-weight: bold;
+      }
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .profile a {
+        color: #ff6b00;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .profile-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .profile-header {
+        margin-bottom: 2rem;
+      }
+      .profile-info h1 {
+        color: #ff6b00;
+        margin-bottom: 0.5rem;
+      }
+      .profile-info p {
+        color: #666;
+        margin: 0.25rem 0;
+      }
+      .profile-details {
+        margin-top: 2rem;
+      }
+      .detail-row {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+      }
+      .detail-label {
+        width: 150px;
+        font-weight: bold;
+        color: #555;
+      }
+      .detail-value {
+        flex: 1;
+      }
+      .logout-btn {
+        background-color: #ff6b00;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 2rem;
+        display: block;
+        width: 100%;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+      .logout-btn:hover {
+        background-color: #e05d00;
+      }
+      footer {
+        background: linear-gradient(135deg, #ff6b00, #ff9a44);
+        padding: 2rem;
+        color: white;
+        margin-top: 2rem;
+      }
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+      }
+      .footer-links h3 {
+        font-size: 1.2rem;
+      }
+      .footer-links ul {
+        list-style: none;
+        padding: 0;
+      }
+      .footer-links a {
+        color: white;
+        text-decoration: none;
+      }
+      .copyright {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav>
+      <div class="nav-container">
+        <div class="logo">
+          <a href="/admin-grp36">DriveBidRent</a>
+        </div>
+        <div class="nav-links">
+          <a href="/admin-grp36">Dashboard</a>
+          <a href="/manage-users">Manage Users</a>
+          <a href="/manage-earnings">Manage Earnings</a>
+          <a href="/analytics">Analytics</a>
+        </div>
+        <div class="profile">
+          <a href="/admin-profile" class="active">Admin Profile</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="profile-container">
+      <div class="profile-header">
+        <div class="profile-info">
+          <h1>Admin User</h1>
+          <p>Administrator</p>
+          <p>admin@drivebidrent.com</p>
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <div class="detail-row">
+          <div class="detail-label">Full Name:</div>
+          <div class="detail-value">Admin User</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Email:</div>
+          <div class="detail-value">admin@drivebidrent.com</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Phone:</div>
+          <div class="detail-value">+91 9876543210</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Admin Since:</div>
+          <div class="detail-value">January 15, 2023</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Permissions:</div>
+          <div class="detail-value">Full administrative access</div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/admin-grp36">Dashboard</a></li>
+            <li><a href="/manage-users">Manage Users</a></li>
+            <li><a href="/manage-earnings">Manage Earnings</a></li>
+            <li><a href="/analytics">Analytics</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h3>Contact Us</h3>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:jeevanvankadara@gmail.com"
+              >jeevanvankadara@gmail.com</a
+            >
+          </p>
+          <p><strong>Phone:</strong> <a href="tel:9876543210">9876543210</a></p>
+          <p><strong>Address:</strong> sb-2, sagar colony, hyderabad</p>
+        </div>
+      </div>
+      <p class="copyright">© 2025 DriveBidRent | All rights reserved.</p>
+    </footer>
+
+    <script>
+      function logout() {
+        // Add your logout functionality here
+        alert("You have been logged out successfully!");
+        // Typically you would redirect to login page:
+        // window.location.href = './login.html';
+      }
+    </script>
+  </body>
+</html>

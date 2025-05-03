@@ -168,18 +168,18 @@
     <!-- Car Details Container -->
     <div class="car-details-container">
       <div class="car-image-container">
-        <img src="/images/tata_harrier.png" alt="Tata Harrier" class="car-image" />
+        <img src="<%= request.vehicleImage %>" alt="<%= request.vehicleName %>" class="car-image" />
       </div>
-      <div class="car-name">Tata Harrier</div>
-      <div class="car-info"><strong>Mileage:</strong> 45,000 km</div>
-      <div class="car-info"><strong>Condition:</strong> Pending</div>
+      <div class="car-name"><%= request.vehicleName %></div>
+      <div class="car-info"><strong>Mileage:</strong> <%= request.vehicleMileage || 'Not specified' %> km</div>
+      <div class="car-info"><strong>Condition:</strong> <%= request.status || 'Pending' %></div>
 
       <!-- Seller Details -->
       <div class="seller-details">
         <h3>Seller Details</h3>
-        <p><strong>Name:</strong> John Doe</p>
-        <p><strong>Contact:</strong> +1 (123) 456-7890</p>
-        <p><strong>Location:</strong> 123 Main St, Springfield, IL, USA</p>
+        <p><strong>Name:</strong> <%= request.sellerId.firstName %> <%= request.sellerId.lastName %></p>
+        <p><strong>Contact:</strong> <%= request.sellerId.phoneNumber || 'Not provided' %></p>
+        <p><strong>Location:</strong> <%= request.sellerId.address || '' %>, <%= request.sellerId.city || '' %>, <%= request.sellerId.country || '' %></p>
       </div>
 
       <!-- Assign Mechanic Section -->
@@ -213,11 +213,30 @@
       const mechanicSelect = document.getElementById("mechanic-select");
       mechanicSelect.addEventListener("change", function () {
         if (this.value) {
-          const assignButton = document.getElementById("assign-button");
-          const assignedMessage = document.getElementById("mechanic-assigned");
+          // Send request to server to update the mechanic assignment
+          fetch('/auctionmanager/assign-mechanic-update/<%= request._id %>', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mechanicName: this.value })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const assignButton = document.getElementById("assign-button");
+              const assignedMessage = document.getElementById("mechanic-assigned");
 
-          assignButton.style.display = "none"; // Hide the Assign Mechanic button
-          assignedMessage.style.display = "block"; // Show the Mechanic Assigned message
+              assignButton.style.display = "none"; // Hide the Assign Mechanic button
+              assignedMessage.style.display = "block"; // Show the Mechanic Assigned message
+            } else {
+              alert('Failed to assign mechanic. Please try again.');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while assigning the mechanic.');
+          });
         }
       });
     </script>

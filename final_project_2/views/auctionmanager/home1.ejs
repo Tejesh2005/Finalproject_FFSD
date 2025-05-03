@@ -232,30 +232,33 @@ footer {
         </div>
       </div>
 
-<!-- REQUESTS Section -->
-<div class="section-title" id="requests">REQUESTS</div>
-<div class="section-container">
-  <div class="car-grid">
-    <% auctionReqPend.slice(0, 3).forEach(function(request) { %>
-      <div class="car-card">
-        <img src="<%= request.vehicleImage %>" alt="<%= request.vehicleName %>" class="car-image" />
-        <div class="car-details">
-          <div class="car-title"><%= request.vehicleName %></div>
-          <div class="car-info">Seller: <%= request.sellerId.firstName %> <%= request.sellerId.lastName %></div>
-          <div class="car-info">Location: <%= request.sellerId.city %></div>
-          <div class="see-more">
-            <a href="/auctionmanager/assign-mechanic/<%= request._id %>">More Details</a>
-          </div>
+    <!-- REQUESTS Section -->
+    <div class="section-title" id="requests">REQUESTS</div>
+    <div class="section-container">
+        <div class="car-grid">
+            <% if (auctionReqPend && auctionReqPend.length > 0) { %>
+                <% auctionReqPend.slice(0, 3).forEach(function(request) { %>
+                    <div class="car-card">
+                        <img src="<%= request.vehicleImage %>" alt="<%= request.vehicleName %>" class="car-image" />
+                        <div class="car-details">
+                            <div class="car-title"><%= request.vehicleName %></div>
+                            <div class="car-info">Seller: <%= request.sellerId.firstName %> <%= request.sellerId.lastName %></div>
+                            <div class="car-info">Location: <%= request.sellerId.city %></div>
+                            <div class="see-more">
+                                <a href="/auctionmanager/assign-mechanic/<%= request._id %>">More Details</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p>No pending requests found</p>
+            <% } %>
         </div>
-      </div>
-    <% }); %>
-  </div>
 
-  <!-- See More Button for REQUESTS -->
-  <div class="see-more">
-    <a href="/auctionmanager/requests">See More</a>
-  </div>
-</div>
+        <div class="see-more">
+            <a href="/auctionmanager/requests">See More</a>
+        </div>
+    </div>
 
       
 

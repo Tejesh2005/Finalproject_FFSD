@@ -336,7 +336,7 @@ footer {
     <!-- Add Rental Form -->
     <section class="add-rental">
       <h1>Add Vehicle for Rent</h1>
-      <form id="rental-form">
+      <form id="rental-form" method="POST" action="/seller_dashboard/add-rental">
         <label for="vehicle-name">Vehicle Name:</label>
         <input type="text" id="vehicle-name" name="vehicle-name" required />
 
@@ -415,17 +415,17 @@ footer {
 
     <script>
       // Form Submission for Rental
-      document.getElementById('rental-form').addEventListener('submit', (e) => {
-          e.preventDefault();
-          alert('Rental listing submitted successfully!');
-          // Redirect to the seller dashboard
-          window.location.href = '/seller_dashboard/view-rentals';
-      });
+      // document.getElementById('rental-form').addEventListener('submit', (e) => {
+      //     e.preventDefault();
+      //     alert('Rental listing submitted successfully!');
+      //     // Redirect to the seller dashboard
+      //     window.location.href = '/seller_dashboard/view-rentals';
+      // });
       
       // Logout button functionality
-      document.querySelector('.logout-btn').addEventListener('click', () => {
-          window.location.href = '/logout';
-      });
+      // document.querySelector('.logout-btn').addEventListener('click', () => {
+      //     window.location.href = '/logout';
+      // });
     </script>
   </body>
 </html>

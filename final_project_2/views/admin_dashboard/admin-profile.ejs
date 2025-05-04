@@ -11,47 +11,6 @@
         padding: 0;
         background-color: #f4f4f4;
       }
-      nav {
-        background-color: #ffffff;
-        padding: 1rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-      .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-      }
-      .logo a {
-        color: #ff6b00;
-        text-decoration: none;
-      }
-      .nav-links {
-        display: flex;
-        gap: 1.5rem;
-      }
-      .nav-links a {
-        color: #333333;
-        text-decoration: none;
-      }
-      .nav-links a.active {
-        font-weight: bold;
-      }
-      .profile {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .profile a {
-        color: #ff6b00;
-        text-decoration: none;
-        font-weight: bold;
-      }
       .profile-container {
         max-width: 800px;
         margin: 2rem auto;
@@ -105,56 +64,11 @@
       .logout-btn:hover {
         background-color: #e05d00;
       }
-      footer {
-        background: linear-gradient(135deg, #ff6b00, #ff9a44);
-        padding: 2rem;
-        color: white;
-        margin-top: 2rem;
-      }
-      .footer-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        gap: 2rem;
-      }
-      .footer-links h3 {
-        font-size: 1.2rem;
-      }
-      .footer-links ul {
-        list-style: none;
-        padding: 0;
-      }
-      .footer-links a {
-        color: white;
-        text-decoration: none;
-      }
-      .copyright {
-        text-align: center;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-      }
     </style>
   </head>
   <body>
-    <!-- Navigation Bar -->
-    <nav>
-      <div class="nav-container">
-        <div class="logo">
-          <a href="/admin-grp36">DriveBidRent</a>
-        </div>
-        <div class="nav-links">
-          <a href="/admin-grp36">Dashboard</a>
-          <a href="/manage-users">Manage Users</a>
-          <a href="/manage-earnings">Manage Earnings</a>
-          <a href="/analytics">Analytics</a>
-        </div>
-        <div class="profile">
-          <a href="/admin-profile" class="active">Admin Profile</a>
-        </div>
-      </div>
-    </nav>
+    <!-- Include the navbar partial -->
+    <%- include('./partials/navbar') %>
 
     <!-- Profile Content -->
     <div class="profile-container">
@@ -192,32 +106,8 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-      <div class="footer-container">
-        <div class="footer-links">
-          <h3>Quick Links</h3>
-          <ul>
-            <li><a href="/admin-grp36">Dashboard</a></li>
-            <li><a href="/manage-users">Manage Users</a></li>
-            <li><a href="/manage-earnings">Manage Earnings</a></li>
-            <li><a href="/analytics">Analytics</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h3>Contact Us</h3>
-          <p>
-            <strong>Email:</strong>
-            <a href="mailto:jeevanvankadara@gmail.com"
-              >jeevanvankadara@gmail.com</a
-            >
-          </p>
-          <p><strong>Phone:</strong> <a href="tel:9876543210">9876543210</a></p>
-          <p><strong>Address:</strong> sb-2, sagar colony, hyderabad</p>
-        </div>
-      </div>
-      <p class="copyright">© 2025 DriveBidRent | All rights reserved.</p>
-    </footer>
+    <!-- Include the footer partial -->
+    <%- include('./partials/footer') %>
 
     <script>
       function logout() {

@@ -46,8 +46,11 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
       'vehicle-name', 
       'vehicle-image',
       'vehicle-year',
-      'vehicle-mileage',
+      'vehicle-ac',
+      'vehicle-capacity',
       'vehicle-condition',
+      'vehicle-fuel-type',
+      'vehicle-transmission',
       'rental-cost',
       'driver-available'
     ];
@@ -63,15 +66,29 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
       });
     }
 
+    // Add additional validation for driver rate if driver is available
+    if (req.body['driver-available'] === 'yes' && !req.body['driver-rate']) {
+      return res.render('seller_dashboard/add-rental', {
+        user: { _id: req.session.userId },
+        formData: req.body,
+        error: 'Driver rate is required when driver is available',
+        success: null
+      });
+    }
+
     // Create new rental
     const newRental = new RentalRequest({
       vehicleName: req.body['vehicle-name'],
       vehicleImage: req.body['vehicle-image'],
       year: parseInt(req.body['vehicle-year']),
-      mileage: parseInt(req.body['vehicle-mileage']),
+      AC: req.body['vehicle-ac'],
+      capacity: parseInt(req.body['vehicle-capacity']),
       condition: req.body['vehicle-condition'],
+      fuelType: req.body['vehicle-fuel-type'],
+      transmission: req.body['vehicle-transmission'],
       costPerKm: parseFloat(req.body['rental-cost']),
       driverAvailable: req.body['driver-available'] === 'yes',
+      driverRate: req.body['driver-available'] === 'yes' ? parseFloat(req.body['driver-rate']) : undefined,
       sellerId: req.session.userId,
       status: 'available'
     });

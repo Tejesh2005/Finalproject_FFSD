@@ -141,6 +141,26 @@ form textarea {
   background: linear-gradient(135deg, #ff9a44, #ff6b00);
 }
 
+/* Alert Messages */
+.alert {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.alert-danger {
+  background-color: #ffe5e5;
+  color: #ff0000;
+  border: 1px solid #ffcccc;
+}
+
+.alert-success {
+  background-color: #e5ffe5;
+  color: #008000;
+  border: 1px solid #ccffcc;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .dashboard-cards {
@@ -156,39 +176,105 @@ form textarea {
     <!-- Add Rental Form -->
     <section class="add-rental">
       <h1>Add Vehicle for Rent</h1>
+      
+      <% if (error) { %>
+        <div class="alert alert-danger">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <% if (success) { %>
+        <div class="alert alert-success">
+          <%= success %>
+        </div>
+      <% } %>
+      
       <form id="rental-form" method="POST" action="/seller_dashboard/add-rental">
         <label for="vehicle-name">Vehicle Name:</label>
-        <input type="text" id="vehicle-name" name="vehicle-name" required />
-
-        <label for="vehicle-image">Vehicle Image URL:</label>
-        <input type="url" id="vehicle-image" name="vehicle-image" required />
-
-        <label for="vehicle-year">Year:</label>
-        <input type="number" id="vehicle-year" name="vehicle-year" required />
-
-        <label for="vehicle-mileage">Mileage (km):</label>
-        <input
-          type="number"
-          id="vehicle-mileage"
-          name="vehicle-mileage"
-          required
+        <input 
+          type="text" 
+          id="vehicle-name" 
+          name="vehicle-name" 
+          value="<%= formData['vehicle-name'] || '' %>"
+          required 
         />
 
+        <label for="vehicle-image">Vehicle Image URL:</label>
+        <input 
+          type="url" 
+          id="vehicle-image" 
+          name="vehicle-image" 
+          value="<%= formData['vehicle-image'] || '' %>"
+          required 
+        />
+
+        <label for="vehicle-year">Year:</label>
+        <input 
+          type="number" 
+          id="vehicle-year" 
+          name="vehicle-year" 
+          value="<%= formData['vehicle-year'] || '' %>"
+          required 
+        />
+
+        <label for="vehicle-ac">AC:</label>
+        <select id="vehicle-ac" name="vehicle-ac" required>
+          <option value="available" <%= formData['vehicle-ac'] === 'available' ? 'selected' : '' %>>Available</option>
+          <option value="not" <%= formData['vehicle-ac'] === 'not' ? 'selected' : '' %>>Not Available</option>
+        </select>
+
+        <label for="vehicle-capacity">Capacity (passengers):</label>
+        <input 
+          type="number" 
+          id="vehicle-capacity" 
+          name="vehicle-capacity" 
+          value="<%= formData['vehicle-capacity'] || '' %>"
+          required 
+        />
+        
         <label for="vehicle-condition">Condition:</label>
         <select id="vehicle-condition" name="vehicle-condition" required>
-          <option value="excellent">Excellent</option>
-          <option value="good">Good</option>
-          <option value="fair">Fair</option>
+          <option value="excellent" <%= formData['vehicle-condition'] === 'excellent' ? 'selected' : '' %>>Excellent</option>
+          <option value="good" <%= formData['vehicle-condition'] === 'good' ? 'selected' : '' %>>Good</option>
+          <option value="fair" <%= formData['vehicle-condition'] === 'fair' ? 'selected' : '' %>>Fair</option>
+        </select>
+
+        <label for="vehicle-fuel-type">Fuel Type:</label>
+        <select id="vehicle-fuel-type" name="vehicle-fuel-type" required>
+          <option value="petrol" <%= formData['vehicle-fuel-type'] === 'petrol' ? 'selected' : '' %>>Petrol</option>
+          <option value="diesel" <%= formData['vehicle-fuel-type'] === 'diesel' ? 'selected' : '' %>>Diesel</option>
+        </select>
+
+        <label for="vehicle-transmission">Transmission:</label>
+        <select id="vehicle-transmission" name="vehicle-transmission" required>
+          <option value="automatic" <%= formData['vehicle-transmission'] === 'automatic' ? 'selected' : '' %>>Automatic</option>
+          <option value="manual" <%= formData['vehicle-transmission'] === 'manual' ? 'selected' : '' %>>Manual</option>
         </select>
 
         <label for="rental-cost">Cost/km (₹):</label>
-        <input type="number" id="rental-cost" name="rental-cost" required />
+        <input 
+          type="number" 
+          id="rental-cost" 
+          name="rental-cost" 
+          value="<%= formData['rental-cost'] || '' %>"
+          required 
+        />
 
         <label for="driver-available">Driver Available:</label>
         <select id="driver-available" name="driver-available" required>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
+          <option value="yes" <%= formData['driver-available'] === 'yes' ? 'selected' : '' %>>Yes</option>
+          <option value="no" <%= formData['driver-available'] === 'no' ? 'selected' : '' %>>No</option>
         </select>
+
+        <div id="driver-rate-container" style="display: none;">
+          <label for="driver-rate">Driver Rate (₹/day):</label>
+          <input 
+            type="number" 
+            id="driver-rate" 
+            name="driver-rate" 
+            value="<%= formData['driver-rate'] || '' %>"
+          />
+        </div>
 
         <button type="submit" class="submit-btn">Submit</button>
       </form>
@@ -198,13 +284,71 @@ form textarea {
     <%- include('partials/footer') %>
 
     <script>
-      // Form Submission for Rental
-      // document.getElementById('rental-form').addEventListener('submit', (e) => {
-      //     e.preventDefault();
-      //     alert('Rental listing submitted successfully!');
-      //     // Redirect to the seller dashboard
-      //     window.location.href = '/seller_dashboard/view-rentals';
-      // });
+      // Form validation script
+      document.getElementById('rental-form').addEventListener('submit', function(e) {
+        // Basic validation
+        const requiredFields = [
+          'vehicle-name',
+          'vehicle-image',
+          'vehicle-year',
+          'vehicle-ac',
+          'vehicle-capacity',
+          'vehicle-condition',
+          'vehicle-fuel-type',
+          'vehicle-transmission',
+          'rental-cost',
+          'driver-available'
+        ];
+        
+        let hasErrors = false;
+        
+        requiredFields.forEach(field => {
+          const element = document.getElementById(field);
+          if (!element.value.trim()) {
+            hasErrors = true;
+            element.style.borderColor = 'red';
+          } else {
+            element.style.borderColor = '#ccc';
+          }
+        });
+        
+        // Check driver rate if driver is available
+        if (document.getElementById('driver-available').value === 'yes') {
+          const driverRate = document.getElementById('driver-rate');
+          if (!driverRate.value.trim()) {
+            hasErrors = true;
+            driverRate.style.borderColor = 'red';
+          } else {
+            driverRate.style.borderColor = '#ccc';
+          }
+        }
+        
+        if (hasErrors) {
+          e.preventDefault();
+          alert('Please fill in all required fields');
+        }
+      });
+      
+      // Show/hide driver rate field based on driver availability
+      document.getElementById('driver-available').addEventListener('change', function() {
+        const driverRateContainer = document.getElementById('driver-rate-container');
+        if (this.value === 'yes') {
+          driverRateContainer.style.display = 'block';
+          document.getElementById('driver-rate').setAttribute('required', 'required');
+        } else {
+          driverRateContainer.style.display = 'none';
+          document.getElementById('driver-rate').removeAttribute('required');
+        }
+      });
+
+      // Trigger the change event on page load to set initial state
+      document.addEventListener('DOMContentLoaded', function() {
+        const driverSelect = document.getElementById('driver-available');
+        if (driverSelect.value === 'yes') {
+          document.getElementById('driver-rate-container').style.display = 'block';
+          document.getElementById('driver-rate').setAttribute('required', 'required');
+        }
+      });
     </script>
   </body>
 </html>

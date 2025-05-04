@@ -103,20 +103,39 @@ app.post("/signup", async (req, res) => {
     // Only get googleAddressLink if user is a mechanic
     const googleAddressLink = userType === 'mechanic' ? req.body.googleAddressLink : undefined;
 
-    // Process address fields that might come as arrays
-    const doorNo = Array.isArray(req.body.doorNo)
-      ? req.body.doorNo[0]
-      : req.body.doorNo;
-    const street = Array.isArray(req.body.street)
-      ? req.body.street[0]
-      : req.body.street;
-    const city = Array.isArray(req.body.city)
-      ? req.body.city[0]
-      : req.body.city;
-    const state = Array.isArray(req.body.state)
-      ? req.body.state[0]
-      : req.body.state;
+    // Process address fields - log them to see what's coming in
+    console.log("doorNo received:", req.body.doorNo);
+    console.log("street received:", req.body.street);
+    console.log("city received:", req.body.city);
+    console.log("state received:", req.body.state);
 
+    // Get address fields, handling both string and array cases explicitly
+    let doorNo, street, city, state;
+    
+    if (req.body.doorNo) {
+      doorNo = Array.isArray(req.body.doorNo) 
+        ? req.body.doorNo.find(val => val && val.trim() !== '') 
+        : req.body.doorNo;
+    }
+    
+    if (req.body.street) {
+      street = Array.isArray(req.body.street) 
+        ? req.body.street.find(val => val && val.trim() !== '') 
+        : req.body.street;
+    }
+    
+    if (req.body.city) {
+      city = Array.isArray(req.body.city) 
+        ? req.body.city.find(val => val && val.trim() !== '') 
+        : req.body.city;
+    }
+    
+    if (req.body.state) {
+      state = Array.isArray(req.body.state) 
+        ? req.body.state.find(val => val && val.trim() !== '') 
+        : req.body.state;
+    }
+    
     // Handle vehicle types - simplified for only bikes and cars
     const repairBikes = req.body.repairBikes === "on";
     const repairCars = req.body.repairCars === "on";
@@ -280,33 +299,39 @@ app.post("/signup", async (req, res) => {
     // Parse experienceYears as a number if it exists
     const parsedExperienceYears = experienceYears ? parseInt(experienceYears) : undefined;
 
-    const user = new User({
+    const userData = {
       firstName,
       lastName,
       email,
       password,
       userType,
       dateOfBirth,
-      doorNo,
-      street,
-      city,
-      state,
-      drivingLicense,
-      shopName,
       phone,
       experienceYears: parsedExperienceYears,
       approved_status: approved_status || 'No', // Default to 'No' if not provided
       repairBikes,
-      repairCars,
-      googleAddressLink
-    });
-
+      repairCars
+    };
+    
+    // Only add these fields if they have values
+    if (doorNo) userData.doorNo = doorNo;
+    if (street) userData.street = street;
+    if (city) userData.city = city;
+    if (state) userData.state = state;
+    if (drivingLicense) userData.drivingLicense = drivingLicense;
+    if (shopName) userData.shopName = shopName;
+    if (googleAddressLink) userData.googleAddressLink = googleAddressLink;
+    
+    console.log("Final userData being saved:", userData);
+    
+    const user = new User(userData);
     await user.save();
+    
     res.redirect("/login");
   } catch (err) {
-    console.error(err);
+    console.error("Error in signup process:", err);
     res.render("signup", {
-      error: "An error occurred during signup",
+      error: "An error occurred during signup: " + err.message,
       formData: req.body,
     });
   }

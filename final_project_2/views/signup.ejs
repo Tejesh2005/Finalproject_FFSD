@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -87,7 +88,7 @@
   <div class="container">
     <div class="form-container">
       <h1 class="form-title">Create an Account</h1>
-      
+
       <% if (typeof error !== 'undefined') { %>
         <div class="error-message"><%= error %></div>
       <% } %>
@@ -169,8 +170,6 @@
           <div id="ageError" class="age-error">You must be at least 18 years old to sign up.</div>
         </div>
 
-        <!-- Google Address Link Field will be moved to mechanic section -->
-        
         <!-- Address Fields (shown for buyer, seller, driver) -->
         <div id="addressFields" class="conditional-fields">
           <div class="form-group">
@@ -247,27 +246,27 @@
           <div class="form-group">
             <label>Shop Address</label>
             <div class="form-group">
-              <label for="doorNo">Door No.</label>
-              <input type="text" id="doorNo" name="doorNo" class="form-control" 
+              <label for="mechDoorNo">Door No.</label>
+              <input type="text" id="mechDoorNo" name="doorNo" class="form-control" 
                      value="<%= typeof formData !== 'undefined' ? formData.doorNo : '' %>"
                      placeholder="Shop/Building Number">
             </div>
             <div class="form-group">
-              <label for="street">Street</label>
-              <input type="text" id="street" name="street" class="form-control" 
+              <label for="mechStreet">Street</label>
+              <input type="text" id="mechStreet" name="street" class="form-control" 
                      value="<%= typeof formData !== 'undefined' ? formData.street : '' %>"
                      placeholder="Street Name">
             </div>
             <div class="form-row">
               <div class="form-group col-md-6">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" class="form-control" 
+                <label for="mechCity">City</label>
+                <input type="text" id="mechCity" name="city" class="form-control" 
                        value="<%= typeof formData !== 'undefined' ? formData.city : '' %>"
                        placeholder="City">
               </div>
               <div class="form-group col-md-6">
-                <label for="state">State</label>
-                <input type="text" id="state" name="state" class="form-control" 
+                <label for="mechState">State</label>
+                <input type="text" id="mechState" name="state" class="form-control" 
                        value="<%= typeof formData !== 'undefined' ? formData.state : '' %>"
                        placeholder="State">
               </div>
@@ -414,5 +413,6 @@
       this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
     });
   </script>
+
 </body>
 </html>

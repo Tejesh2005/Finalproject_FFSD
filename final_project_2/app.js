@@ -14,6 +14,7 @@ const viewAuctionsRoute = require("./routes/Seller/ViewAuctions.js"); // Import 
 const viewRentalsRoute = require("./routes/Seller/ViewRentals.js"); // Import the viewRentals route
 const viewearningsRoute = require("./routes/Seller/ViewEarnings.js"); // Import the viewearnings route
 const rentalDetailsRoute = require("./routes/Seller/RentalDetails");
+const updateRentalRoute = require('./routes/Seller/UpdateRental');
 
 const AuctionManagerHomeRoute = require("./routes/AuctionManager/Home.js"); // Import the AuctionManagerHome route
 const Auctionrequests = require("./routes/AuctionManager/Requests.js"); // Import the AuctionManagerHome route
@@ -409,6 +410,7 @@ app.use("/seller_dashboard", viewAuctionsRoute);
 app.use("/seller_dashboard", viewRentalsRoute);
 app.use("/seller_dashboard", viewearningsRoute);
 app.use("/seller_dashboard", rentalDetailsRoute);
+app.use('/seller_dashboard', updateRentalRoute);
 
 app.get("/seller_dashboard/update-rental", async (req, res) => {
   if (!req.session.userId || req.session.userType !== "seller") {

@@ -46,11 +46,7 @@ const app = express();
 
 const DriverDashboard = require('./routes/Driver/Dashboard.js'); // Import the DriverDashboard route
 
-app.get('/proj',(req,res)=>{
 
-  res.render('buyer_dashboard/proj.ejs');
-
-});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/drivebidrent')

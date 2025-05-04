@@ -3,399 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveBidRent - Rentals</title>
+    <title>All Rentals - DriveBidRent</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "montserrat", sans-serif;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
 
-body {
-    background-color: #ffffff;
-    color: #333333;
-}
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
 
-/* Heading Section */
-.heading1 {
-    width: 800px;
-    height: 400px;
-    padding-top: 250px;
-    padding-left: 500px;
-    padding-right: 20px;
-    margin: 150px auto 85px auto;
-    border: 3px solid #ff6b00;
-    border-radius: 15px;
-    box-shadow: 10px 10px 50px rgba(255, 107, 0, 0.3);
-    background: linear-gradient(135deg, #ff6b00, #ff9a44, #ffffff);
-    opacity: 1;
-    border: none;
-}
+        /* Search and Filter Section - Adjusted Spacing */
+        .search-filter {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 0 auto 2rem auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+        }
 
+        .search-filter form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            align-items: end;
+        }
 
-.heading1 h1 {
-    font-family: "Montserrat", sans-serif;
-    font-size: 29px;
-    transition: text-shadow 0.3s ease-in-out;
-    margin-bottom: 10px;
-    color: #ff6b00;
-}
+        .search-filter .form-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-.heading1 p {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    line-height: 1.5;
-    font-size: 16px;
-    font-weight: 500;
-    color: #333333;
-}
+        .search-filter label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
 
-.heading1 h1:hover {
-    text-shadow: 0px 0px 15px #ff6b00;
-}
+        .search-filter input,
+        .search-filter select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+        }
 
-.oneL {
-    color: #ff6b00;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+        .search-filter button {
+            background: linear-gradient(135deg, #ff6b00, #ff9a44);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            height: fit-content;
+            align-self: end;
+        }
 
-/* Sections */
-section {
-    padding: 4rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+        .search-filter button:hover {
+            background: linear-gradient(135deg, #ff9a44, #ff6b00);
+        }
 
-section h2 {
-    color: #ff6b00;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-}
+        /* Results Count */
+        .results-count {
+            text-align: right;
+            margin: 0 auto 1rem auto;
+            color: #666;
+            font-style: italic;
+            max-width: 1200px;
+        }
 
-.card-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
+        /* Car Cards - Fixed Size and 3 per row */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-.more-btn {
-    align-content: flex-end;
-}
+        .car-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #ff6b00;
+            height: 550px; /* Fixed height */
+            display: flex;
+            flex-direction: column;
+        }
 
-/* Auctions Section Heading */
-.auctions h2 {
-    color: #ff6b00;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    line-height: 1.5;
-}
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
+        }
 
-/* Rentals and Drivers Section Headings */
-.rentals h2,
-.drivers h2 {
-    color: #ff6b00;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    line-height: 1.5;
-}
+        .new-tag {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: #ff6b00;
+            color: white;
+            padding: 2px 15px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 400;
+        }
 
-/* Car Cards */
-.car-card {
-    background-color: #ffffff;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #ff6b00;
-    height: 550px;
-}
+        .heart-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #ff6b00;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
 
-.car-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
-}
+        .car-card img {
+            width: 100%;
+            height: 180px; /* Fixed image height */
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
 
-.hot-tag {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background-color: #ff6b00;
-    color: white;
-    padding: 2px 15px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 400;
-    margin-top: 50%;
-    margin-left: 4%;
-}
+        .car-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #ff6b00;
+        }
 
-.heart-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    color: #ff6b00;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
+        .rental-cost {
+            color: #666666;
+            margin-bottom: 1rem;
+        }
 
-.car-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
+        .car-details {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            flex-grow: 1; /* Makes details section fill space */
+            overflow: hidden; /* Prevents content from overflowing */
+        }
 
-.car-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-    color: #ff6b00;
-}
+        .car-details p {
+            margin-bottom: 0.5rem;
+            color: #333333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-.auction-date, .rental-cost, .costperday {
-    color: #666666;
-    margin-bottom: 1rem;
-}
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto; /* Pushes buttons to bottom */
+        }
 
-.car-details {
-    background-color: #f9f9f9;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
+        .details-btn {
+            display: inline-block;
+            background-color: #ff6b00;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            flex: 1;
+            margin-right: 0.5rem;
+        }
 
-.car-details p {
-    margin-bottom: 0.5rem;
-    color: #333333;
-}
+        .placebid-btn {
+            display: inline-block;
+            background-color: #ff6b00;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            flex: 1;
+            margin-left: 0.5rem;
+        }
 
-.details-btn {
-    display: inline-block;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
+        .placebid-btn:hover,
+        .details-btn:hover {
+            background-color: #e65c00;
+        }
 
-.placebid-btn {
-    display: inline;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    margin-left: 35px;
-    padding-left: 30px;
-    padding-right: 30px;
-}
+        /* No Results */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.2rem;
+        }
 
-.placebid-btn:hover {
-    background-color: #e65c00;
-}
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .card-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-filter form {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
-.bid-btn {
-    display: inline;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    margin-left: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.bid-btn:hover {
-    background-color: #e65c00;
-}
-
-.details-btn:hover {
-    background-color: #e65c00;
-}
-
-/* More Button Container */
-.more-btn-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-}
-
-/* More Button */
-.more-btn {
-    display: inline-block;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.75rem 2rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    text-align: center;
-}
-
-.more-btn:hover {
-    background-color: #e65c00;
-}
-
-section {
-    position: relative;
-    overflow: hidden;
-}
-
-section::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, #ff6b00, #ff9a44, transparent);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .heading1 {
-        width: 90%;
-        padding-left: 20px;
-        padding-right: 20px;
-        text-align: center;
-    }
-    
-    .nav-container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .hero {
-        margin-top: 8rem;
-    }
-}
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filter form {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .details-btn,
+            .placebid-btn {
+                margin: 0;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-<!-- Include Navigation Bar -->
-<%- include('partials/navbar') %>
+    <!-- Include Navigation Bar -->
+    <%- include('partials/navbar') %>
 
-    <!-- Rentals Section -->
     <section class="rentals">
-        <h2>Rentals</h2>
+        <h2 style="text-align: center; margin-bottom: 1.5rem;">Available Rentals</h2>
+        
+        <!-- Search and Filter Section -->
+        <div class="search-filter">
+            <form action="/buyer_dashboard" method="GET">
+                <input type="hidden" name="page" value="rentals">
+                
+                <!-- Search Input -->
+                <div class="form-group">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" name="search" placeholder="Vehicle name..." 
+                           value="<%= searchQuery || '' %>">
+                </div>
+                
+                <!-- Fuel Type Filter -->
+                <div class="form-group">
+                    <label for="fuelType">Fuel Type</label>
+                    <select id="fuelType" name="fuelType">
+                        <option value="">All Types</option>
+                        <option value="petrol" <%= fuelType === 'petrol' ? 'selected' : '' %>>Petrol</option>
+                        <option value="diesel" <%= fuelType === 'diesel' ? 'selected' : '' %>>Diesel</option>
+                    </select>
+                </div>
+                
+                <!-- Transmission Filter -->
+                <div class="form-group">
+                    <label for="transmission">Transmission</label>
+                    <select id="transmission" name="transmission">
+                        <option value="">All Types</option>
+                        <option value="automatic" <%= transmission === 'automatic' ? 'selected' : '' %>>Automatic</option>
+                        <option value="manual" <%= transmission === 'manual' ? 'selected' : '' %>>Manual</option>
+                    </select>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit">Apply Filters</button>
+            </form>
+        </div>
+
+        <!-- Results Count -->
+        <div class="results-count">
+            <%= rentals.length %> <%= rentals.length === 1 ? 'vehicle' : 'vehicles' %> found
+        </div>
+
+        <!-- Rentals Grid -->
         <div class="card-container">
-            <!-- Rental 1 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://www.pngfind.com/pngs/m/73-734475_force-toofan-hd-png-download.png" alt="Toofan">
-                <h3>Trax Toofan</h3>
-                <p class="rental-cost">Cost/km: <strong>15 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 15km/liter</p>
-                    <p><strong>AC:</strong> No</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 13</p>
+            <% if (rentals && rentals.length > 0) { %>
+                <% rentals.forEach(rental => { %>
+                    <div class="car-card">
+                        <% if (new Date() - rental.createdAt < 7 * 24 * 60 * 60 * 1000) { %>
+                            <span class="new-tag">New</span>
+                        <% } %>
+                        <button class="heart-btn" data-liked="false">❤</button>
+                        <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>">
+                        <h3><%= rental.vehicleName %></h3>
+                        <p class="rental-cost">Cost/km: <strong>₹<%= rental.costPerKm %></strong></p>
+                        <div class="car-details">
+                            <p><strong>Year:</strong> <%= rental.year %></p>
+                            <p><strong>AC:</strong> <%= rental.AC === 'available' ? 'Yes' : 'No' %></p>
+                            <p><strong>Capacity:</strong> <%= rental.capacity %> passengers</p>
+                            <p><strong>Condition:</strong> <%= rental.condition.charAt(0).toUpperCase() + rental.condition.slice(1) %></p>
+                            <p><strong>Seller:</strong> <%= rental.sellerId.firstName %> <%= rental.sellerId.lastName %></p>
+                            <% if (rental.driverAvailable) { %>
+                                <p><strong>Driver:</strong> Yes (₹<%= rental.driverRate %>/day)</p>
+                            <% } %>
+                        </div>
+                        <div class="button-container">
+                            <a href="/buyer_dashboard?page=rental&id=<%= rental._id %>" class="details-btn">Details</a>
+                            <a href="/buyer_dashboard?page=rental&id=<%= rental._id %>" class="placebid-btn">Rent Now</a>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-results">
+                    <p>No rentals found matching your criteria.</p>
+                    <a href="/buyer_dashboard?page=rentals" class="details-btn" style="margin-top: 1rem; display: inline-block;">Clear Filters</a>
                 </div>
-                <a href="/rental?id=1" class="placebid-btn">Rent it</a>
-                <a href="/rental?id=1" class="details-btn">More Details</a>
-            </div>
-
-            <!-- Rental 2 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://www.91trucks.com/_next/image?url=https%3A%2F%2Fimages.91trucks.com%2Fbuses%2Fmodels%2F71%2F1548%2Fforce-traveller-3350-super-796998490.jpg%3Fw%3D350%26h%3D180&w=640&q=75" alt="Traveller">
-                <h3>Trax Traveller</h3>
-                <p class="rental-cost">Cost/km: <strong>18 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 13km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 26</p>
-                </div>
-                <a href="/rental?id=2" class="details-btn">More Details</a>
-                <a href="/rental?id=2" class="placebid-btn">Rent it</a>
-            </div>
-
-            <!-- Rental 3 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/ExtraImages/20230405103153_Innova_1.jpg&w=700&c=1" alt="Innova">
-                <h3>Toyota Innova</h3>
-                <p class="rental-cost">Cost/km: <strong>17 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 14km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 8</p>
-                </div>
-                <a href="/rental?id=2" class="details-btn">More Details</a>
-                <a href="/rental?id=2" class="placebid-btn">Rent it</a>
-            </div>
-
-            <!-- Rental 4 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://trident-group.s3.ap-south-1.amazonaws.com/hyundai/models/colors/1705922962.png" alt="Hyundai Creta">
-                <h3>Hyundai Creta</h3>
-                <p class="rental-cost">Cost/km: <strong>20 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 16km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 5</p>
-                </div>
-                <a href="/rental?id=4" class="details-btn">More Details</a>
-                <a href="/rental?id=4" class="placebid-btn">Rent it</a>
-            </div>
-
-            <!-- Rental 5 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://akm-img-a-in.tosshub.com/indiatoday/images/story/201609/toyota-fortuner_story_647_091416044216.jpg?VersionId=PPZmXaEGWYlavAlxVYwgTxA1OJQm6rSi&size=690:388" alt="Toyota Fortuner">
-                <h3>Toyota Fortuner</h3>
-                <p class="rental-cost">Cost/km: <strong>25 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 12km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 7</p>
-                </div>
-                <a href="/rental?id=5" class="details-btn">More Details</a>
-                <a href="/rental?id=5" class="placebid-btn">Rent it</a>
-            </div>
-
-            <!-- Rental 6 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://offers.caimahindra.com/uploads/product/Thar%20Deep%20Grey.png" alt="Mahindra Thar">
-                <h3>Mahindra Thar</h3>
-                <p class="rental-cost">Cost/km: <strong>22 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 10km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 4</p>
-                </div>
-                <a href="/rental?id=6" class="details-btn">More Details</a>
-                <a href="/rental?id=6" class="placebid-btn">Rent it</a>
-            </div>
+            <% } %>
         </div>
     </section>
 
@@ -405,19 +340,53 @@ section::after {
     <script>
         // Heart button functionality
         document.querySelectorAll('.heart-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const isLiked = button.getAttribute('data-liked') === 'true';
-                button.setAttribute('data-liked', !isLiked);
-                button.style.color = !isLiked ? '#ff6b00' : '#ffffff';
+            button.addEventListener('click', function() {
+                const isLiked = this.getAttribute('data-liked') === 'true';
+                this.setAttribute('data-liked', !isLiked);
+                this.style.color = !isLiked ? '#ff6b00' : '#ccc';
+                
+                const rentalId = this.closest('.car-card').querySelector('a[href*="id="]').href.split('id=')[1];
+                
+                fetch('/api/wishlist', {
+                    method: isLiked ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rentalId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        this.setAttribute('data-liked', isLiked);
+                        this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.setAttribute('data-liked', isLiked);
+                    this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                });
             });
         });
 
+        // Initialize heart buttons based on wishlist
         document.addEventListener('DOMContentLoaded', () => {
-        const savedProfile = JSON.parse(localStorage.getItem('profile')) || {};
-        if (savedProfile.name) {
-            document.getElementById('profile-name').textContent = savedProfile.name;
-        }
-    });
+            fetch('/api/wishlist')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.wishlist) {
+                        document.querySelectorAll('.car-card').forEach(card => {
+                            const rentalId = card.querySelector('a[href*="id="]').href.split('id=')[1];
+                            const heartBtn = card.querySelector('.heart-btn');
+                            if (data.wishlist.includes(rentalId)) {
+                                heartBtn.setAttribute('data-liked', 'true');
+                                heartBtn.style.color = '#ff6b00';
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading wishlist:', error));
+        });
     </script>
 </body>
 </html>

@@ -3,216 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent Vehicle - DriveBidRent</title>
+    <title><%= vehicleName %> - DriveBidRent</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "montserrat", sans-serif;
-}
-
-body {
-    background-color: #ffffff;
-    color: #333333;
-}
-
-/* Rental Page Styles */
-.rental-details {
-    padding: 4rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.rental-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
-
-.vehicle-image img {
-    width: 100%;
-    border-radius: 1rem;
-}
-
-.vehicle-info h1 {
-    color: #ff6b00;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.rental-cost {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-}
-
-.vehicle-specs {
-    background-color: #f9f9f9;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.vehicle-specs p {
-    margin-bottom: 0.5rem;
-    color: #333333;
-}
-
-.rental-form {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.rental-form h2 {
-    color: #ff6b00;
-    margin-bottom: 1rem;
-}
-
-.rental-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #333333;
-}
-
-.rental-form input, .rental-form select {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 0.3rem;
-}
-
-.rent-btn {
-    background: linear-gradient(135deg, #ff6b00, #ff9a44);
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.3rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.rent-btn:hover {
-    background: linear-gradient(135deg, #ff9a44, #ff6b00);
-}
-
-.rental-summary {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 2rem;
-}
-
-.rental-summary h2 {
-    color: #ff6b00;
-    margin-bottom: 1rem;
-}
-
-.rental-summary p {
-    margin-bottom: 0.5rem;
-    color: #333333;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .rental-container {
-        grid-template-columns: 1fr;
-    }
-}
+        .rental-detail {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .rental-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .seller-info {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .details-btn, .placebid-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .details-btn {
+            background-color: #333;
+            color: white;
+        }
+        .placebid-btn {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .details-btn:hover {
+            background-color: #222;
+        }
+        .placebid-btn:hover {
+            background-color: #e65c00;
+        }
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .spec-item {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 0.3rem;
+        }
     </style>
 </head>
 <body>
-<!-- Include Navigation Bar -->
-<%- include('partials/navbar') %>
+    <%- include('partials/navbar') %>
 
-    <!-- Rental Page Content -->
-    <section class="rental-details">
-        <div class="rental-container">
-            <!-- Vehicle Image and Basic Details -->
-            <div class="vehicle-image">
-                <img src="<%= image %>" alt="<%= name %>">
+    <div class="rental-detail">
+        <h1><%= vehicleName %></h1>
+        <img src="<%= vehicleImage %>" alt="<%= vehicleName %>" class="rental-image">
+        
+        <div class="specs-grid">
+            <div class="spec-item">
+                <h3>Vehicle Specifications</h3>
+                <p><strong>Year:</strong> <%= year %></p>
+                <p><strong>Condition:</strong> <%= condition.charAt(0).toUpperCase() + condition.slice(1) %></p>
+                <p><strong>Capacity:</strong> <%= capacity %> passengers</p>
             </div>
-            <div class="vehicle-info">
-                <h1><%= name %></h1>
-                <p class="rental-cost">Cost/km: <strong><%= cost %></strong></p>
-                <div class="vehicle-specs">
-                    <p><strong>Mileage:</strong> <%= mileage %></p>
-                    <p><strong>AC:</strong> <%= ac %></p>
-                    <p><strong>Driver:</strong> <%= driver %></p>
-                    <p><strong>Capacity:</strong> <%= capacity %></p>
-                </div>
-            </div>
-
-            <!-- Rental Form -->
-            <div class="rental-form">
-                <h2>Rental Details</h2>
-                <form id="rental-form">
-                    <label for="pickup-date">Pickup Date:</label>
-                    <input type="date" id="pickup-date" name="pickup-date" required>
-
-                    <label for="return-date">Return Date:</label>
-                    <input type="date" id="return-date" name="return-date" required>
-
-                    <label for="driver-required">Driver Required:</label>
-                    <select id="driver-required" name="driver-required">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-
-                    <button type="submit" class="rent-btn">Confirm Rental</button>
-                </form>
-            </div>
-
-            <!-- Rental Summary -->
-            <div class="rental-summary">
-                <h2>Rental Summary</h2>
-                <p><strong>Vehicle:</strong> Trax Toofan</p>
-                <p><strong>Cost/km:</strong> ₹15</p>
-                <p><strong>Pickup Date:</strong> <span id="summary-pickup-date">-</span></p>
-                <p><strong>Return Date:</strong> <span id="summary-return-date">-</span></p>
-                <p><strong>Driver Required:</strong> <span id="summary-driver-required">-</span></p>
-                <p><strong>Total Cost:</strong> <span id="total-cost">-</span></p>
+            <div class="spec-item">
+                <h3>Technical Details</h3>
+                <p><strong>Fuel Type:</strong> <%= fuelType.charAt(0).toUpperCase() + fuelType.slice(1) %></p>
+                <p><strong>Transmission:</strong> <%= transmission.charAt(0).toUpperCase() + transmission.slice(1) %></p>
+                <p><strong>AC:</strong> <%= AC === 'available' ? 'Yes' : 'No' %></p>
             </div>
         </div>
-    </section>
+        
+        <div class="spec-item">
+            <h3>Pricing</h3>
+            <p><strong>Cost per km:</strong> ₹<%= costPerKm %></p>
+            <% if (driverAvailable) { %>
+                <p><strong>Driver Available:</strong> Yes (₹<%= driverRate %>/day)</p>
+            <% } else { %>
+                <p><strong>Driver Available:</strong> No</p>
+            <% } %>
+        </div>
+        
+        <div class="seller-info">
+            <h2>Seller Information</h2>
+            <p><strong>Name:</strong> <%= sellerId.firstName %> <%= sellerId.lastName %></p>
+            <p><strong>Email:</strong> <%= sellerId.email %></p>
+            <% if (sellerId.phone) { %>
+                <p><strong>Phone:</strong> <%= sellerId.phone %></p>
+            <% } %>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="mailto:<%= sellerId.email %>" class="details-btn">Contact Seller</a>
+            <a href="#" class="placebid-btn">Rent Now</a>
+        </div>
+    </div>
 
-    <!-- Include Footer -->
     <%- include('partials/footer') %>
-    
-    <script>
-// Rental Form Submission
-const rentalForm = document.getElementById('rental-form');
-const summaryPickupDate = document.getElementById('summary-pickup-date');
-const summaryReturnDate = document.getElementById('summary-return-date');
-const summaryDriverRequired = document.getElementById('summary-driver-required');
-const totalCost = document.getElementById('total-cost');
-
-rentalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    // Get form values
-    const pickupDate = document.getElementById('pickup-date').value;
-    const returnDate = document.getElementById('return-date').value;
-    const driverRequired = document.getElementById('driver-required').value;
-
-    // Calculate total cost (example: ₹15/km * 100km)
-    const costPerKm = 15;
-    const distance = 100; // Example distance
-    const total = costPerKm * distance;
-
-    // Update summary
-    summaryPickupDate.textContent = pickupDate;
-    summaryReturnDate.textContent = returnDate;
-    summaryDriverRequired.textContent = driverRequired;
-    totalCost.textContent = `₹${total}`;
-
-    alert('Rental confirmed! Thank you for choosing DriveBidRent.');
-});
-    </script>
 </body>
 </html>

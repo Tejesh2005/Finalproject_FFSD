@@ -5,48 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveBidRent - Buyer Dashboard</title>
     <style>
-        /* Buyer Dashboard specific styles */
-        
-        /* Heading Section */
-        .heading1 {
-            width: 40%;
-            height: 300px;
-            padding-top: 250px;
-            padding-left: 500px;
-            padding-right: 20px;
-            margin: 150px auto 85px auto;
+        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+
+/* Heading Section */
+.heading1 {
+            width: 90%;
+            height: 500px;
+            margin: 50px auto;
             border-radius: 15px;
             box-shadow: 10px 10px 50px rgba(255, 107, 0, 0.3);
             background: linear-gradient(135deg, #ff6b00, #ff9a44, #ffffff);
             opacity: 1;
             border: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
         }
-        
+
         .heading1 h1 {
             font-family: "Montserrat", sans-serif;
-            font-size: 29px;
+            font-size: 42px;
+            font-weight: 700;
             transition: text-shadow 0.3s ease-in-out;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #ff6b00;
         }
-        
+
         .heading1 p {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             line-height: 1.5;
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 500;
             color: #333333;
+            margin-top: 5px;
         }
-        
+
         .heading1 h1:hover {
             text-shadow: 0px 0px 15px #ff6b00;
         }
-        
+
         .oneL {
             color: #ff6b00;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         /* Sections */
         section {
             padding: 4rem 2rem;
@@ -55,7 +74,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         section::after {
             content: '';
             position: absolute;
@@ -65,20 +84,20 @@
             height: 2px;
             background: linear-gradient(90deg, #ff6b00, #ff9a44, transparent);
         }
-        
+
         section h2 {
             color: #ff6b00;
             font-size: 2rem;
             text-align: center;
             margin-bottom: 2rem;
         }
-        
+
         .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
         }
-        
+
         /* Auctions Section Heading */
         .auctions h2 {
             color: #ff6b00;
@@ -89,7 +108,7 @@
             padding-bottom: 1rem;
             line-height: 1.5;
         }
-        
+
         /* Rentals and Drivers Section Headings */
         .rentals h2,
         .drivers h2 {
@@ -101,8 +120,8 @@
             padding-bottom: 1rem;
             line-height: 1.5;
         }
-        
-        /* Car Cards */
+
+        /* Car Cards - Consistent Size */
         .car-card {
             background-color: #ffffff;
             border-radius: 1rem;
@@ -111,14 +130,16 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid #ff6b00;
             height: 550px;
+            display: flex;
+            flex-direction: column;
         }
-        
+
         .car-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
         }
-        
-        .hot-tag {
+
+        .hot-tag, .new-tag {
             position: absolute;
             top: 1rem;
             left: 1rem;
@@ -128,10 +149,8 @@
             border-radius: 10px;
             font-size: 15px;
             font-weight: 400;
-            margin-top: 50%;
-            margin-left: 4%;
         }
-        
+
         .heart-btn {
             position: absolute;
             top: 1rem;
@@ -143,38 +162,44 @@
             cursor: pointer;
             transition: color 0.3s ease;
         }
-        
+
         .car-card img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
         }
-        
+
         .car-card h3 {
             font-size: 1.3rem;
             margin-bottom: 0.5rem;
             color: #ff6b00;
         }
-        
+
         .auction-date, .rental-cost, .costperday {
             color: #666666;
             margin-bottom: 1rem;
         }
-        
+
         .car-details {
             background-color: #f9f9f9;
             padding: 1rem;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
+            flex-grow: 1;
         }
-        
+
         .car-details p {
             margin-bottom: 0.5rem;
             color: #333333;
         }
-        
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
         .details-btn {
             display: inline-block;
             background-color: #ff6b00;
@@ -183,53 +208,37 @@
             border-radius: 0.3rem;
             text-decoration: none;
             transition: background-color 0.3s ease;
+            flex: 1;
+            margin-right: 0.5rem;
+            text-align: center;
         }
-        
-        .placebid-btn {
-            display: inline;
+
+        .placebid-btn, .bid-btn {
+            display: inline-block;
             background-color: #ff6b00;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.3rem;
             text-decoration: none;
             transition: background-color 0.3s ease;
-            margin-left: 35px;
-            padding-left: 30px;
-            padding-right: 30px;
+            flex: 1;
+            margin-left: 0.5rem;
+            text-align: center;
         }
-        
-        .placebid-btn:hover {
-            background-color: #e65c00;
-        }
-        
-        .bid-btn {
-            display: inline;
-            background-color: #ff6b00;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.3rem;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-            margin-left: 40px;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        
-        .bid-btn:hover {
-            background-color: #e65c00;
-        }
-        
+
+        .placebid-btn:hover,
+        .bid-btn:hover,
         .details-btn:hover {
             background-color: #e65c00;
         }
-        
+
         /* More Button Container */
         .more-btn-container {
             display: flex;
             justify-content: center;
             margin-top: 2rem;
         }
-        
+
         /* More Button */
         .more-btn {
             display: inline-block;
@@ -242,18 +251,49 @@
             transition: background-color 0.3s ease;
             text-align: center;
         }
-        
+
         .more-btn:hover {
             background-color: #e65c00;
         }
-        
+
+        /* No Items Message */
+        .no-items {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 2rem;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
         /* Responsive Design */
+        @media (max-width: 1024px) {
+            .card-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .heading1 {
                 width: 90%;
                 padding-left: 20px;
                 padding-right: 20px;
                 text-align: center;
+            }
+            
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .details-btn,
+            .placebid-btn,
+            .bid-btn {
+                margin: 0;
+                width: 100%;
             }
         }
     </style>
@@ -270,9 +310,8 @@
 
     <!-- Auctions Section -->
     <section class="auctions">
-        <h2>Auctions</h2>
+        <h2>Featured Auctions</h2>
         <div class="card-container">
-            <!-- Car 1 -->
             <div class="car-card">
                 <span class="hot-tag">Hot</span>
                 <button class="heart-btn" data-liked="false">❤</button>
@@ -285,11 +324,12 @@
                     <p><strong>Condition:</strong> Excellent</p>
                     <p><strong>Estimated Price:</strong> 7lakhs-9lakhs</p>
                 </div>
-                <a href="/auction?id=1" class="details-btn">More Details</a>
-                <a href="/auction?id=1" class="bid-btn">Place a bid</a>
+                <div class="button-container">
+                    <a href="/auction?id=1" class="details-btn">Details</a>
+                    <a href="/auction?id=1" class="bid-btn">Place Bid</a>
+                </div>
             </div>
 
-            <!-- Car 2 -->
             <div class="car-card">
                 <span class="hot-tag">Hot</span>
                 <button class="heart-btn" data-liked="false">❤</button>
@@ -302,11 +342,12 @@
                     <p><strong>Condition:</strong> Good</p>
                     <p><strong>Estimated Price:</strong> 70,000-1.5lak</p>
                 </div>
-                <a href="/auction?id=2" class="details-btn">More Details</a>
-                <a href="/auction?id=2" class="bid-btn">Place a bid</a>
+                <div class="button-container">
+                    <a href="/auction?id=2" class="details-btn">Details</a>
+                    <a href="/auction?id=2" class="bid-btn">Place Bid</a>
+                </div>
             </div>
 
-            <!-- Car 3 -->
             <div class="car-card">
                 <span class="hot-tag">Hot</span>
                 <button class="heart-btn" data-liked="false">❤</button>
@@ -319,79 +360,62 @@
                     <p><strong>Condition:</strong> Excellent</p>
                     <p><strong>Estimated Price:</strong> 15lakhs-20lakhs</p>
                 </div>
-                <a href="/auction?id=3" class="details-btn">More Details</a>
-                <a href="/auction?id=3" class="bid-btn">Place a bid</a>
+                <div class="button-container">
+                    <a href="/auction?id=3" class="details-btn">Details</a>
+                    <a href="/auction?id=3" class="bid-btn">Place Bid</a>
+                </div>
             </div>
         </div>
-        <!-- More Button -->
         <div class="more-btn-container">
-            <a href="/auctions" class="more-btn">More</a>
+            <a href="/buyer_dashboard?page=auctions" class="more-btn">More Auctions</a>
         </div>
     </section>
 
-    <!-- Rentals Section -->
+    <!-- Rentals Section - Limited to 3 cars -->
     <section class="rentals">
-        <h2>Rentals</h2>
+        <h2>Featured Rentals</h2>
         <div class="card-container">
-            <!-- Rental 1 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://www.pngfind.com/pngs/m/73-734475_force-toofan-hd-png-download.png" alt="Toofan">
-                <h3>Trax Toofan</h3>
-                <p class="rental-cost">Cost/km: <strong>15 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 15km/liter</p>
-                    <p><strong>AC:</strong> No</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 13</p>
+            <% if (featuredRentals && featuredRentals.length > 0) { %>
+                <% const displayedRentals = featuredRentals.slice(0, 3); %>
+                <% displayedRentals.forEach(rental => { %>
+                    <div class="car-card">
+                        <% if (new Date() - rental.createdAt < 7 * 24 * 60 * 60 * 1000) { %>
+                            <span class="new-tag">New</span>
+                        <% } %>
+                        <button class="heart-btn" data-liked="false">❤</button>
+                        <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>">
+                        <h3><%= rental.vehicleName %></h3>
+                        <p class="rental-cost">Cost/km: <strong>₹<%= rental.costPerKm %></strong></p>
+                        <div class="car-details">
+                            <p><strong>Year:</strong> <%= rental.year %></p>
+                            <p><strong>AC:</strong> <%= rental.AC === 'available' ? 'Yes' : 'No' %></p>
+                            <p><strong>Capacity:</strong> <%= rental.capacity %> passengers</p>
+                            <p><strong>Seller:</strong> <%= rental.sellerId.firstName %> <%= rental.sellerId.lastName %></p>
+                            <% if (rental.driverAvailable) { %>
+                                <p><strong>Driver:</strong> Yes (₹<%= rental.driverRate %>/day)</p>
+                            <% } %>
+                        </div>
+                        <div class="button-container">
+                            <a href="/buyer_dashboard?page=rental&id=<%= rental._id %>" class="details-btn">Details</a>
+                            <a href="/buyer_dashboard?page=rental&id=<%= rental._id %>" class="placebid-btn">Rent Now</a>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-items">
+                    <p>No featured rentals available at the moment.</p>
                 </div>
-                <a href="/rental?id=1" class="details-btn">More Details</a>
-                <a href="/rental?id=1" class="placebid-btn">Rent it</a>
-            </div>
-
-            <!-- Rental 2 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://www.91trucks.com/_next/image?url=https%3A%2F%2Fimages.91trucks.com%2Fbuses%2Fmodels%2F71%2F1548%2Fforce-traveller-3350-super-796998490.jpg%3Fw%3D350%26h%3D180&w=640&q=75" alt="Traveller">
-                <h3>Trax Traveller</h3>
-                <p class="rental-cost">Cost/km: <strong>18 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 13km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 26</p>
-                </div>
-                <a href="/rental?id=2" class="details-btn">More Details</a>
-                <a href="/rental?id=2" class="placebid-btn">Rent it</a>
-            </div>
-
-            <!-- Rental 3 -->
-            <div class="car-card">
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/ExtraImages/20230405103153_Innova_1.jpg&w=700&c=1" alt="Innova">
-                <h3>Toyota Innova</h3>
-                <p class="rental-cost">Cost/km: <strong>17 rupees</strong></p>
-                <div class="car-details">
-                    <p><strong>Mileage:</strong> 14km/liter</p>
-                    <p><strong>AC:</strong> Yes</p>
-                    <p><strong>Driver:</strong> Yes</p>
-                    <p><strong>Capacity:</strong> 8</p>
-                </div>
-                <a href="/rental?id=3" class="details-btn">More Details</a>
-                <a href="/rental?id=3" class="placebid-btn">Rent it</a>
-            </div>
+            <% } %>
         </div>
-        <!-- More Button -->
         <div class="more-btn-container">
-            <a href="/rentals" class="more-btn">More</a>
+            <a href="/buyer_dashboard?page=rentals" class="more-btn">More Rentals</a>
         </div>
     </section>
 
     <!-- Drivers Section -->
     <section class="drivers">
-        <h2>Drivers</h2>
+        <h2>Featured Drivers</h2>
         <div class="card-container">
-            <!-- Driver 1 -->
             <div class="car-card">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEKmgdU0rUu_utzM7HeVnTQcM7SWKW7INLXQ&s" alt="Pant">
                 <h3>Pant</h3>
@@ -402,11 +426,12 @@
                     <p><strong>Automatic car:</strong> Can't drive</p>
                     <p><strong>Rating:</strong> 4.8⭐</p>
                 </div>
-                <a href="/driver?id=1" class="details-btn">More Details</a>
-                <a href="/driver?id=1" class="placebid-btn">Hire him</a>
+                <div class="button-container">
+                    <a href="/driver?id=1" class="details-btn">Details</a>
+                    <a href="/driver?id=1" class="placebid-btn">Hire Now</a>
+                </div>
             </div>
 
-            <!-- Driver 2 -->
             <div class="car-card">
                 <img src="https://cdlschool.com/hubfs/Imported_Blog_Media/iStock-1358424193.jpeg" alt="Jani Basha">
                 <h3>Jani Basha</h3>
@@ -417,11 +442,12 @@
                     <p><strong>Automatic car:</strong> Can't drive</p>
                     <p><strong>Rating:</strong> 4.5⭐</p>
                 </div>
-                <a href="/driver?id=2" class="details-btn">More Details</a>
-                <a href="/driver?id=2" class="placebid-btn">Hire him</a>
+                <div class="button-container">
+                    <a href="/driver?id=2" class="details-btn">Details</a>
+                    <a href="/driver?id=2" class="placebid-btn">Hire Now</a>
+                </div>
             </div>
 
-            <!-- Driver 3 -->
             <div class="car-card">
                 <img src="https://4.imimg.com/data4/LD/NM/IMOB-50588173/images-1-250x250.jpg" alt="Naresh">
                 <h3>Naresh</h3>
@@ -432,13 +458,14 @@
                     <p><strong>Automatic car:</strong> Can drive</p>
                     <p><strong>Rating:</strong> 4.2⭐</p>
                 </div>
-                <a href="/driver?id=3" class="details-btn">More Details</a>
-                <a href="/driver?id=3" class="placebid-btn">Hire him</a>
+                <div class="button-container">
+                    <a href="/driver?id=3" class="details-btn">Details</a>
+                    <a href="/driver?id=3" class="placebid-btn">Hire Now</a>
+                </div>
             </div>
         </div>
-        <!-- More Button -->
         <div class="more-btn-container">
-            <a href="/drivers" class="more-btn">More</a>
+            <a href="/buyer_dashboard?page=drivers" class="more-btn">More Drivers</a>
         </div>
     </section>
 
@@ -451,9 +478,49 @@
             button.addEventListener('click', () => {
                 const isLiked = button.getAttribute('data-liked') === 'true';
                 button.setAttribute('data-liked', !isLiked);
-                button.style.color = !isLiked ? '#ff6b00' : '#ffffff';
+                button.style.color = !isLiked ? '#ff6b00' : '#ccc';
+                
+                const rentalId = button.closest('.car-card').querySelector('a[href*="id="]').href.split('id=')[1];
+                fetch('/api/wishlist', {
+                    method: isLiked ? 'DELETE' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rentalId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        button.setAttribute('data-liked', isLiked);
+                        button.style.color = isLiked ? '#ff6b00' : '#ccc';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    button.setAttribute('data-liked', isLiked);
+                    button.style.color = isLiked ? '#ff6b00' : '#ccc';
+                });
             });
+        });
+
+        // Initialize heart buttons based on wishlist
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/wishlist')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.wishlist) {
+                        document.querySelectorAll('.car-card').forEach(card => {
+                            const rentalId = card.querySelector('a[href*="id="]').href.split('id=')[1];
+                            const heartBtn = card.querySelector('.heart-btn');
+                            if (data.wishlist.includes(rentalId)) {
+                                heartBtn.setAttribute('data-liked', 'true');
+                                heartBtn.style.color = '#ff6b00';
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading wishlist:', error));
         });
     </script>
 </body>
-</html>
+</html> 

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveBidRent - Buyer Dashboard</title>
-    <%- include('partials/styles') %>
     <style>
         /* Buyer Dashboard specific styles */
         
@@ -260,23 +259,8 @@
     </style>
 </head>
 <body>
-    <!-- Navigation Bar - Hard-coded to ensure original appearance -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo"><a href="/proj">DriveBidRent</a></div>
-            <div class="nav-links">
-                <a href="/purchase">My Purchases</a>
-                <a href="/wishlist">Wishlist</a>
-                <a href="#notifications">Notifications</a>
-                <a href="/Aboutus">About Us</a>
-            </div>
-            <div class="profile">
-                <img src="<%= typeof user !== 'undefined' && user.photoPath ? user.photoPath : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' %>" alt="profile symbol" style="height: 40px;">
-                <a href="/profile" class="profile-text"><%= typeof user !== 'undefined' && user.firstName ? user.firstName + ' ' + user.lastName : 'My Profile' %></a>
-                <button class="logout-btn" onclick="location.href='/logout'">Logout</button>
-            </div>
-        </div>
-    </nav>
+    <!-- Include Navigation Bar -->
+    <%- include('partials/navbar') %>
 
     <!-- Hero Section -->
     <div class="heading1">

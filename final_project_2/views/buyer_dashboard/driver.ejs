@@ -15,97 +15,8 @@
 }
 
 body {
-    background-color: #ffffff; /* Changed to white */
-    color: #333333; /* Changed to dark gray for better contrast */
-}
-
-/* Navbar */
-.navbar {
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #ffffff; /* Changed to white */
-    padding: 1rem 0;
-    box-shadow: 0 2px 20px rgba(255, 107, 0, 0.2); /* Orange shadow */
-    z-index: 1000;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-}
-
-.logo a {
-    color: #ff6b00; /* Orange */
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.nav-links {
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-links a {
-    color: #333333; /* Dark gray */
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    padding-bottom: 5px;
-}
-
-.nav-links a:hover, .nav-links a.active {
-    border-bottom: 3px solid #ff6b00; /* Orange */
-}
-
-/* Logout Button */
-.logout-btn {
-    background-color: #ff6b00; /* Orange */
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-left: 0.5rem;
-}
-
-.logout-btn:hover {
-    background-color: #e65c00; /* Darker orange */
-    transform: translateY(-1px);
-}
-
-/* Adjust profile container to accommodate the new button */
-.profile {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap; /* Allow items to wrap if needed */
-}
-
-.profile img {
-    height: 40px;
-    border-radius: 50%; /* Make the profile image round */
-}
-
-.profile-text {
-    color: #ff6b00; /* Orange */
-    text-decoration: none;
-    font-weight: 600; /* Bold */
-    text-transform: uppercase; /* Uppercase text */
-    letter-spacing: 1px; /* Add spacing between letters */
-    transition: color 0.3s ease;
-}
-
-.profile-text:hover {
-    color: #e65c00; /* Darker orange on hover */
+    background-color: #ffffff;
+    color: #333333;
 }
 
 /* Driver Hiring Page Styles */
@@ -207,113 +118,17 @@ body {
     color: #333333;
 }
 
-/* Footer */
-footer {
-    background: linear-gradient(135deg, #ff6b00, #ff9a44); /* Gradient background */
-    padding: 4rem 2rem 2rem;
-    margin-top: 4rem;
-    color: white; /* White text for better contrast */
-    border-top: none; /* Remove the orange border */
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    gap: 3rem;
-}
-
-.footer-section h3 {
-    color: white; /* White text for headings */
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-}
-
-.footer-section ul {
-    list-style: none;
-}
-
-.footer-section ul li {
-    margin-bottom: 0.8rem;
-}
-
-.footer-section a {
-    color: white; /* White text for links */
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-section p {
-    margin-top: 0.8rem;
-    color: white; /* White text for paragraphs */
-}
-
-.footer-section a:hover {
-    color: #f0f0f0; /* Light gray on hover */
-}
-
-.social-icons {
-    display: flex;
-    gap: 1rem;
-}
-
-.social-icons img {
-    width: 30px;
-    height: 30px;
-    filter: brightness(0) invert(1); /* Make icons white */
-    transition: transform 0.3s ease;
-}
-
-.social-icons img:hover {
-    transform: scale(1.2); /* Scale icons on hover */
-}
-
-.copyright {
-    text-align: center;
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Light white border */
-    color: white; /* White text for copyright */
-}
 /* Responsive Design */
 @media (max-width: 768px) {
-    .nav-container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .hero {
-        margin-top: 8rem;
+    .hire-driver-container {
+        grid-template-columns: 1fr;
     }
 }
-
-
     </style>
 </head>
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo"><a href="/proj">DriveBidRent</a></div>
-        <div class="nav-links">
-            <a href="/purchase">My Purchases</a>
-            <a href="/wishlist">Wishlist</a>
-            <a href="#notifications">Notifications</a>
-            <a href="/Aboutus">About Us</a>
-        </div>
-        <div class="profile">
-            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="profile symbol" style="height: 40px;">
-            <a href="/profile" class="profile-text">My Profile</a>
-            <button class="logout-btn" onclick="location.href='/'">Logout</button>
-        </div>
-    </div>
-</nav>
+<!-- Include Navigation Bar -->
+<%- include('partials/navbar') %>
 
     <!-- Driver Hiring Page Content -->
     <section class="hire-driver-details">
@@ -366,38 +181,11 @@ footer {
         </div>
     </section>
 
-        <!-- Footer -->
-        <footer>
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="/purchase">My Purchases</a></li>
-                        <li><a href="/wishlist">Wishlist</a></li>
-                        <li><a href="index.html#notifications">Notifications</a></li>
-                        <li><a href="/Aboutus">About Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact Us</h3>
-                    <p><strong>Email:</strong> <a href="mailto:jeevanvankadara@gmail.com">jeevanvankadara@gmail.com</a></p>
-                    <p><strong>Phone:</strong> <a href="tel:9876543210">9876543210</a></p>
-                    <p><strong>Address:</strong> sb-2, sagar colony, hyderabad</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Follow Us</h3>
-                    <div class="social-icons">
-                        <a href="#instagram"><img src="./images/instagram.png" alt="Instagram"></a>
-                        <a href="#facebook"><img src="./images/facebook.png" alt="Facebook"></a>
-                        <a href="#twitter"><img src="./images/X.png" alt="X"></a>
-                    </div>
-                </div>
-            </div>
-            <p class="copyright">© 2025 DriveBidRent | All rights reserved.</p>
-        </footer>
+    <!-- Include Footer -->
+    <%- include('partials/footer') %>
 
     <!-- Link to the driver-specific JavaScript -->
-    <script >
+    <script>
         // Hiring Form Submission
 const hireForm = document.getElementById('hire-form');
 const summaryStartDate = document.getElementById('summary-start-date');

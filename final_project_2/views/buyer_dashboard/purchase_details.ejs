@@ -7,417 +7,236 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
 
-body {
-    background-color: #ffffff; /* Changed to white */
-    color: #333333; /* Changed to dark gray for better contrast */
-}
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
 
-/* Navbar */
-.navbar {
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #ffffff; /* Changed to white */
-    padding: 1rem 0;
-    box-shadow: 0 2px 20px rgba(255, 107, 0, 0.2); /* Orange shadow */
-    z-index: 1000;
-}
+        /* Hero Section */
+        .purchases-hero {
+            width: 800px;
+            height: 400px;
+            padding-top: 150px;
+            margin: 150px auto 85px auto;
+            border: 3px solid #ff6b00;
+            border-radius: 15px;
+            box-shadow: 5px 10px 20px rgba(255, 107, 0, 0.3);
+            text-align: center;
+            background-color: #ffffff;
+            opacity: 1;
+        }
 
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-}
+        .purchases-hero h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            color: #ff6b00;
+        }
 
-.logo a {
-    color: #ff6b00; /* Orange */
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-decoration: none;
-}
+        .purchases-hero p {
+            font-size: 1.15rem;
+            opacity: 0.75;
+            color: #333333;
+        }
 
-.nav-links {
-    display: flex;
-    gap: 2rem;
-}
+        .oneL {
+            color: #ff6b00;
+        }
 
-.nav-links a {
-    color: #333333; /* Dark gray */
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    padding-bottom: 5px;
-}
+        /* Sections */
+        section {
+            padding: 3rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
 
-.nav-links a:hover, .nav-links a.active {
-    border-bottom: 3px solid #ff6b00; /* Orange */
-}
+        section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b00, #ff9a44, transparent);
+        }
 
-/* Logout Button */
-.logout-btn {
-    background-color: #ff6b00; /* Orange */
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-left: 0.5rem;
-}
+        /* Purchase Details */
+        .purchase-details {
+            padding: 3rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-.logout-btn:hover {
-    background-color: #e65c00; /* Darker orange */
-    transform: translateY(-1px);
-}
+        .details-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
 
-/* Adjust profile container to accommodate the new button */
-.profile {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap; /* Allow items to wrap if needed */
-}
+        .vehicle-image img {
+            width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
 
-.profile img {
-    height: 40px;
-    border-radius: 50%; /* Make the profile image round */
-}
+        .vehicle-info h1 {
+            color: #ff6b00;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
 
-.profile-text {
-    color: #ff6b00; /* Orange */
-    text-decoration: none;
-    font-weight: 600; /* Bold */
-    text-transform: uppercase; /* Uppercase text */
-    letter-spacing: 1px; /* Add spacing between letters */
-    transition: color 0.3s ease;
-}
+        .purchase-date {
+            color: #666666;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
 
-.profile-text:hover {
-    color: #e65c00; /* Darker orange on hover */
-}
+        .vehicle-specs {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+        }
 
-/* Hero Section */
-.purchases-hero {
-    width: 800px;
-    height: 400px;
-    padding-top: 150px;
-    margin: 150px auto 85px auto;
-    border: 3px solid #ff6b00; /* Orange */
-    border-radius: 15px;
-    box-shadow: 5px 10px 20px rgba(255, 107, 0, 0.3); /* Orange shadow */
-    text-align: center;
-    background-color: #ffffff; /* White */
-    opacity: 1;
-}
+        .vehicle-specs p {
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            color: #333333;
+        }
 
-.purchases-hero h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    color: #ff6b00; /* Orange */
-}
+        .documents-section {
+            grid-column: span 2;
+            background-color: #f9f9f9;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e0e0e0;
+        }
 
-.purchases-hero p {
-    font-size: 1.15rem;
-    opacity: 0.75;
-    color: #333333; /* Dark gray */
-}
+        .documents-section h2 {
+            color: #ff6b00;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
 
-.oneL {
-    color: #ff6b00; /* Orange */
-}
+        .documents-section ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
 
-/* Sections */
-section {
-    padding: 3rem 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
-}
+        .documents-section ul li {
+            margin-bottom: 1rem;
+        }
 
-section h2 {
-    color: #ff6b00; /* Orange */
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    position: relative;
-    padding-bottom: 1rem;
-}
+        .doc-link {
+            color: #2196F3;
+            text-decoration: none;
+            display: inline-block;
+            padding: 0.5rem 0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
 
-.card-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 cards in a row */
-    gap: 2rem;
-}
+        .doc-link:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .card-container {
-        grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
-    }
-}
+        .download-btn {
+            display: inline-block;
+            background-color: #ff6b00;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.3rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-@media (max-width: 768px) {
-    .card-container {
-        grid-template-columns: repeat(1, 1fr); /* 1 card per row */
-    }
-}
+        .download-btn:hover {
+            background-color: #e65c00;
+        }
 
-/* Car Cards */
-.car-card {
-    background-color: #ffffff; /* White */
-    border-radius: 1rem;
-    padding: 1.5rem;
-    position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #ff6b00; /* Orange */
-    height: 550px;
-}
+        .action-buttons {
+            grid-column: span 2;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
 
-.car-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
-}
+        .contact-btn, .back-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
 
-.status-tag {
-    position: absolute;
-    top: 1.75rem;
-    left: 1.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    z-index: 1;
-}
+        .contact-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
 
-.status-tag.purchased {
-    background-color: #ff6b00; /* Orange */
-    color: white;
-}
+        .contact-btn:hover {
+            background-color: #45a049;
+        }
 
-.status-tag.active {
-    background-color: #ff6b00; /* Orange */
-    color: white;
-}
+        .back-btn {
+            background-color: #ff6b00;
+            color: white;
+        }
 
-.status-tag.completed {
-    background-color: #888888; /* Gray */
-    color: white;
-}
+        .back-btn:hover {
+            background-color: #e65c00;
+        }
 
-.car-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .details-container {
+                grid-template-columns: 1fr;
+            }
 
-.car-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-    color: #ff6b00; /* Orange */
-}
+            .documents-section,
+            .action-buttons {
+                grid-column: 1;
+            }
 
-.purchase-date, .rental-period, .booking-period {
-    color: #666666; /* Gray */
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-}
+            .purchases-hero {
+                width: 90%;
+                height: auto;
+                padding: 100px 20px;
+            }
 
-.car-details {
-    background-color: #f9f9f9; /* Light gray */
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
+            .contact-btn,
+            .back-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 0.5rem;
+            }
 
-.car-details p {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #333333; /* Dark gray */
-}
-
-.doc-link {
-    color: #2196F3; /* Blue */
-    text-decoration: none;
-}
-
-.doc-link:hover {
-    text-decoration: underline;
-}
-
-.details-btn, .bid-btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.details-btn {
-    background-color: #ff6b00; /* Orange */
-    color: white;
-    margin-right: 0.5rem;
-}
-
-.details-btn:hover {
-    background-color: #e65c00; /* Darker orange */
-}
-
-.bid-btn {
-    background-color: #4CAF50; /* Green */
-    color: white;
-}
-
-.bid-btn:hover {
-    background-color: #45a049; /* Darker green */
-}
-
-section {
-    position: relative;
-    overflow: hidden;
-}
-
-section::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, #ff6b00, #ff9a44, transparent);
-}
-
-/* Footer */
-/* Footer */
-footer {
-    background: linear-gradient(135deg, #ff6b00, #ff9a44); /* Gradient background */
-    padding: 4rem 2rem 2rem;
-    margin-top: 4rem;
-    color: white; /* White text for better contrast */
-    border-top: none; /* Remove the orange border */
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    gap: 3rem;
-}
-
-.footer-section h3 {
-    color: white; /* White text for headings */
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-}
-
-.footer-section ul {
-    list-style: none;
-}
-
-.footer-section ul li {
-    margin-bottom: 0.8rem;
-}
-
-.footer-section a {
-    color: white; /* White text for links */
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-section p {
-    margin-top: 0.8rem;
-    color: white; /* White text for paragraphs */
-}
-
-.footer-section a:hover {
-    color: #f0f0f0; /* Light gray on hover */
-}
-
-.social-icons {
-    display: flex;
-    gap: 1rem;
-}
-
-.social-icons img {
-    width: 30px;
-    height: 30px;
-    filter: brightness(0) invert(1); /* Make icons white */
-    transition: transform 0.3s ease;
-}
-
-.social-icons img:hover {
-    transform: scale(1.2); /* Scale icons on hover */
-}
-
-.copyright {
-    text-align: center;
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Light white border */
-    color: white; /* White text for copyright */
-}
-/* Responsive Design */
-@media (max-width: 768px) {
-    .nav-container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .purchases-hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .purchases-hero p {
-        font-size: 1.2rem;
-    }
-
-    .details-btn, .bid-btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-}
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo"><a href="/proj">DriveBidRent</a></div>
-        <div class="nav-links">
-            <a href="/purchase">My Purchases</a>
-            <a href="/wishlist">Wishlist</a>
-            <a href="#notifications">Notifications</a>
-            <a href="/Aboutus">About Us</a>
-        </div>
-        <div class="profile">
-            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="profile symbol" style="height: 40px;">
-            <a href="/profile" class="profile-text">My Profile</a>
-            <button class="logout-btn" onclick="location.href='/'">Logout</button>
-        </div>
-    </div>
-</nav>
+    <!-- Include Navigation Bar -->
+    <%- include('partials/navbar') %>
 
     <!-- Purchase Details Section -->
     <section class="purchase-details">
@@ -458,34 +277,7 @@ footer {
         </div>
     </section>
 
-        <!-- Footer -->
-        <footer>
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="/purchase">My Purchases</a></li>
-                        <li><a href="/wishlist">Wishlist</a></li>
-                        <li><a href="index.html#notifications">Notifications</a></li>
-                        <li><a href="/Aboutus">About Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact Us</h3>
-                    <p><strong>Email:</strong> <a href="mailto:jeevanvankadara@gmail.com">jeevanvankadara@gmail.com</a></p>
-                    <p><strong>Phone:</strong> <a href="tel:9876543210">9876543210</a></p>
-                    <p><strong>Address:</strong> sb-2, sagar colony, hyderabad</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Follow Us</h3>
-                    <div class="social-icons">
-                        <a href="#instagram"><img src="./images/instagram.png" alt="Instagram"></a>
-                        <a href="#facebook"><img src="./images/facebook.png" alt="Facebook"></a>
-                        <a href="#twitter"><img src="./images/X.png" alt="X"></a>
-                    </div>
-                </div>
-            </div>
-            <p class="copyright">© 2025 DriveBidRent | All rights reserved.</p>
-        </footer>
+    <!-- Include Footer -->
+    <%- include('partials/footer') %>
 </body>
 </html>

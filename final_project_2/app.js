@@ -46,7 +46,7 @@ const DriverDashboard = require("./routes/Driver/Dashboard.js"); // Import the D
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/drivebidrent")
+  .connect(process.env.MONGODB_URI || "mongodb+srv://Jeevan:Bunny@123@cluster0.2jrrwqn.mongodb.net/")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
 

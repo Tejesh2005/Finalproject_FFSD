@@ -40,8 +40,12 @@ const userSchema = new mongoose.Schema({
   repairEVs: { type: Boolean, default: false },
   repairTrucks: { type: Boolean, default: false },
   repairJCBs: { type: Boolean, default: false },
-  phone: { type: String }, // Added for profile updates
-  notificationPreference: { // Added for notification preferences
+  phone: { 
+    type: String, 
+    required: true, 
+    match: [/^\d{10}$/, 'Phone number must be 10 digits']
+  },
+  notificationPreference: { 
     type: String,
     enum: ['all', 'important', 'none'],
     default: 'all'

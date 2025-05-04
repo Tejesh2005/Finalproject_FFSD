@@ -47,7 +47,7 @@ const DriverDashboard = require("./routes/Driver/Dashboard.js"); // Import the D
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb+srv://Jeevan:Bunny@123@cluster0.2jrrwqn.mongodb.net/")
+  .connect(process.env.MONGODB_URI || "mongodb+srv://Jeevan:Bunny123@cluster0.2jrrwqn.mongodb.net/DriveBidRent")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
 
@@ -320,7 +320,7 @@ app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-
+  
     if (!user) {
       return res.render("login", { error: "Invalid email or password" });
     }

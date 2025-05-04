@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const path = require("path");
-const multer = require("multer");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const User = require("./models/User");
@@ -51,21 +50,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
 
-// Set up multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage: storage });
-
 // Set up middlewares
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -96,7 +81,7 @@ app.get("/signup", (req, res) => {
   res.render("signup", { title: "Sign Up" });
 });
 
-app.post("/signup", upload.single("photo"), async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const {
       firstName,
@@ -109,8 +94,13 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
       drivingLicense,
       shopName,
       termsAccepted,
-      phone, // Added phone parameter
+      phone,
+      experienceYears,
+      approved_status
     } = req.body;
+    
+    // Only get googleAddressLink if user is a mechanic
+    const googleAddressLink = userType === 'mechanic' ? req.body.googleAddressLink : undefined;
 
     // Process address fields that might come as arrays
     const doorNo = Array.isArray(req.body.doorNo)
@@ -126,12 +116,9 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
       ? req.body.state[0]
       : req.body.state;
 
-    // Handle vehicle types
+    // Handle vehicle types - simplified for only bikes and cars
     const repairBikes = req.body.repairBikes === "on";
     const repairCars = req.body.repairCars === "on";
-    const repairEVs = req.body.repairEVs === "on";
-    const repairTrucks = req.body.repairTrucks === "on";
-    const repairJCBs = req.body.repairJCBs === "on";
 
     // Validate phone number (10 digits)
     if (!phone || !phone.match(/^\d{10}$/)) {
@@ -150,11 +137,10 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
           drivingLicense,
           shopName,
           phone,
+          experienceYears,
           repairBikes,
           repairCars,
-          repairEVs,
-          repairTrucks,
-          repairJCBs,
+          googleAddressLink
         },
       });
     }
@@ -183,12 +169,11 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
           state,
           drivingLicense,
           shopName,
-          phone, // Include phone in form data
+          phone,
+          experienceYears,
           repairBikes,
           repairCars,
-          repairEVs,
-          repairTrucks,
-          repairJCBs,
+          googleAddressLink
         },
       });
     }
@@ -209,12 +194,11 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
           state,
           drivingLicense,
           shopName,
-          phone, // Include phone in form data
+          phone,
+          experienceYears,
           repairBikes,
           repairCars,
-          repairEVs,
-          repairTrucks,
-          repairJCBs,
+          googleAddressLink
         },
       });
     }
@@ -234,12 +218,11 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
           state,
           drivingLicense,
           shopName,
-          phone, // Include phone in form data
+          phone,
+          experienceYears,
           repairBikes,
           repairCars,
-          repairEVs,
-          repairTrucks,
-          repairJCBs,
+          googleAddressLink
         },
       });
     }
@@ -259,12 +242,11 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
           state,
           drivingLicense,
           shopName,
-          phone, // Include phone in form data
+          phone,
+          experienceYears,
           repairBikes,
           repairCars,
-          repairEVs,
-          repairTrucks,
-          repairJCBs,
+          googleAddressLink
         },
       });
     }
@@ -285,18 +267,17 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
           state,
           drivingLicense,
           shopName,
-          phone, // Include phone in form data
+          phone,
+          experienceYears,
           repairBikes,
           repairCars,
-          repairEVs,
-          repairTrucks,
-          repairJCBs,
+          googleAddressLink
         },
       });
     }
 
-    // Create new user
-    const photoPath = req.file ? "/uploads/" + req.file.filename : null;
+    // Parse experienceYears as a number if it exists
+    const parsedExperienceYears = experienceYears ? parseInt(experienceYears) : undefined;
 
     const user = new User({
       firstName,
@@ -311,13 +292,12 @@ app.post("/signup", upload.single("photo"), async (req, res) => {
       state,
       drivingLicense,
       shopName,
-      photoPath,
-      phone, // Add phone to user object
+      phone,
+      experienceYears: parsedExperienceYears,
+      approved_status: approved_status || 'No', // Default to 'No' if not provided
       repairBikes,
       repairCars,
-      repairEVs,
-      repairTrucks,
-      repairJCBs,
+      googleAddressLink
     });
 
     await user.save();
@@ -361,6 +341,8 @@ app.post("/login", async (req, res) => {
       res.redirect("/driver_dashboard/driverdashboard");
     } else if (req.session.userType === "mechanic") {
       res.redirect("/mechanic_dashboard/index");
+    }else if (req.session.userType === "admin") {
+      res.redirect("/admin");
     }
   } catch (err) {
     console.error(err);

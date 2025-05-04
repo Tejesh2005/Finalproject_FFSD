@@ -63,6 +63,24 @@
     .btn:hover {
       background: #0069d9;
     }
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .service-item:last-child {
+      border-bottom: none;
+    }
+    .service-name {
+      font-weight: 500;
+      color: #333;
+    }
+    .service-checkbox {
+      height: 20px;
+      width: 20px;
+    }
   </style>
 </head>
 <body>
@@ -74,7 +92,7 @@
         <div class="error-message"><%= error %></div>
       <% } %>
       
-      <form action="/signup" method="POST" enctype="multipart/form-data" id="signupForm">
+      <form action="/signup" method="POST" id="signupForm">
         <div class="form-group">
           <label for="userType">I am a:</label>
           <select id="userType" name="userType" class="form-control" required>
@@ -114,7 +132,7 @@
           </div>
         </div>
         
-        <!-- New Phone Number Field -->
+        <!-- Phone Number Field -->
         <div class="form-group">
           <label for="phone">Phone Number</label>
           <div class="input-group">
@@ -150,6 +168,8 @@
           </div>
           <div id="ageError" class="age-error">You must be at least 18 years old to sign up.</div>
         </div>
+
+        <!-- Google Address Link Field will be moved to mechanic section -->
         
         <!-- Address Fields (shown for buyer, seller, driver) -->
         <div id="addressFields" class="conditional-fields">
@@ -158,23 +178,27 @@
             <div class="form-group">
               <label for="doorNo">Door No.</label>
               <input type="text" id="doorNo" name="doorNo" class="form-control" 
-                     value="<%= typeof formData !== 'undefined' ? formData.doorNo : '' %>">
+                     value="<%= typeof formData !== 'undefined' ? formData.doorNo : '' %>"
+                     placeholder="Apt/House Number">
             </div>
             <div class="form-group">
               <label for="street">Street</label>
               <input type="text" id="street" name="street" class="form-control" 
-                     value="<%= typeof formData !== 'undefined' ? formData.street : '' %>">
+                     value="<%= typeof formData !== 'undefined' ? formData.street : '' %>"
+                     placeholder="Street Name">
             </div>
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="city">City</label>
                 <input type="text" id="city" name="city" class="form-control" 
-                       value="<%= typeof formData !== 'undefined' ? formData.city : '' %>">
+                       value="<%= typeof formData !== 'undefined' ? formData.city : '' %>"
+                       placeholder="City">
               </div>
               <div class="form-group col-md-6">
                 <label for="state">State</label>
                 <input type="text" id="state" name="state" class="form-control" 
-                       value="<%= typeof formData !== 'undefined' ? formData.state : '' %>">
+                       value="<%= typeof formData !== 'undefined' ? formData.state : '' %>"
+                       placeholder="State">
               </div>
             </div>
           </div>
@@ -187,30 +211,118 @@
             <div class="input-group">
               <i class="fas fa-id-card"></i>
               <input type="text" id="drivingLicense" name="drivingLicense" class="form-control" 
-                     value="<%= typeof formData !== 'undefined' ? formData.drivingLicense : '' %>">
+                     value="<%= typeof formData !== 'undefined' ? formData.drivingLicense : '' %>"
+                     placeholder="Enter your driving license number">
             </div>
-          </div>
-          <div class="form-group">
-            <label>Upload Photo</label>
-            <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
           </div>
           <div class="form-group">
             <label>Types of Vehicles You Can Handle</label>
             <div class="vehicle-types">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="repairBikes" id="repairBikes" 
+              <div class="service-item">
+                <span class="service-name">Bikes</span>
+                <input class="service-checkbox" type="checkbox" name="repairBikes" id="driver-repairBikes" 
                        <%= (typeof formData !== 'undefined' && formData.repairBikes) ? 'checked' : '' %>>
-                <label class="form-check-label" for="repairBikes">Bikes</label>
               </div>
-              <!-- Other vehicle checkboxes -->
+              <div class="service-item">
+                <span class="service-name">Cars</span>
+                <input class="service-checkbox" type="checkbox" name="repairCars" id="driver-repairCars" 
+                       <%= (typeof formData !== 'undefined' && formData.repairCars) ? 'checked' : '' %>>
+              </div>
             </div>
           </div>
         </div>
         
+        <!-- Mechanic Specific Fields -->
+        <div id="mechanicFields" class="conditional-fields">
+          <div class="form-group">
+            <label for="shopName">Shop Name</label>
+            <div class="input-group">
+              <i class="fas fa-store"></i>
+              <input type="text" id="shopName" name="shopName" class="form-control" 
+                     value="<%= typeof formData !== 'undefined' ? formData.shopName : '' %>"
+                     placeholder="Enter your shop name">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Shop Address</label>
+            <div class="form-group">
+              <label for="doorNo">Door No.</label>
+              <input type="text" id="doorNo" name="doorNo" class="form-control" 
+                     value="<%= typeof formData !== 'undefined' ? formData.doorNo : '' %>"
+                     placeholder="Shop/Building Number">
+            </div>
+            <div class="form-group">
+              <label for="street">Street</label>
+              <input type="text" id="street" name="street" class="form-control" 
+                     value="<%= typeof formData !== 'undefined' ? formData.street : '' %>"
+                     placeholder="Street Name">
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" class="form-control" 
+                       value="<%= typeof formData !== 'undefined' ? formData.city : '' %>"
+                       placeholder="City">
+              </div>
+              <div class="form-group col-md-6">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" class="form-control" 
+                       value="<%= typeof formData !== 'undefined' ? formData.state : '' %>"
+                       placeholder="State">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="experienceYears">Experience (Years)</label>
+            <div class="input-group">
+              <i class="fas fa-briefcase"></i>
+              <input type="number" id="experienceYears" name="experienceYears" class="form-control" min="0" 
+                     value="<%= typeof formData !== 'undefined' ? formData.experienceYears : '' %>"
+                     placeholder="Years of experience">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Services Offered</label>
+            <div class="services-offered">
+              <div class="service-item">
+                <span class="service-name">Bike Repair</span>
+                <input class="service-checkbox" type="checkbox" name="repairBikes" id="mechanic-repairBikes" 
+                       <%= (typeof formData !== 'undefined' && formData.repairBikes) ? 'checked' : '' %>>
+              </div>
+              
+              <div class="service-item">
+                <span class="service-name">Car Repair</span>
+                <input class="service-checkbox" type="checkbox" name="repairCars" id="mechanic-repairCars" 
+                       <%= (typeof formData !== 'undefined' && formData.repairCars) ? 'checked' : '' %>>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Google Address Link Field (only for mechanics) -->
+          <div class="form-group">
+            <label for="googleAddressLink">Google Maps Shop Location Link</label>
+            <div class="input-group">
+              <i class="fas fa-map-marker-alt"></i>
+              <input type="url" id="googleAddressLink" name="googleAddressLink" class="form-control" 
+                     value="<%= typeof formData !== 'undefined' ? formData.googleAddressLink : '' %>"
+                     placeholder="https://maps.google.com/?q=...">
+            </div>
+            <small class="form-text text-muted">Share your shop's Google Maps link </small>
+          </div>
+          
+          <!-- Hidden field for approved_status, default to 'No' -->
+          <input type="hidden" name="approved_status" value="No">
+        </div>
+        
         <!-- Terms and Conditions -->
         <div class="form-group form-check">
-          <input type="checkbox" id="termsAccepted" name="termsAccepted" class="form-check-input" required>
-          <label class="form-check-label" for="termsAccepted">I accept the Terms and Conditions</label>
+          <div class="service-item">
+            <span class="service-name">I accept the Terms and Conditions</span>
+            <input class="service-checkbox" type="checkbox" id="termsAccepted" name="termsAccepted" required>
+          </div>
         </div>
         
         <div class="form-group">
@@ -242,7 +354,10 @@
     document.getElementById('signupForm').addEventListener('submit', function(e) {
       const dobInput = document.getElementById('dateOfBirth');
       const ageError = document.getElementById('ageError');
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
       
+      // Age validation
       if (dobInput.value) {
         const age = calculateAge(dobInput.value);
         if (age < 18) {
@@ -252,6 +367,15 @@
           return false;
         }
       }
+      
+      // Password confirmation validation
+      if (password.value !== confirmPassword.value) {
+        e.preventDefault();
+        alert("Passwords do not match!");
+        confirmPassword.focus();
+        return false;
+      }
+      
       return true;
     });
 

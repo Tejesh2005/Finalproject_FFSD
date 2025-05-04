@@ -32,14 +32,19 @@ const userSchema = new mongoose.Schema({
       return Array.isArray(v) ? v.find(val => val && val.trim() !== '') || '' : v;
     }
   },
+  googleAddressLink: { 
+    type: String,
+    // Only required for mechanics
+    required: function() {
+      return this.userType === 'mechanic';
+    }
+  },
   drivingLicense: { type: String },
   shopName: { type: String },
-  photoPath: { type: String },
   repairBikes: { type: Boolean, default: false },
   repairCars: { type: Boolean, default: false },
-  repairEVs: { type: Boolean, default: false },
-  repairTrucks: { type: Boolean, default: false },
-  repairJCBs: { type: Boolean, default: false },
+  experienceYears: { type: Number },
+  approved_status: { type: String, enum: ['Yes', 'No'], default: 'No' },
   phone: { 
     type: String, 
     required: true, 

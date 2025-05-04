@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router()
 
 
-router.get('/admin-grp36', async (req, res) => {
+router.get('/admin', async (req, res) => {
 
     res.render('admin_dashboard/admin.ejs');
     // if (!req.session.userId || req.session.userType !== 'admin') {

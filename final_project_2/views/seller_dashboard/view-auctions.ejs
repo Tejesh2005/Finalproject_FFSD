@@ -5,118 +5,231 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Auctions - DriveBidRent</title>
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
 
-body {
-  background-color: #ffffff;
-  color: #333333;
-}
+      body {
+        background-color: #f8f8f8;
+        color: #333333;
+      }
 
-/* Seller Dashboard Content */
-.seller-dashboard {
-  padding: 4rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+      /* Seller Dashboard Content */
+      .seller-dashboard {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-.seller-dashboard h1 {
-  color: #ff6b00;
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
+      .seller-dashboard h1 {
+        color: #ff6b00;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
 
-.dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
+      /* Auction cards grid */
+      .auction-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+      }
 
-.dashboard-card {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+      .auction-card {
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+      }
 
-.dashboard-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
+      .auction-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
 
-.dashboard-card h2 {
-  color: #ff6b00;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
+      .auction-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
 
-.dashboard-card p {
-  margin-bottom: 0.5rem;
-  color: #666666;
-}
+      .auction-info {
+        padding: 1.2rem;
+      }
 
-.card-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #ff6b00, #ff9a44);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background 0.3s ease;
-  margin: 0.5rem;
-}
+      .auction-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #ff6b00;
+        margin-bottom: 0.5rem;
+      }
 
-.card-btn:hover {
-  background: linear-gradient(135deg, #ff9a44, #ff6b00);
-}
+      /* Status styling */
+      .status-pending {
+        color: #FFA500;
+        font-weight: bold;
+      }
 
-.status-pending {
-  color: #FFA500;
-  font-weight: bold;
-}
+      .status-approved {
+        color: #008000;
+        font-weight: bold;
+      }
 
-.status-approved {
-  color: #008000;
-  font-weight: bold;
-}
+      .status-rejected {
+        color: #FF0000;
+        font-weight: bold;
+      }
 
-.status-rejected {
-  color: #FF0000;
-  font-weight: bold;
-}
+      .status-assignedMechanic {
+        color: #1E90FF;
+        font-weight: bold;
+      }
 
-.status-assignedMechanic {
-  color: #1E90FF;
-  font-weight: bold;
-}
+      /* Details modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 100;
+        overflow-y: auto;
+      }
 
-.auction-date {
-  font-weight: bold;
-  color: #333;
-}
+      .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        width: 90%;
+        max-width: 900px;
+        border-radius: 1rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
 
-.not-specified {
-  color: #999;
-  font-style: italic;
-}
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #ff6b00, #ff9a44);
+        color: white;
+      }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .dashboard-cards {
-    grid-template-columns: 1fr;
-  }
-}
+      .modal-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .close {
+        font-size: 1.8rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close:hover {
+        color: #f0f0f0;
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .vehicle-image-container {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .vehicle-details-container {
+        flex: 1;
+        min-width: 300px;
+        padding-left: 2rem;
+      }
+
+      .vehicle-image {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 0.5rem;
+      }
+
+      .vehicle-name {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #ff6b00;
+        margin-bottom: 0.5rem;
+      }
+
+      .vehicle-status-container {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .detail-item {
+        display: flex;
+        margin-bottom: 0.8rem;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        width: 140px;
+      }
+
+      .detail-value {
+        flex: 1;
+      }
+
+      .card-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #ff6b00, #ff9a44);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        margin-top: 1rem;
+        cursor: pointer;
+      }
+
+      .card-btn:hover {
+        background: linear-gradient(135deg, #ff9a44, #ff6b00);
+      }
+
+      .no-auctions {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .no-auctions p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .modal-body {
+          flex-direction: column;
+        }
+        
+        .vehicle-details-container {
+          padding-left: 0;
+          padding-top: 1.5rem;
+        }
+      }
     </style>
   </head>
   <body>
@@ -126,42 +239,85 @@ body {
     <!-- View Auctions Content -->
     <section class="seller-dashboard">
       <h1>Your Auction Listings</h1>
+      
       <% if (auctions && auctions.length > 0) { %>
-        <div class="dashboard-cards" id="auction-listings">
+        <div class="auction-grid" id="auction-listings">
           <% auctions.forEach(auction => { %>
-            <div class="dashboard-card">
-              <h2><%= auction.vehicleName || 'Not specified' %></h2>
-              <img src="<%= auction.vehicleImage || 'https://via.placeholder.com/300x200?text=No+Image' %>" 
-                   alt="<%= auction.vehicleName || 'Vehicle image' %>" 
-                   style="width: 100%; height: auto; border-radius: 0.5rem; margin-bottom: 1rem;">
-              
-              <p><strong>Year:</strong> <%= auction.year || 'Not specified' %></p>
-              <p><strong>Mileage:</strong> <%= auction.mileage ? `${auction.mileage} km` : 'Not specified' %></p>
-              <p><strong>Fuel Type:</strong> <%= helpers.capitalize(auction.fuelType) %></p>
-              <p><strong>Transmission:</strong> <%= helpers.capitalize(auction.transmission) %></p>
-              <p><strong>Condition:</strong> <%= helpers.capitalize(auction.condition) %></p>
-              <p><strong>Auction Date:</strong> <span class="auction-date"><%= helpers.formatDate(auction.auctionDate) %></span></p>
-              <p><strong>Starting Bid:</strong> <%= auction.startingBid ? `₹${auction.startingBid}` : 'Not specified' %></p>
-              
-              <p>
-                <strong>Status:</strong> 
-                <span class="status-<%= auction.status || 'pending' %>">
-                  <%= helpers.capitalize(auction.status) %>
-                </span>
-              </p>
-              
-              <% if (auction.status === 'approved' || auction.status === 'assignedMechanic') { %>
-                <a href="/seller_dashboard/view-bids?auctionId=<%= auction._id %>" class="card-btn">View Bids</a>
-              <% } %>
-              
-              <% if (auction.status === 'pending') { %>
-                <p class="status-pending">Your request is under review</p>
-              <% } %>
+            <div class="auction-card" data-id="<%= auction._id %>">
+              <a href="/seller_dashboard/auction-details/<%= auction._id %>">
+                <img 
+                  src="<%= auction.vehicleImage || 'https://via.placeholder.com/300x200?text=No+Image' %>" 
+                  alt="<%= auction.vehicleName || 'Vehicle image' %>" 
+                  class="auction-image"
+                >
+              </a>
+              <div class="auction-info">
+                <div class="auction-title"><%= auction.vehicleName || 'Unnamed Vehicle' %></div>
+                <p>
+                  <strong>Status:</strong> 
+                  <span class="status-<%= auction.status || 'pending' %>">
+                    <%= helpers.capitalize(auction.status || 'pending') %>
+                  </span>
+                </p>
+              </div>
             </div>
           <% }); %>
         </div>
+        
+        <!-- Vehicle Detail Modal -->
+        <div id="vehicleModal" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title">Vehicle Details</h2>
+              <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+              <div class="vehicle-image-container">
+                <img id="modalVehicleImage" class="vehicle-image" src="" alt="Vehicle Image">
+                <div class="vehicle-name-container">
+                  <h3 id="modalVehicleName" class="vehicle-name"></h3>
+                  <div class="vehicle-status-container">
+                    <strong>Status: </strong>
+                    <span id="modalVehicleStatus" class=""></span>
+                  </div>
+                </div>
+              </div>
+              <div class="vehicle-details-container">
+                <div class="detail-item">
+                  <span class="detail-label">Year:</span>
+                  <span id="modalVehicleYear" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Mileage:</span>
+                  <span id="modalVehicleMileage" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Fuel Type:</span>
+                  <span id="modalVehicleFuel" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Transmission:</span>
+                  <span id="modalVehicleTransmission" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Condition:</span>
+                  <span id="modalVehicleCondition" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Auction Date:</span>
+                  <span id="modalVehicleAuctionDate" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Starting Bid:</span>
+                  <span id="modalVehicleStartingBid" class="detail-value"></span>
+                </div>
+                <div id="viewBidsContainer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       <% } else { %>
-        <div style="text-align: center; padding: 2rem;">
+        <div class="no-auctions">
           <p>You haven't listed any vehicles for auction yet.</p>
           <a href="/seller_dashboard/add-auction" class="card-btn">Add Auction Listing</a>
         </div>
@@ -172,6 +328,75 @@ body {
     <%- include('partials/footer') %>
 
     <script>
+      // Store auction data in JS for modal usage
+      const auctionData = [
+        <% auctions.forEach((auction, index) => { %>
+          {
+            id: "<%= auction._id %>",
+            name: "<%= auction.vehicleName || 'Unnamed Vehicle' %>",
+            image: "<%= auction.vehicleImage || 'https://via.placeholder.com/400x300?text=No+Image' %>",
+            year: "<%= auction.year || 'Not specified' %>",
+            mileage: "<%= auction.mileage ? `${auction.mileage} km` : 'Not specified' %>",
+            fuelType: "<%= helpers.capitalize(auction.fuelType || 'Not specified') %>",
+            transmission: "<%= helpers.capitalize(auction.transmission || 'Not specified') %>",
+            condition: "<%= helpers.capitalize(auction.condition || 'Not specified') %>",
+            auctionDate: "<%= helpers.formatDate(auction.auctionDate) %>",
+            startingBid: "<%= auction.startingBid ? `₹${auction.startingBid}` : 'Not specified' %>",
+            status: "<%= auction.status || 'pending' %>"
+          }<%= index < auctions.length - 1 ? ',' : '' %>
+        <% }); %>
+      ];
+      
+      const modal = document.getElementById("vehicleModal");
+      
+      // Function to open the modal and populate with vehicle data
+      function openModal(auctionId) {
+        const auction = auctionData.find(a => a.id === auctionId);
+        if (!auction) return;
+        
+        // Populate modal with auction data
+        document.getElementById("modalVehicleName").textContent = auction.name;
+        document.getElementById("modalVehicleImage").src = auction.image;
+        document.getElementById("modalVehicleYear").textContent = auction.year;
+        document.getElementById("modalVehicleMileage").textContent = auction.mileage;
+        document.getElementById("modalVehicleFuel").textContent = auction.fuelType;
+        document.getElementById("modalVehicleTransmission").textContent = auction.transmission;
+        document.getElementById("modalVehicleCondition").textContent = auction.condition;
+        document.getElementById("modalVehicleAuctionDate").textContent = auction.auctionDate;
+        document.getElementById("modalVehicleStartingBid").textContent = auction.startingBid;
+        
+        // Set status with appropriate styling
+        const statusElement = document.getElementById("modalVehicleStatus");
+        statusElement.textContent = auction.status.charAt(0).toUpperCase() + auction.status.slice(1);
+        statusElement.className = `status-${auction.status}`;
+        
+        // Add View Bids button if applicable
+        const viewBidsContainer = document.getElementById("viewBidsContainer");
+        viewBidsContainer.innerHTML = '';
+        if (auction.status === 'approved' || auction.status === 'assignedMechanic') {
+          const viewBidsBtn = document.createElement('a');
+          viewBidsBtn.href = `/seller_dashboard/view-bids?auctionId=${auction.id}`;
+          viewBidsBtn.className = 'card-btn';
+          viewBidsBtn.textContent = 'View Bids';
+          viewBidsContainer.appendChild(viewBidsBtn);
+        }
+        
+        // Show modal
+        modal.style.display = "block";
+      }
+      
+      // Function to close the modal
+      function closeModal() {
+        modal.style.display = "none";
+      }
+      
+      // Close modal when clicking outside of it
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      }
+      
       // Logout button functionality
       document.querySelector('.logout-btn')?.addEventListener('click', () => {
         window.location.href = '/logout';

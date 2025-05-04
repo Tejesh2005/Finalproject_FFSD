@@ -9,6 +9,7 @@ const User = require('./models/User');
 
 
 const addAuctionRoute = require('./routes/Seller/AddAuction'); // Import the addAuction route
+const auctionDetailsRoutes = require('./routes/Seller/AuctionDetail');
 const addRentalRoute= require('./routes/Seller/AddRental');// Import the addRental route
 const seller_profileRoute= require('./routes/Seller/profile');
 const viewAuctionsRoute= require('./routes/Seller/ViewAuctions.js');// Import the viewAuctions route
@@ -657,6 +658,7 @@ app.get('/seller_dashboard/seller', async (req, res) => {
 
 // app.use('/seller_dashboard', SellerDashboard); 
 app.use('/seller_dashboard', addAuctionRoute);
+app.use('/seller_dashboard', auctionDetailsRoutes);
 app.use('/seller_dashboard', addRentalRoute);
 app.use('/seller_dashboard', seller_profileRoute);
 app.use('/seller_dashboard', viewAuctionsRoute);

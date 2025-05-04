@@ -60,7 +60,7 @@ body {
 }
 
 .dashboard-card p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   color: #666666;
 }
 
@@ -81,6 +81,36 @@ body {
   background: linear-gradient(135deg, #ff9a44, #ff6b00);
 }
 
+.status-pending {
+  color: #FFA500;
+  font-weight: bold;
+}
+
+.status-approved {
+  color: #008000;
+  font-weight: bold;
+}
+
+.status-rejected {
+  color: #FF0000;
+  font-weight: bold;
+}
+
+.status-assignedMechanic {
+  color: #1E90FF;
+  font-weight: bold;
+}
+
+.auction-date {
+  font-weight: bold;
+  color: #333;
+}
+
+.not-specified {
+  color: #999;
+  font-style: italic;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .dashboard-cards {
@@ -91,85 +121,59 @@ body {
   </head>
   <body>
     <!-- Include Navbar Partial -->
-    <%- include('partials/navbar', { currentPage: '' }) %>
+    <%- include('partials/navbar', { currentPage: 'view-auctions' }) %>
 
     <!-- View Auctions Content -->
     <section class="seller-dashboard">
       <h1>Your Auction Listings</h1>
-      <div class="dashboard-cards" id="auction-listings">
-        <!-- Auction listings will be dynamically inserted here -->
-      </div>
+      <% if (auctions && auctions.length > 0) { %>
+        <div class="dashboard-cards" id="auction-listings">
+          <% auctions.forEach(auction => { %>
+            <div class="dashboard-card">
+              <h2><%= auction.vehicleName || 'Not specified' %></h2>
+              <img src="<%= auction.vehicleImage || 'https://via.placeholder.com/300x200?text=No+Image' %>" 
+                   alt="<%= auction.vehicleName || 'Vehicle image' %>" 
+                   style="width: 100%; height: auto; border-radius: 0.5rem; margin-bottom: 1rem;">
+              
+              <p><strong>Year:</strong> <%= auction.year || 'Not specified' %></p>
+              <p><strong>Mileage:</strong> <%= auction.mileage ? `${auction.mileage} km` : 'Not specified' %></p>
+              <p><strong>Fuel Type:</strong> <%= helpers.capitalize(auction.fuelType) %></p>
+              <p><strong>Transmission:</strong> <%= helpers.capitalize(auction.transmission) %></p>
+              <p><strong>Condition:</strong> <%= helpers.capitalize(auction.condition) %></p>
+              <p><strong>Auction Date:</strong> <span class="auction-date"><%= helpers.formatDate(auction.auctionDate) %></span></p>
+              <p><strong>Starting Bid:</strong> <%= auction.startingBid ? `₹${auction.startingBid}` : 'Not specified' %></p>
+              
+              <p>
+                <strong>Status:</strong> 
+                <span class="status-<%= auction.status || 'pending' %>">
+                  <%= helpers.capitalize(auction.status) %>
+                </span>
+              </p>
+              
+              <% if (auction.status === 'approved' || auction.status === 'assignedMechanic') { %>
+                <a href="/seller_dashboard/view-bids?auctionId=<%= auction._id %>" class="card-btn">View Bids</a>
+              <% } %>
+              
+              <% if (auction.status === 'pending') { %>
+                <p class="status-pending">Your request is under review</p>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div style="text-align: center; padding: 2rem;">
+          <p>You haven't listed any vehicles for auction yet.</p>
+          <a href="/seller_dashboard/add-auction" class="card-btn">Add Auction Listing</a>
+        </div>
+      <% } %>
     </section>
 
     <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
 
     <script>
-      // Example data for auction listings
-      const auctionListings = [
-        {
-          name: "Honda Civic",
-          image: "https://automobiles.honda.com/-/media/Honda-Automobiles/Vehicles/2025/civic-sedan/non-VLP/10-Family/MY25_Civic_Family_Card_Jelly_Hybrid_2x.jpg?sc_lang=en",
-          year: 2020,
-          mileage: 15000,
-          condition: "Excellent",
-          startingBid: 500000,
-        },
-        {
-          name: "Toyota Innova",
-          image: "https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/ExtraImages/20230405103153_Innova_1.jpg&w=700&c=1",
-          year: 2018,
-          mileage: 30000,
-          condition: "Good",
-          startingBid: 700000,
-        },
-        {
-          name: "Skoda Rapid",
-          image: "https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png",
-          year: 2019,
-          mileage: 20000,
-          condition: "Good",
-          startingBid: 400000,
-        },
-        {
-          name: "Ford Mustang",
-          image: "https://www.vdm.ford.com/content/dam/na/ford/en_us/images/mustang/2025/jellybeans/Ford_Mustang_2025_400A_PJS_889_89W_13R_COU_64V_99F_44X_GT_YZTAC_DEFAULT_EXT_4.png",
-          year: 2021,
-          mileage: 10000,
-          condition: "Excellent",
-          startingBid: 900000,
-        },
-        {
-          name: "Kia Sonet",
-          image: "https://i.ibb.co/T9F2sFp/Screenshot-2025-02-20-002536.png",
-          year: 2022,
-          mileage: 5000,
-          condition: "Excellent",
-          startingBid: 1000000,
-        },
-      ];
-
-      const auctionListingsContainer =
-        document.getElementById("auction-listings");
-
-      // Dynamically create cards for each auction listing
-      auctionListings.forEach((listing) => {
-        const card = document.createElement("div");
-        card.className = "dashboard-card";
-        card.innerHTML = `
-                <h2>${listing.name}</h2>
-                <img src="${listing.image}" alt="${listing.name}" style="width: 100%; height: auto; border-radius: 0.5rem;">
-                <p><strong>Year:</strong> ${listing.year}</p>
-                <p><strong>Mileage:</strong> ${listing.mileage} km</p>
-                <p><strong>Condition:</strong> ${listing.condition}</p>
-                <p><strong>Starting Bid:</strong> ₹${listing.startingBid}</p>
-                <a href="/seller_dashboard/view-bids" class="card-btn">View Bids</a>
-            `;
-        auctionListingsContainer.appendChild(card);
-      });
-      
       // Logout button functionality
-      document.querySelector('.logout-btn').addEventListener('click', () => {
+      document.querySelector('.logout-btn')?.addEventListener('click', () => {
         window.location.href = '/logout';
       });
     </script>

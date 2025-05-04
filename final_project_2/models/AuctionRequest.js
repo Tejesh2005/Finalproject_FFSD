@@ -47,7 +47,7 @@ const auctionRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected', 'completed'],
+    enum: ['pending', 'approved', 'assignedMechanic', 'rejected'],
     default: 'pending'
   },
 

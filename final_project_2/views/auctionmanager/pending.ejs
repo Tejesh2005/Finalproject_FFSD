@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRIVBIDRENT - Pending Cars</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Montserrat', sans-serif;
+      }
 
-        body {
-            background-color: #ffffff; /* White background */
-        }
+      body {
+        background-color: #ffffff;
+      }
 
-        /* Header Styles */
+      /* Header Styles */
       .header {
-        background-color: #ff6b00; /* Orange header */
+        background-color: #ff6b00;
         color: white;
         padding: 15px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 80px;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
       }
 
       .logo {
@@ -52,200 +56,136 @@
       }
 
       .nav-links a:hover {
-        opacity: 0.8; /* Hover effect */
+        opacity: 0.8;
       }
 
-        /* Cards Container */
-        .cards-container {
-            max-width: 1000px;
-            margin: 120px auto 20px; /* Adjusted for fixed header */
-            padding: 30px 20px;
-        }
+      /* Cards Container */
+      .cards-container {
+        max-width: 1000px;
+        margin: 120px auto 20px;
+        padding: 30px 20px;
+      }
 
-        .car-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+      .car-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
 
-        .car-card {
-            background-color: #ffffff; /* White card background */
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ddd;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
+      .car-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
 
-        .car-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
+      .car-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
 
-        .car-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+      .car-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
 
-        .car-details {
-            margin-top: 15px;
-        }
+      .car-details {
+        margin-top: 15px;
+      }
 
-        .car-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333; /* Dark text for car name */
-            margin-bottom: 10px;
-        }
+      .car-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+      }
 
-        .car-info {
-            font-size: 16px;
-            color: #666; /* Gray text for car info */
-            margin-bottom: 5px;
-        }
+      .car-info {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 5px;
+      }
 
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
+      .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
 
-        .approve-btn, .decline-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-        }
+      .status-pending {
+        background-color: #FFA500;
+        color: white;
+      }
 
-        .approve-btn {
-            background-color: #4CAF50; /* Green for approve */
-            color: white;
-        }
+      .view-button {
+        width: 100%;
+        padding: 10px;
+        background-color: #ff6b00;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+        margin-top: 10px;
+      }
 
-        .decline-btn {
-            background-color: #f44336; /* Red for decline */
-            color: white;
-        }
+      .view-button:hover {
+        opacity: 0.8;
+      }
 
-        .approve-btn:hover, .decline-btn:hover {
-            opacity: 0.8;
-        }
-
-        .approved, .declined {
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .approved {
-            background-color: #4CAF50; /* Green for approved */
-        }
-
-        .declined {
-            background-color: #f44336; /* Red for declined */
-        }
+      .no-cars {
+        text-align: center;
+        grid-column: 1 / -1;
+        padding: 40px;
+        color: #666;
+        font-size: 18px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Header -->
     <div class="header">
-        <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
-        <div class="nav-links">
-          <a href="/auctionmanager/requests">REQUESTS</a>
-          <a href="/auctionmanager/pending">PENDINGCARS</a>
-          <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
-        </div>
+      <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
+      <div class="nav-links">
+        <a href="/auctionmanager/requests">REQUESTS</a>
+        <a href="/auctionmanager/pending">PENDINGCARS</a>
+        <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
       </div>
+    </div>
 
     <!-- Cards Container -->
     <div class="cards-container">
-        <div class="car-grid">
-            <!-- Car Card 1 -->
-            <div class="car-card" onclick="window.location.href='/auctionmanager/pending-car-details'">
-                <div class="car-image-container">
-                    <img src="/images/tata_toofan.png" alt="Tata Toofan" class="car-image">
-                </div>
-                <div class="car-details">
-                    <div class="car-title">Tata Harrier</div>
-                    <div class="car-info">Mileage: 35,000 km</div>
-                    <div class="car-info">Condition: Pending</div>
-                    <div class="action-buttons" id="buttons-car1">
-                        <button class="approve-btn" onclick="approveCar('car1')">Approve</button>
-                        <button class="decline-btn" onclick="declineCar('car1')">Decline</button>
-                    </div>
-                    <div id="status-car1" class="status" style="display: none;"></div>
-                </div>
+      <div class="car-grid">
+        <% if (pendingCars && pendingCars.length > 0) { %>
+          <% pendingCars.forEach(function(car) { %>
+            <div class="car-card">
+              <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
+              <div class="car-details">
+                <div class="car-title"><%= car.vehicleName %></div>
+                <div class="car-info">Seller: <%= car.sellerId.firstName %> <%= car.sellerId.lastName %></div>
+                <div class="car-info">Location: <%= car.sellerId.city %></div>
+                <div class="status-badge status-pending">Pending Inspection</div>
+              </div>
+              <button class="view-button">
+                View Details
+              </button>
             </div>
-
-            <!-- Car Card 2 -->
-            <div class="car-card" onclick="window.location.href='/auctionmanager/pending-car-details'">
-                <div class="car-image-container">
-                    <img src="/images/tata_traveller.png" alt="tata_traveller" class="car-image">
-                </div>
-                <div class="car-details">
-                    <div class="car-title">Tata Traveller</div>
-                    <div class="car-info">Mileage: 40,000 km</div>
-                    <div class="car-info">Condition: Pending</div>
-                    <div class="action-buttons" id="buttons-car2">
-                        <button class="approve-btn" onclick="approveCar('car2')">Approve</button>
-                        <button class="decline-btn" onclick="declineCar('car2')">Decline</button>
-                    </div>
-                    <div id="status-car2" class="status" style="display: none;"></div>
-                </div>
-            </div>
-
-            <!-- Car Card 3 -->
-            <div class="car-card" onclick="window.location.href='/auctionmanager/pending-car-details'">
-                <div class="car-image-container">
-                    <img src="/images/toyota_innova.png" alt="Toyota Innova" class="car-image">
-                </div>
-                <div class="car-details">
-                    <div class="car-title">Toyota Innova</div>
-                    <div class="car-info">Mileage: 65,000 km</div>
-                    <div class="car-info">Condition: Pending</div>
-                    <div class="action-buttons" id="buttons-car3">
-                        <button class="approve-btn" onclick="approveCar('car3')">Approve</button>
-                        <button class="decline-btn" onclick="declineCar('car3')">Decline</button>
-                    </div>
-                    <div id="status-car3" class="status" style="display: none;"></div>
-                </div>
-            </div>
-
-            <!-- Car Card 4 -->
-            <div class="car-card" onclick="window.location.href='/auctionmanager/pending-car-details'">
-                <div class="car-image-container">
-                    <img src="/images/ford_mus.png" alt="Ford Mustang" class="car-image">
-                </div>
-                <div class="car-details">
-                    <div class="car-title">Ford Mustang</div>
-                    <div class="car-info">Mileage: 30,000 km</div>
-                    <div class="car-info">Condition: Pending</div>
-                    <div class="action-buttons" id="buttons-car4">
-                        <button class="approve-btn" onclick="approveCar('car4')">Approve</button>
-                        <button class="decline-btn" onclick="declineCar('car4')">Decline</button>
-                    </div>
-                    <div id="status-car4" class="status" style="display: none;"></div>
-                </div>
-            </div>
-
-            <!-- Car Card 5 -->
-            <div class="car-card" onclick="window.location.href='/auctionmanager/pending-car-details'">
-                <div class="car-image-container">
-                    <img src="/images/honda_civic.png" alt="Honda Civic" class="car-image">
-                </div>
-                <div class="car-details">
-                    <div class="car-title">Honda Civic</div>
-                    <div class="car-info">Mileage: 50,000 km</div>
-                    <div class="car-info">Condition: Pending</div>
-                    <div class="action-buttons" id="buttons-car5">
-                        <button class="approve-btn" onclick="approveCar('car5')">Approve</button>
-                        <button class="decline-btn" onclick="declineCar('car5')">Decline</button>
-                    </div>
-                    <div id="status-car5" class="status
+          <% }); %>
+        <% } else { %>
+          <div class="no-cars">
+            No cars currently pending inspection
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>

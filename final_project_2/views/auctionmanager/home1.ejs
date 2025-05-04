@@ -262,94 +262,55 @@ footer {
 
       
 
-      <!-- PENDINGCARS Section -->
-      <div class="section-title" id="pendingcars">PENDINGCARS</div>
-      <div class="section-container">
-        <div class="car-grid">
-          <!-- Car Card 1 -->
-          <div class="car-card">
-            <img src="/images/tata_toofan.png" alt="Tata Toofan" class="car-image" />
-            <div class="car-details">
-              <div class="car-title">Tata Toofan</div>
-              <div class="car-info">Vehicle ID: TT-395695</div>
-              <div class="car-info">Mileage: 35,000 km</div>
-              <div class="car-info">Daily Rate: ₹1,200/day</div>
-              <div class="car-info">Available: Yes</div>
-            </div>
-          </div>
-
-          <!-- Car Card 2 -->
-          <div class="car-card">
-            <img src="/images/tata_traveller.png" alt="Tata Traveller" class="car-image" />
-            <div class="car-details">
-              <div class="car-title">Tata Traveller</div>
-              <div class="car-info">Vehicle ID: TT-395696</div>
-              <div class="car-info">Mileage: 40,000 km</div>
-              <div class="car-info">Daily Rate: ₹1,500/day</div>
-              <div class="car-info">Available: Yes</div>
-            </div>
-          </div>
-
-          <!-- Car Card 3 -->
-          <div class="car-card">
-            <img src="/images/toyota_innova.png" alt="Toyota Innova" class="car-image" />
-            <div class="car-details">
-              <div class="car-title">Toyota Innova</div>
-              <div class="car-info">Vehicle ID: TI-395697</div>
-              <div class="car-info">Mileage: 65,000 km</div>
-              <div class="car-info">Daily Rate: ₹2,000/day</div>
-              <div class="car-info">Available: Yes</div>
-            </div>
-          </div>
-        </div>
-        <!-- See More Button for PENDINGCARS -->
-        <div class="see-more">
-          <a href="/auctionmanager/pending">See More</a>
-        </div>
-      </div>
+<!-- PENDINGCARS Section -->
+<div class="section-title" id="pendingcars">PENDINGCARS</div>
+<div class="section-container">
+    <div class="car-grid">
+        <% if (pendingCars && pendingCars.length > 0) { %>
+            <% pendingCars.forEach(function(car) { %>
+                <div class="car-card">
+                    <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
+                    <div class="car-details">
+                        <div class="car-title"><%= car.vehicleName %></div>
+                        <div class="car-info">Seller: <%= car.sellerId.firstName %> <%= car.sellerId.lastName %></div>
+                <div class="car-info">Location: <%= car.sellerId.city %></div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No cars currently pending inspection</p>
+        <% } %>
+    </div>
+    <div class="see-more">
+        <a href="/auctionmanager/pending">See More</a>
+    </div>
+</div>
 
       <!-- APPROVEDCARS Section -->
-      <div class="section-title" id="approvedcars">APPROVEDCARS</div>
-      <div class="section-container">
-        <div class="car-grid">
-          <!-- Car Card 1 -->
-          <div class="car-card">
-            <img src="/images/tata_harrier.png" alt="Tata Harrier" class="car-image" />
-            <div class="car-details">
-              <div class="car-title">Tata Harrier</div>
-              <div class="car-info">Auction ID: #1565355</div>
-              <div class="car-info">Mileage: 45,000 km</div>
-              <div class="car-info">Condition: Approved</div>
-            </div>
-          </div>
-
-          <!-- Car Card 2 -->
-          <div class="car-card">
-            <img src="/images/land_rover.png" alt="Land Rover" class="car-image" />
-            <div class="car-details">
-              <div class="car-title">Land Rover</div>
-              <div class="car-info">Auction ID: #1565356</div>
-              <div class="car-info">Mileage: 60,000 km</div>
-              <div class="car-info">Condition: Approved</div>
-            </div>
-          </div>
-
-          <!-- Car Card 3 -->
-          <div class="car-card">
-            <img src="/images/toyota_innova.png" alt="Toyota Innova" class="car-image" />
-            <div class="car-details">
-              <div class="car-title">Toyota Innova</div>
-              <div class="car-info">Auction ID: #1565357</div>
-              <div class="car-info">Mileage: 75,000 km</div>
-              <div class="car-info">Condition: Approved</div>
-            </div>
-          </div>
-        </div>
-        <!-- See More Button for APPROVEDCARS -->
-        <div class="see-more">
-          <a href="/auctionmanager/approvedcars">See More</a>
-        </div>
-      </div>
+<div class="section-title" id="approvedcars">APPROVEDCARS</div>
+<div class="section-container">
+    <div class="car-grid">
+        <% if (approvedCars && approvedCars.length > 0) { %>
+            <% approvedCars.forEach(function(car) { %>
+                <div class="car-card">
+                    <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
+                    <div class="car-details">
+                        <div class="car-title"><%= car.vehicleName %></div>
+                        <div class="car-info">Year: <%= car.year %></div>
+                        <div class="car-info">Mileage: <%= car.mileage %> km</div>
+                        <div class="car-info">Status: Approved</div>
+                        <div class="car-info">Starting Bid: $<%= car.startingBid %></div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No approved cars available</p>
+        <% } %>
+    </div>
+    <div class="see-more">
+        <a href="/auctionmanager/approvedcars">See More</a>
+    </div>
+</div>
       <footer>
           <div class="footer-container">
               <div class="footer-section">

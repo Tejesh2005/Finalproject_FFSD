@@ -50,7 +50,13 @@ const auctionRequestSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'assignedMechanic', 'rejected'],
     default: 'pending'
   },
-
+  assignedMechanic: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  mechanicName: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now

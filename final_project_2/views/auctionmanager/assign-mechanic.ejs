@@ -227,64 +227,79 @@
           <div class="car-info"><strong>Location:</strong> <%= request.sellerId.doorNo || '' %>,<%= request.sellerId.street || '' %>, <%= request.sellerId.city || '' %>, <%= request.sellerId.state || '' %></div>
         </div>
 
-        <!-- Assign Mechanic Section -->
-        <div class="assign-mechanic">
-          <button id="assign-button" onclick="showMechanicDropdown()">
-            Assign Mechanic
-          </button>
-          <div class="mechanic-dropdown" id="mechanic-dropdown">
-            <select id="mechanic-select">
-              <option value="">Select a Mechanic</option>
-              <option value="Mechanic 1">Mechanic 1</option>
-              <option value="Mechanic 2">Mechanic 2</option>
-              <option value="Mechanic 3">Mechanic 3</option>
-              <option value="Mechanic 4">Mechanic 4</option>
-            </select>
-          </div>
-          <div id="mechanic-assigned" class="mechanic-assigned">
-            Mechanic Assigned
-          </div>
-        </div>
+        <!-- In your assign-mechanic.ejs file, modify the mechanic dropdown section: -->
+<div class="assign-mechanic">
+  <button id="assign-button" onclick="showMechanicDropdown()">
+      Assign Mechanic
+  </button>
+  <div class="mechanic-dropdown" id="mechanic-dropdown">
+      <select id="mechanic-select">
+          <option value="">Select a Mechanic</option>
+          <% mechanics.forEach(mechanic => { %>
+              <option value="<%= `${mechanic.firstName} ${mechanic.lastName}` %>" 
+                      data-id="<%= mechanic._id %>">
+                  <%= `${mechanic.firstName} ${mechanic.lastName}` %> 
+                  <% if (mechanic.shopName) { %>- <%= mechanic.shopName %><% } %>
+                  <% if (mechanic.experienceYears) { %>(<%= mechanic.experienceYears %> yrs exp)<% } %>
+              </option>
+          <% }); %>
+      </select>
+  </div>
+  <div id="mechanic-assigned" class="mechanic-assigned">
+      Mechanic Assigned
+  </div>
+</div>
       </div>
     </div>
 
     <script>
       // Function to show the mechanic dropdown
       function showMechanicDropdown() {
-        const dropdown = document.getElementById("mechanic-dropdown");
-        dropdown.style.display = "block";
+          const dropdown = document.getElementById("mechanic-dropdown");
+          dropdown.style.display = "block";
       }
-
+  
       // Function to assign a mechanic
       const mechanicSelect = document.getElementById("mechanic-select");
       mechanicSelect.addEventListener("change", function () {
-        if (this.value) {
-          // Send request to server to update the mechanic assignment
-          fetch('/auctionmanager/assign-mechanic-update/<%= request._id %>', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ mechanicName: this.value })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const assignButton = document.getElementById("assign-button");
-              const assignedMessage = document.getElementById("mechanic-assigned");
-
-              assignButton.style.display = "none"; // Hide the Assign Mechanic button
-              assignedMessage.style.display = "block"; // Show the Mechanic Assigned message
-            } else {
-              alert('Failed to assign mechanic. Please try again.');
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while assigning the mechanic.');
-          });
-        }
+          if (this.value) {
+              const selectedOption = this.options[this.selectedIndex];
+              const mechanicId = selectedOption.getAttribute('data-id');
+              const mechanicName = this.value;
+              
+              // Send request to server to update the mechanic assignment
+              fetch('/auctionmanager/assign-mechanic-update/<%= request._id %>', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ 
+                      mechanicName: mechanicName,
+                      mechanicId: mechanicId
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      const assignButton = document.getElementById("assign-button");
+                      const assignedMessage = document.getElementById("mechanic-assigned");
+                      const dropdown = document.getElementById("mechanic-dropdown");
+  
+                      assignButton.style.display = "none";
+                      dropdown.style.display = "none";
+                      assignedMessage.style.display = "block";
+                  } else {
+                      alert('Failed to assign mechanic. Please try again.');
+                      this.value = ""; // Reset the select
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred while assigning the mechanic.');
+                  this.value = ""; // Reset the select
+              });
+          }
       });
-    </script>
+  </script>
   </body>
 </html>

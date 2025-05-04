@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
   repairBikes: { type: Boolean, default: false },
   repairCars: { type: Boolean, default: false },
   experienceYears: { type: Number },
-  approved_status: { type: String, enum: ['Yes', 'No'], default: 'No' },
+  approved_status: { type: String, enum: ['Yes', 'No'], default: 'Yes' },
   phone: { 
     type: String, 
     required: true, 

@@ -1,262 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manage Users - DriveBidRent</title>
-  </head>
-  <body
-    style="
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pending Mechanics - DriveBidRent</title>
+  <style>
+    body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
-    "
-  >
-    <!-- Include the navbar partial -->
-    <%- include('./partials/navbar') %>
+    }
+    
+    .container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background-color: #ffffff;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+    
+    h1, h2 {
+      color: #ff6b00;
+    }
+    
+    h1 {
+      text-align: center;
+    }
+    
+    .mechanic-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .mechanic-item {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.5s ease;
+    }
+    
+    .mechanic-item.removing {
+      opacity: 0;
+      transform: translateX(-100px);
+      height: 0;
+      padding: 0;
+      margin: 0;
+      border: none;
+      overflow: hidden;
+    }
+    
+    .mechanic-info {
+      flex-grow: 1;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn {
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .btn-blue {
+      background-color: #007bff;
+    }
+    
+    .btn-green {
+      background-color: #00cc66;
+    }
+    
+    .btn-red {
+      background-color: #ff3333;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      position: relative;
+      background-color: white;
+      margin: 10% auto;
+      padding: 2rem;
+      width: 70%;
+      max-width: 800px;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .no-mechanics {
+      padding: 2rem;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    
+    .alert-success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    
+    .alert-danger {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    
+    .alert-close {
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <%- include('./partials/navbar') %>
 
-    <!-- Manage Users Content -->
-    <section style="padding: 2rem; max-width: 1200px; margin: 0 auto">
-      <h1 style="color: #ff6b00; text-align: center">Manage Users</h1>
-      <div
-        style="
-          background-color: #ffffff;
-          padding: 1.5rem;
-          border-radius: 0.5rem;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        "
-      >
-        <h2 style="color: #ff6b00">User List</h2>
-        <ul style="list-style: none; padding: 0" id="user-list">
-          <!-- User 1 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>John Doe</strong> - johndoe@example.com (Buyer)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 2 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Jane Smith</strong> - janesmith@example.com (Seller)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 3 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Alice Johnson</strong> - alicejohnson@example.com (Auction
-            Manager)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-            <button
-              onclick="approveUser(this)"
-              style="
-                background-color: #00cc66;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Approve
-            </button>
-          </li>
-          <!-- User 4 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Bob Brown</strong> - bobbrown@example.com (Driver)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 5 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Charlie Davis</strong> - charliedavis@example.com (Mechanic)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 6 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Eva Green</strong> - evagreen@example.com (Buyer)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 7 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Frank White</strong> - frankwhite@example.com (Seller)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 8 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Grace Lee</strong> - gracelee@example.com (Auction Manager)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-            <button
-              onclick="approveUser(this)"
-              style="
-                background-color: #00cc66;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Approve
-            </button>
-          </li>
-          <!-- User 9 -->
-          <li style="padding: 0.75rem 0; border-bottom: 1px solid #eee">
-            <strong>Henry Clark</strong> - henryclark@example.com (Driver)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-          <!-- User 10 -->
-          <li style="padding: 0.75rem 0">
-            <strong>Ivy Adams</strong> - ivyadams@example.com (Mechanic)
-            <button
-              onclick="suspendUser(this)"
-              style="
-                background-color: #ff6b00;
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                margin-left: 1rem;
-              "
-            >
-              Suspend
-            </button>
-          </li>
-        </ul>
+  <div class="container">
+    <h1>Pending Mechanic Approvals</h1>
+    
+    <div id="alertContainer"></div>
+    
+    <div class="card">
+      <h2>Mechanics Waiting for Approval</h2>
+      
+      <ul class="mechanic-list" id="mechanic-list">
+        <% if (users && users.length > 0) { %>
+          <% users.forEach(user => { %>
+            <li class="mechanic-item" id="mechanic-<%= user._id %>">
+              <div class="mechanic-info">
+                <strong><%= user.firstName %> <%= user.lastName %></strong> - <%= user.email %> (Mechanic)
+                <span style="margin-left: 10px; font-style: italic;">
+                  Status: Pending Approval
+                </span>
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-blue" onclick="viewDetails('<%= user._id %>', '<%= user.firstName %>', '<%= user.lastName %>', '<%= user.email %>', '<%= user.phone %>', '<%= user.experienceYears || 0 %>', '<%= user.shopName || 'N/A' %>', '<%= user.repairBikes || false %>', '<%= user.repairCars || false %>', '<%= user.doorNo || '' %>', '<%= user.street || '' %>', '<%= user.city || '' %>', '<%= user.state || '' %>', '<%= user.googleAddressLink || '' %>')">
+                  View Details
+                </button>
+                <button class="btn btn-green" onclick="handleAction('<%= user._id %>', 'approve')">Approve</button>
+                <button class="btn btn-red" onclick="handleAction('<%= user._id %>', 'decline')">Decline</button>
+              </div>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li class="no-mechanics">No pending mechanics found</li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+
+  <div id="detailsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Mechanic Details</h2>
+      <div id="modalContent"></div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button id="modalApproveBtn" class="btn btn-green">Approve</button>
+        <button id="modalDeclineBtn" class="btn btn-red">Decline</button>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Include the footer partial -->
-    <%- include('./partials/footer') %>
+  <%- include('./partials/footer') %>
 
-    <!-- JavaScript for Suspend and Approve Buttons -->
-    <script>
-      // Function to suspend a user
-      function suspendUser(button) {
-        const userItem = button.parentElement;
-        userItem.remove(); // Remove the user from the list
+  <script>
+    const modal = document.getElementById('detailsModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalContent = document.getElementById('modalContent');
+    const approveBtn = document.getElementById('modalApproveBtn');
+    const declineBtn = document.getElementById('modalDeclineBtn');
+    let currentMechanicId = '';
+
+    // Modal functions remain the same
+    closeModal.onclick = function() {
+      modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = 'none';
       }
+    }
 
-      // Function to approve an auction manager
-      function approveUser(button) {
-        button.style.display = "none"; // Hide the approve button
+    function viewDetails(id, firstName, lastName, email, phone, experience, shopName, repairBikes, repairCars, doorNo, street, city, state, googleLink) {
+      currentMechanicId = id;
+      const detailsHtml = `
+        <div class="details-grid">
+          <div>
+            <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Experience:</strong> ${experience || 'N/A'} ${experience ? 'years' : ''}</p>
+          </div>
+          <div>
+            <p><strong>Shop Name:</strong> ${shopName || 'N/A'}</p>
+            <p><strong>Repairs Bikes:</strong> ${repairBikes === 'true' ? 'Yes' : 'No'}</p>
+            <p><strong>Repairs Cars:</strong> ${repairCars === 'true' ? 'Yes' : 'No'}</p>
+            <p><strong>Address:</strong> ${doorNo || ''}, ${street || ''}, ${city || ''}, ${state || ''}</p>
+          </div>
+        </div>
+        ${googleLink ? `<p><strong>Location:</strong> <a href="${googleLink}" target="_blank">View on Google Maps</a></p>` : ''}
+      `;
+      modalContent.innerHTML = detailsHtml;
+      approveBtn.onclick = () => handleAction(id, 'approve');
+      declineBtn.onclick = () => handleAction(id, 'decline');
+      modal.style.display = 'block';
+    }
+
+    // Updated handleAction function
+    async function handleAction(id, action) {
+      console.log(id, action);
+      const url = `/${action === 'approve' ? 'approve-user' : 'decline-user'}/${id}`;
+      const confirmMessage = action === 'decline' ? 'Are you sure you want to decline and delete this mechanic?' : null;
+      console.log(url);
+      if (action === 'decline' && !confirm(confirmMessage)) {
+        return;
       }
-    </script>
-  </body>
+      console.log('before fetch');
+      try {
+        console.log('inside try');
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        console.log('responce', response);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          showAlert(result.message, 'success');
+          const mechanicItem = document.getElementById(`mechanic-${id}`);
+          if (mechanicItem) {
+            mechanicItem.classList.add('removing');
+            setTimeout(() => {
+              mechanicItem.remove();
+              const mechanicList = document.getElementById('mechanic-list');
+              if (mechanicList.children.length === 0) {
+                mechanicList.innerHTML = '<li class="no-mechanics">No pending mechanics found</li>';
+              }
+            }, 500);
+          }
+          modal.style.display = 'none';
+        } else {
+          showAlert(result.message || `Error ${action === 'approve' ? 'approving' : 'declining'} mechanic`, 'danger');
+        }
+      } catch (error) {
+        console.error(`Error ${action} mechanic:`, error);
+        showAlert(`Error ${action === 'approve' ? 'approving' : 'declining'} mechanic. Please try again.`, 'danger');
+      }
+    }
+
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.innerHTML = `
+        <span class="alert-close" onclick="this.parentElement.style.display='none';">&times;</span>
+        ${message}
+      `;
+      alertContainer.appendChild(alertDiv);
+      setTimeout(() => {
+        alertDiv.style.opacity = '0';
+        setTimeout(() => {
+          alertDiv.remove();
+        }, 500);
+      }, 5000);
+    }
+  </script>
+</body>
 </html>

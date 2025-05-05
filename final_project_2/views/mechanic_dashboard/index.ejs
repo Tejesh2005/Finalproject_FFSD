@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Driver Home</title>
+    <title>Mechanic Dashboard</title>
     <%- include('partials/styles') %>
     <style>
       /* PAGE-SPECIFIC STYLES */
@@ -100,12 +100,76 @@
         color: white;
         text-decoration: none;
       }
+
+      /* Popup Styling */
+      .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .popup-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .popup-content h2 {
+        color: #ff6600;
+        margin-bottom: 15px;
+      }
+
+      .popup-content p {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .popup-content button {
+        padding: 10px 20px;
+        background-color: #ff6600;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .popup-content button:hover {
+        background-color: #e65c00;
+      }
+
+      /* Hide main content when popup is active */
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <%- include('partials/header') %>
 
-    <main>
+    <!-- Popup for unapproved mechanics -->
+    <div class="popup-overlay" id="approvalPopup">
+      <div class="popup-content">
+        <h2>Approval Pending</h2>
+        <p>Process underway. Please wait for admin approval to access the Mechanic Dashboard.</p>
+        <button onclick="redirectToLogin()">Back to Login</button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <main id="mainContent">
       <!-- Current Tasks Section -->
       <section class="task-box">
         <h2 class="task-heading">Current Tasks</h2>
@@ -209,6 +273,24 @@
     <%- include('partials/footer') %>
 
     <script>
+      // Check approval status and show popup if not approved
+      const approvedStatus = "<%= user.approved_status %>";
+      const popup = document.getElementById("approvalPopup");
+      const mainContent = document.getElementById("mainContent");
+
+      if (approvedStatus === "No") {
+        popup.style.display = "flex";
+        mainContent.classList.add("hidden");
+      } else {
+        popup.style.display = "none";
+        mainContent.classList.remove("hidden");
+      }
+
+      // Redirect to login page
+      function redirectToLogin() {
+        window.location.href = "/login";
+      }
+
       // Star Rating Functionality
       document.querySelectorAll(".star-rating span").forEach((star) => {
         star.addEventListener("click", (e) => {
@@ -222,7 +304,7 @@
       document.querySelectorAll(".vehicle-card").forEach((card) => {
         card.addEventListener("click", function (e) {
           if (!e.target.closest("a") && !e.target.closest(".star-rating")) {
-            window.location.href = "/mechanic_dashboard/car-details";
+            window.location.href = "/mechanic_dashboard/mcar-details";
           }
         });
       });

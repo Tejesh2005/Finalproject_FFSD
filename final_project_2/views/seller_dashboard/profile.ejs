@@ -375,7 +375,7 @@ form input, form select, form textarea {
         }
         
         try {
-          const response = await fetch('/update-profile', {
+          const response = await fetch('/seller_dashboard/update-profile', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -442,7 +442,7 @@ form input, form select, form textarea {
         
         try {
           // First update notification preferences
-          const prefResponse = await fetch('/update-preferences', {
+          const prefResponse = await fetch('/seller_dashboard/update-preferences', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -454,7 +454,7 @@ form input, form select, form textarea {
           
           // Then update password if provided
           if (oldPassword && newPassword) {
-            const pwResponse = await fetch('/change-password', {
+            const pwResponse = await fetch('/seller_dashboard/change-password', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'

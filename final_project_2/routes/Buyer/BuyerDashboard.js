@@ -79,7 +79,7 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
     // Single rental view
     if (page === 'rental' && req.query.id) {
       const rental = await RentalRequest.findById(req.query.id)
-        .populate('sellerId', 'firstName lastName email phone')
+        .populate('sellerId', 'firstName lastName email phone city state')
         .exec();
 
       if (!rental) {
@@ -178,12 +178,10 @@ router.post('/update-profile', isBuyerLoggedIn, async (req, res) => {
       lastName,
       email,
       phone,
-      address: {
-        doorNo,
-        street,
-        city,
-        state
-      }
+      doorNo,
+      street,
+      city,
+      state
     };
     
     // Remove empty fields
@@ -217,7 +215,10 @@ router.post('/update-profile', isBuyerLoggedIn, async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         phone: user.phone,
-        address: user.address
+        doorNo: user.doorNo,
+        street: user.street,
+        city: user.city,
+        state: user.state
       }
     });
   } catch (err) {

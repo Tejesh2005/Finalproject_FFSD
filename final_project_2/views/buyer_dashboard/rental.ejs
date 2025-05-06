@@ -105,6 +105,12 @@
             <% if (sellerId.phone) { %>
                 <p><strong>Phone:</strong> <%= sellerId.phone %></p>
             <% } %>
+            <% if (sellerId.city) { %>
+                <p><strong>City:</strong> <%= sellerId.city %></p>
+            <% } %>
+            <% if (sellerId.state) { %>
+                <p><strong>State:</strong> <%= sellerId.state %></p>
+            <% } %>
         </div>
         
         <div class="action-buttons">

@@ -85,8 +85,7 @@
         }
 
         .auction-date,
-        .rental-cost,
-        .costperday {
+        .rental-cost {
             color: #666666;
             margin-bottom: 1rem;
         }
@@ -119,7 +118,7 @@
 
         .placebid-btn {
             display: inline-block;
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.3rem;
@@ -129,7 +128,7 @@
 
         .rent-btn {
             display: inline-block;
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.3rem;
@@ -139,11 +138,11 @@
 
         .placebid-btn:hover,
         .rent-btn:hover {
-            background-color: #45a049; /* Darker green */
+            background-color: #45a049;
         }
 
         .car-card {
-            background-color: #ffffff;
+            background-color: #Wffffff;
             border-radius: 1rem;
             padding: 1.5rem;
             position: relative;
@@ -192,14 +191,14 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .card-container .car-card {
-                flex: 1 1 48%; /* 2 cards per row on smaller screens */
+                flex: 1 1 48%;
                 max-width: 48%;
             }
         }
 
         @media (max-width: 480px) {
             .card-container .car-card {
-                flex: 1 1 100%; /* 1 card per row on mobile */
+                flex: 1 1 100%;
                 max-width: 100%;
             }
         }
@@ -250,7 +249,7 @@
                         <button class="heart-btn" data-liked="true" onclick="removeFromRentalWishlist('<%= rental._id %>')">❤</button>
                         <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>">
                         <h3><%= rental.vehicleName %></h3>
-                        <p class="rental-cost">Cost/km: <strong>₹<%= rental.costPerKm %></strong></p>
+                        <p class="rental-cost">Cost/day: <strong>₹<%= rental.costPerDay %></strong></p>
                         <div class="car-details">
                             <p><strong>City:</strong> <%= rental.city || 'Not specified' %></p>
                             <p><strong>Year:</strong> <%= rental.year %></p>

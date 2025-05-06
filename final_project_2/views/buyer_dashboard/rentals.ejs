@@ -312,7 +312,7 @@
                         <button class="heart-btn" data-liked="false" data-rental-id="<%= rental._id %>">❤</button>
                         <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>">
                         <h3><%= rental.vehicleName %></h3>
-                        <p class="rental-cost">Cost/km: <strong>₹<%= rental.costPerKm %></strong></p>
+                        <p class="rental-cost">Cost/day: <strong>₹<%= rental.costPerDay %></strong></p>
                         <div class="car-details">
                             <p><strong>Year:</strong> <%= rental.year %></p>
                             <p><strong>AC:</strong> <%= rental.AC === 'available' ? 'Yes' : 'No' %></p>

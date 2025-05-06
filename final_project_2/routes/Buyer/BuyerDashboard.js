@@ -56,9 +56,9 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
       }
 
       if (minPrice || maxPrice) {
-        query.costPerKm = {};
-        if (minPrice) query.costPerKm.$gte = parseFloat(minPrice);
-        if (maxPrice) query.costPerKm.$lte = parseFloat(maxPrice);
+        query.costPerDay = {};
+        if (minPrice) query.costPerDay.$gte = parseFloat(minPrice);
+        if (maxPrice) query.costPerDay.$lte = parseFloat(maxPrice);
       }
 
       const rentals = await RentalRequest.find(query)
@@ -89,15 +89,58 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         });
       }
 
+      // Pass the rental data directly to the template
       return res.render('buyer_dashboard/rental.ejs', {
-        ...rental.toObject(),
+        vehicleName: rental.vehicleName,
+        vehicleImage: rental.vehicleImage,
+        year: rental.year,
+        condition: rental.condition,
+        capacity: rental.capacity,
+        fuelType: rental.fuelType,
+        transmission: rental.transmission,
+        AC: rental.AC,
+        costPerDay: rental.costPerDay,
+        driverAvailable: rental.driverAvailable,
+        driverRate: rental.driverRate,
+        sellerId: rental.sellerId,
         user
       });
     }
 
     // All other pages (auctions, drivers, etc.)
+    if (page === 'auction' && req.query.id) {
+      // Get auction data from database
+      const auctionId = req.query.id;
+      
+      // This is where you'd normally fetch the auction data
+      // Since we don't have actual auction data, we'll create placeholder data
+      const auctionData = {
+        name: "Vehicle Name", // Required by the template
+        image: "https://placeholder.com/car.jpg", // Required by the template
+        description: "Vehicle description",
+        startPrice: 10000,
+        currentBid: 12000,
+        endDate: new Date(),
+        seller: {
+          name: "Seller Name",
+          email: "seller@example.com"
+        },
+        specifications: {
+          year: 2020,
+          mileage: "15000 km",
+          condition: "Excellent",
+          fuelType: "Petrol"
+        }
+      };
+      
+      return res.render('buyer_dashboard/auction.ejs', {
+        ...auctionData,
+        user
+      });
+    }
+
     const validPages = [
-      'auctions', 'auction', 
+      'auctions', 
       'drivers', 'driver',
       'profile', 'wishlist',
       'purchase', 'purchase_details',
@@ -105,16 +148,12 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
     ];
 
     if (validPages.includes(page)) {
-      // Handle auction details if needed
-      if (page === 'auction' && req.query.id) {
-        // Your existing auction logic
-      }
-
       // Handle driver details if needed
       if (page === 'driver' && req.query.id) {
         // Your existing driver logic
       }
-      if(page==='about'){
+      
+      if(page === 'about'){
         return res.render('buyer_dashboard/Aboutus.ejs', { user });
       }
 

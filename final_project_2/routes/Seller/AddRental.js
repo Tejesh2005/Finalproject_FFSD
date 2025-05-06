@@ -86,7 +86,7 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
       condition: req.body['vehicle-condition'],
       fuelType: req.body['vehicle-fuel-type'],
       transmission: req.body['vehicle-transmission'],
-      costPerKm: parseFloat(req.body['rental-cost']),
+      costPerDay: parseFloat(req.body['rental-cost']),
       driverAvailable: req.body['driver-available'] === 'yes',
       driverRate: req.body['driver-available'] === 'yes' ? parseFloat(req.body['driver-rate']) : undefined,
       sellerId: req.session.userId,

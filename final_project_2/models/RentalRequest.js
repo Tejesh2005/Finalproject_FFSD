@@ -37,7 +37,7 @@ const RentalRequestSchema = new mongoose.Schema({
     enum: ['automatic', 'manual'],
     required: true
   },
-  costPerKm: {
+  costPerDay: {
     type: Number,
     required: true
   },

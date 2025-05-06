@@ -115,11 +115,11 @@
             </div>
             <div class="vehicle-info">
                 <h1><%= vehicle.name %></h1>
-                <p class="rental-cost">Cost/km: <strong>₹<%= vehicle.costPerKm %></strong></p>
+                <p class="rental-cost">Cost/day: <strong>₹<%= vehicle.costPerDay %></strong></p>
                 <div class="vehicle-specs">
-                    <p><strong>Mileage:</strong> <%= vehicle.mileage %></p>
-                    <p><strong>AC:</strong> <%= vehicle.ac %></p>
-                    <p><strong>Driver:</strong> <%= vehicle.driver %></p>
+                    <p><strong>Year:</strong> <%= vehicle.year %></p>
+                    <p><strong>AC:</strong> <%= vehicle.AC %></p>
+                    <p><strong>Driver:</strong> <%= vehicle.driverAvailable ? 'Available' : 'Not Available' %></p>
                     <p><strong>Capacity:</strong> <%= vehicle.capacity %></p>
                 </div>
             </div>
@@ -130,7 +130,7 @@
                 <form id="rental-form">
                     <input type="hidden" id="vehicle-id" value="<%= vehicle.id %>">
                     <input type="hidden" id="vehicle-name" value="<%= vehicle.name %>">
-                    <input type="hidden" id="cost-per-km" value="<%= vehicle.costPerKm %>">
+                    <input type="hidden" id="cost-per-day" value="<%= vehicle.costPerDay %>">
                     <input type="hidden" id="user-id" value="<%= userId %>">
                     
                     <label for="pickup-date">Pickup Date:</label>
@@ -138,9 +138,6 @@
 
                     <label for="return-date">Return Date:</label>
                     <input type="date" id="return-date" name="return-date" required>
-
-                    <label for="estimated-distance">Estimated Distance (km):</label>
-                    <input type="number" id="estimated-distance" name="estimated-distance" min="1" placeholder="Enter estimated distance" required>
 
                     <label for="driver-required">Driver Required:</label>
                     <select id="driver-required" name="driver-required">
@@ -158,11 +155,11 @@
             <div class="rental-summary">
                 <h2>Rental Summary</h2>
                 <p><strong>Vehicle:</strong> <%= vehicle.name %></p>
-                <p><strong>Cost/km:</strong> ₹<%= vehicle.costPerKm %></p>
+                <p><strong>Cost/day:</strong> ₹<%= vehicle.costPerDay %></p>
                 <p><strong>Pickup Date:</strong> <span id="summary-pickup-date">-</span></p>
                 <p><strong>Return Date:</strong> <span id="summary-return-date">-</span></p>
                 <p><strong>Driver Required:</strong> <span id="summary-driver-required">-</span></p>
-                <p><strong>Estimated Distance:</strong> <span id="summary-distance">-</span></p>
+                <p><strong>Total Days:</strong> <span id="summary-days">-</span></p>
                 <p><strong>Total Cost:</strong> <span id="total-cost">-</span></p>
             </div>
         </div>
@@ -178,7 +175,7 @@
         const summaryPickupDate = document.getElementById('summary-pickup-date');
         const summaryReturnDate = document.getElementById('summary-return-date');
         const summaryDriverRequired = document.getElementById('summary-driver-required');
-        const summaryDistance = document.getElementById('summary-distance');
+        const summaryDays = document.getElementById('summary-days');
         const totalCost = document.getElementById('total-cost');
         const successMessage = document.getElementById('success-message');
         const errorMessage = document.getElementById('error-message');
@@ -190,8 +187,7 @@
             const pickupDate = document.getElementById('pickup-date').value;
             const returnDate = document.getElementById('return-date').value;
             const driverRequired = document.getElementById('driver-required').value;
-            const estimatedDistance = document.getElementById('estimated-distance').value;
-            const costPerKm = document.getElementById('cost-per-km').value;
+            const costPerDay = document.getElementById('cost-per-day').value;
             const vehicleId = document.getElementById('vehicle-id').value;
             const vehicleName = document.getElementById('vehicle-name').value;
             const userId = document.getElementById('user-id').value;
@@ -218,14 +214,18 @@
                 return;
             }
 
+            // Calculate number of days
+            const diffTime = returnD - pickup;
+            const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
             // Calculate total cost
-            const total = costPerKm * estimatedDistance;
+            const total = costPerDay * totalDays;
 
             // Update summary
             summaryPickupDate.textContent = pickupDate;
             summaryReturnDate.textContent = returnDate;
             summaryDriverRequired.textContent = driverRequired;
-            summaryDistance.textContent = estimatedDistance + ' km';
+            summaryDays.textContent = totalDays + ' days';
             totalCost.textContent = '₹' + total.toFixed(2);
 
             // Create booking data
@@ -236,7 +236,7 @@
                 pickupDate: pickupDate,
                 returnDate: returnDate,
                 driverRequired: driverRequired,
-                estimatedDistance: estimatedDistance,
+                totalDays: totalDays,
                 totalCost: total
             };
 
@@ -255,24 +255,28 @@
         document.getElementById('pickup-date').addEventListener('change', updateSummary);
         document.getElementById('return-date').addEventListener('change', updateSummary);
         document.getElementById('driver-required').addEventListener('change', updateSummary);
-        document.getElementById('estimated-distance').addEventListener('input', updateSummary);
 
         function updateSummary() {
             const pickupDate = document.getElementById('pickup-date').value;
             const returnDate = document.getElementById('return-date').value;
             const driverRequired = document.getElementById('driver-required').value;
-            const estimatedDistance = document.getElementById('estimated-distance').value;
-            const costPerKm = document.getElementById('cost-per-km').value;
+            const costPerDay = document.getElementById('cost-per-day').value;
 
             if (pickupDate) summaryPickupDate.textContent = pickupDate;
             if (returnDate) summaryReturnDate.textContent = returnDate;
             if (driverRequired) summaryDriverRequired.textContent = driverRequired;
             
-            if (estimatedDistance) {
-                summaryDistance.textContent = estimatedDistance + ' km';
-                if (costPerKm) {
-                    const total = costPerKm * estimatedDistance;
-                    totalCost.textContent = '₹' + total.toFixed(2);
+            if (pickupDate && returnDate) {
+                const pickup = new Date(pickupDate);
+                const returnD = new Date(returnDate);
+                if (returnD > pickup) {
+                    const diffTime = returnD - pickup;
+                    const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    summaryDays.textContent = totalDays + ' days';
+                    if (costPerDay) {
+                        const total = costPerDay * totalDays;
+                        totalCost.textContent = '₹' + total.toFixed(2);
+                    }
                 }
             }
         }

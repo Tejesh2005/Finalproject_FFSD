@@ -159,9 +159,9 @@
       <% if (rental) { %>
         <form class="update-form" action="/seller_dashboard/update-rental/<%= rental._id %>" method="POST">
           <div class="form-group">
-            <label class="form-label">Cost per km (₹)</label>
+            <label class="form-label">Cost per day (₹)</label>
             <input type="number" class="form-control" name="rental-cost" 
-                   value="<%= rental.costPerKm %>" step="0.01" min="0" required>
+                   value="<%= rental.costPerDay %>" step="0.01" min="0" required>
           </div>
           
           <div class="form-group">

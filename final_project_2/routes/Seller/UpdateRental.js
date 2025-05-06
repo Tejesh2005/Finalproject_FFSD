@@ -65,7 +65,7 @@ router.post('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
     }
     
     // Update fields
-    rental.costPerKm = parseFloat(req.body['rental-cost']);
+    rental.costPerDay = parseFloat(req.body['rental-cost']);
     rental.driverAvailable = req.body['driver-available'] === 'yes';
     rental.status = req.body['status'];
     

@@ -92,6 +92,15 @@
       .star-rating span:hover {
         color: #ffcc00;
       }
+
+      /* No Tasks Message */
+      .no-tasks {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: #666;
+        font-size: 16px;
+        padding: 20px;
+      }
     </style>
   </head>
   <body>
@@ -100,50 +109,27 @@
     <main>
       <h1>Current Tasks</h1>
       <div class="vehicle-list">
-        <!-- Vehicle Card 1 -->
-        <div
-          class="vehicle-card"
-          onclick="window.location.href='/mechanic_dashboard/mcar-details'"
-        >
-          <img
-            src="https://imgd.aeplcdn.com/1920x1080/n/cw/ec/192443/camry-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80&q=80"
-            alt="Toyota Camry"
-          />
-          <h3>Toyota Camry</h3>
-          <p><strong>Owner:</strong> Harmanpreet</p>
-          <p><strong>Mileage:</strong> 45,000 km</p>
-          <button class="more-details">More Details</button>
-        </div>
-
-        <!-- Vehicle Card 2 -->
-        <div
-          class="vehicle-card"
-          onclick="window.location.href='/mechanic_dashboard/mcar-details'"
-        >
-          <img
-            src="https://imgd.aeplcdn.com/664x374/n/cw/ec/27074/civic-exterior-right-front-three-quarter-148155.jpeg?q=80"
-            alt="Honda Civic"
-          />
-          <h3>Honda Civic</h3>
-          <p><strong>Owner:</strong> Jos</p>
-          <p><strong>Mileage:</strong> 60,000 km</p>
-          <button class="more-details">More Details</button>
-        </div>
-
-        <!-- Vehicle Card 3 -->
-        <div
-          class="vehicle-card"
-          onclick="window.location.href='/mechanic_dashboard/mcar-details'"
-        >
-          <img
-            src="https://imgd.aeplcdn.com/664x374/cw/ec/23766/Ford-Mustang-Exterior-126883.jpg?wm=0&q=80"
-            alt="Ford Mustang"
-          />
-          <h3>Ford Mustang</h3>
-          <p><strong>Owner:</strong> Mahipal</p>
-          <p><strong>Mileage:</strong> 30,000 km</p>
-          <button class="more-details">More Details</button>
-        </div>
+        <% if (assignedVehicles && assignedVehicles.length > 0) { %>
+          <% assignedVehicles.forEach(vehicle => { %>
+            <div
+              class="vehicle-card"
+              onclick="window.location.href='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'"
+            >
+              <img
+                src="<%= vehicle.vehicleImage %>"
+                alt="<%= vehicle.vehicleName %>"
+                class="car-image"
+              />
+              <h3><%= vehicle.vehicleName %></h3>
+              <p><strong>Year:</strong> <%= vehicle.year %></p>
+              <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
+              <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
+              <button class="more-details">More Details</button>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p class="no-tasks">No vehicles currently assigned to you.</p>
+        <% } %>
       </div>
     </main>
 
@@ -156,7 +142,8 @@
         document.querySelectorAll(".vehicle-card").forEach((card) => {
           card.addEventListener("click", function (e) {
             if (!e.target.closest("button")) {
-              window.location.href = "/mechanic_dashboard/mcar-details";
+              const url = card.getAttribute("onclick").match(/'\/mechanic_dashboard\/vehicle-details\/[^']+'/)[0].replace(/'/g, "");
+              window.location.href = url;
             }
           });
         });
@@ -165,7 +152,9 @@
         document.querySelectorAll(".more-details").forEach((button) => {
           button.addEventListener("click", function (e) {
             e.stopPropagation();
-            window.location.href = "/mechanic_dashboard/mcar-details";
+            const card = button.closest(".vehicle-card");
+            const url = card.getAttribute("onclick").match(/'\/mechanic_dashboard\/vehicle-details\/[^']+'/)[0].replace(/'/g, "");
+            window.location.href = url;
           });
         });
 

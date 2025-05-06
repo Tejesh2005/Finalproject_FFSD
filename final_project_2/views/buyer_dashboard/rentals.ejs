@@ -31,7 +31,7 @@
 
         .search-filter form {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 1.5rem;
             align-items: end;
         }
@@ -225,7 +225,7 @@
             }
             
             .search-filter form {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -288,6 +288,26 @@
                         <option value="">All Types</option>
                         <option value="automatic" <%= transmission === 'automatic' ? 'selected' : '' %>>Automatic</option>
                         <option value="manual" <%= transmission === 'manual' ? 'selected' : '' %>>Manual</option>
+                    </select>
+                </div>
+                
+                <!-- Capacity Filter -->
+                <div class="form-group">
+                    <label for="capacity">Min Capacity (passengers)</label>
+                    <input type="number" id="capacity" name="capacity" placeholder="e.g., 4" 
+                           min="1" value="<%= capacity || '' %>">
+                </div>
+                
+                <!-- City Filter -->
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <select id="city" name="city">
+                        <option value="">All Cities</option>
+                        <% uniqueCities.forEach(cityOption => { %>
+                            <option value="<%= cityOption %>" <%= city && city.toLowerCase() === cityOption.toLowerCase() ? 'selected' : '' %>>
+                                <%= cityOption %>
+                            </option>
+                        <% }); %>
                     </select>
                 </div>
                 

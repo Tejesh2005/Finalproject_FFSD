@@ -40,7 +40,7 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
 
     // All rentals page with search/filter
     if (page === 'rentals') {
-      const { search, fuelType, transmission, minPrice, maxPrice } = req.query;
+      const { search, fuelType, transmission, minPrice, maxPrice, capacity, city } = req.query;
       const query = { status: 'available' };
 
       if (search) {
@@ -61,9 +61,29 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         if (maxPrice) query.costPerKm.$lte = parseFloat(maxPrice);
       }
 
-      const rentals = await RentalRequest.find(query)
-        .populate('sellerId', 'firstName lastName email phone')
+      if (capacity) {
+        query.capacity = { $gte: parseInt(capacity) };
+      }
+
+      let rentals = await RentalRequest.find(query)
+        .populate('sellerId', 'firstName lastName email phone city state')
         .exec();
+
+      // Filter by city if provided
+      if (city) {
+        rentals = rentals.filter(rental => rental.sellerId && rental.sellerId.city && rental.sellerId.city.toLowerCase() === city.toLowerCase());
+      }
+
+      // Fetch all unique cities for the dropdown (only from sellers who have rentals)
+      const sellersWithRentals = await RentalRequest.find({ status: 'available' })
+        .populate('sellerId', 'city')
+        .exec();
+      
+      const uniqueCities = [...new Set(
+        sellersWithRentals
+          .filter(rental => rental.sellerId && rental.sellerId.city)
+          .map(rental => rental.sellerId.city)
+      )].sort();
 
       return res.render('buyer_dashboard/rentals.ejs', {
         rentals,
@@ -72,7 +92,10 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         fuelType,
         transmission,
         minPrice,
-        maxPrice
+        maxPrice,
+        capacity,
+        city,
+        uniqueCities
       });
     }
 

@@ -13,12 +13,12 @@ router.get("/index", async (req, res) => {
         const assignedVehicles = await AuctionRequest.find({
             assignedMechanic: req.session.userId,
             status: 'assignedMechanic'
-        }).sort({ createdAt: -1 }); // Newest first
+        }).sort({ createdAt: -1 });
 
         res.render("mechanic_dashboard/index.ejs", { 
             user,
             assignedVehicles,
-            displayedVehicles: assignedVehicles.slice(0, 3) // Only show first 3
+            displayedVehicles: assignedVehicles.slice(0, 3)
         });
     } catch (err) {
         console.error(err);

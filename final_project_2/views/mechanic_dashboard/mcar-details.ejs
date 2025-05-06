@@ -3,139 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Car Details</title>
+    <title><%= vehicle.vehicleName %> Details</title>
     <%- include('partials/styles') %>
     <style>
-      /* Main Page Styles */
       body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #ffffff;
-        color: #333;
+        background-color: #f4f4f4;
       }
 
       main {
-        padding: 20px;
-      }
-
-      h1,
-      h2 {
-        color: #ff6600;
-      }
-
-      /* Car Details Specific Styles */
-      .car-details-container {
-        display: flex;
-        gap: 20px;
         max-width: 1200px;
         margin: 20px auto;
         padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
       }
 
-      .car-details-box {
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 20px;
-        flex: 2;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      .vehicle-header {
         text-align: center;
+        margin-bottom: 30px;
       }
 
-      .car-details-box img {
-        width: 100%;
+      .vehicle-image {
+        max-width: 100%;
         height: 300px;
         object-fit: cover;
         border-radius: 8px;
-        margin-bottom: 20px;
       }
 
-      .car-details-box h2 {
-        font-size: 24px;
+      .details-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .detail-card {
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+      }
+
+      h1, h2 {
         color: #ff6600;
+      }
+
+      .detail-item {
+        margin: 15px 0;
+        display: flex;
+      }
+
+      .detail-label {
+        font-weight: bold;
+        min-width: 150px;
+        color: #555;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-height: 100px;
         margin-bottom: 15px;
       }
 
-      .car-details-box .details {
-        text-align: left;
-      }
-
-      .car-details-box .details p {
-        margin: 10px 0;
-        font-size: 16px;
-        color: #333;
-      }
-
-      .car-details-box .details strong {
-        color: #666;
-      }
-
-      .side-box {
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 20px;
-        flex: 1;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .side-box h3 {
-        font-size: 20px;
-        color: #ff6600;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-
-      .side-box .specification {
-        margin-bottom: 20px;
-      }
-
-      .side-box .specification p {
-        font-size: 16px;
-        color: #333;
-        margin-bottom: 10px;
-      }
-
-      .side-box .star-rating {
-        margin-bottom: 10px;
-      }
-
-      .side-box .star-rating span {
-        cursor: pointer;
-        color: #ccc;
-        font-size: 24px;
-        transition: color 0.3s ease;
-      }
-
-      .side-box .star-rating span.active,
-      .side-box .star-rating span:hover {
-        color: #ffcc00;
-      }
-
-      .side-box textarea {
-        width: 100%;
-        height: 60px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        resize: none;
-      }
-
-      .side-box .submit-button {
-        background-color: #ff6600;
+      .submit-btn {
+        background: #ff6600;
         color: white;
         border: none;
         padding: 10px 20px;
-        border-radius: 5px;
+        border-radius: 4px;
         cursor: pointer;
-        width: 100%;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
       }
 
-      .side-box .submit-button:hover {
-        background-color: #e65c00;
+      .submit-btn:hover {
+        background: #e65c00;
       }
     </style>
   </head>
@@ -143,136 +88,116 @@
     <%- include('partials/header') %>
 
     <main>
-      <h1>Car Details</h1>
-      <div class="car-details-container">
-        <!-- Main Car Details Box -->
-        <div class="car-details-box">
-          <img
-            src="https://mediaservice.audi.com/media/fast/H4sIAAAAAAAAAFvzloG1tIiBOTrayfuvpGh6-m1zJgaGigIGBgZGoDhTtNOaz-I_2DhCHsCEtzEwF-SlMwJZKUycmbmJ6an6QD4_I3taTmV-aUkxO0grT6IZW1LM5FXvttkx5OyX3LxWaWLSLgZWoC7GeUCCWQhI8KUBCU5VBjAJMm8-iLAD8ZksmRkYWCuAjEgGEODjKy3KKUgsSszVK89MKckQ1DAgEgizu7iGOHr6BAMAWEMXeOkAAAA"
-            alt="Vehicle Image"
-            class="car-image"
-          />
-          <h2>Toyota Camry</h2>
-          <div class="details">
-            <p><strong>Owner:</strong> kishan</p>
-            <p><strong>Contact:</strong> 9119988388</p>
-            <p><strong>Location:</strong> iiit sricity,sricity,AP</p>
-            <p><strong>Mileage:</strong> 45,000 km</p>
-            <p><strong>Vehicle Type:</strong> Sedan</p>
-            <p><strong>Engine:</strong> 2.5L 4-Cylinder</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Fuel Type:</strong> Petrol</p>
+      <div class="vehicle-header">
+        <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="vehicle-image" />
+        <h1><%= vehicle.vehicleName %></h1>
+      </div>
+
+      <div class="details-container">
+        <div class="detail-card">
+          <h2>Vehicle Specifications</h2>
+          
+          <div class="detail-item">
+            <span class="detail-label">Year:</span>
+            <span><%= vehicle.year %></span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Mileage:</span>
+            <span><%= vehicle.mileage.toLocaleString() %> km</span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Condition:</span>
+            <span><%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Fuel Type:</span>
+            <span><%= vehicle.fuelType.charAt(0).toUpperCase() + vehicle.fuelType.slice(1) %></span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Transmission:</span>
+            <span><%= vehicle.transmission.charAt(0).toUpperCase() + vehicle.transmission.slice(1) %></span>
+          </div>
+          
+          <div class="detail-item">
+            <span class="detail-label">Auction Date:</span>
+            <span><%= vehicle.auctionDate.toLocaleDateString() %></span>
           </div>
         </div>
 
-        <!-- Side Box for Car Specifications and Rating -->
-        <div class="side-box">
-          <h3>Car Specifications & Rating</h3>
-          <div class="specification">
-            <p><strong>1. Engine Condition:</strong></p>
-            <div class="star-rating">
-              <span data-value="1">★</span>
-              <span data-value="2">★</span>
-              <span data-value="3">★</span>
-              <span data-value="4">★</span>
-              <span data-value="5">★</span>
-            </div>
-            <textarea placeholder="Add a comment..."></textarea>
+        <div class="detail-card">
+          <h2>Seller Information</h2>
+          
+          <div class="detail-item">
+            <span class="detail-label">Name:</span>
+            <span><%= seller.firstName %> <%= seller.lastName %></span>
           </div>
-          <div class="specification">
-            <p><strong>2. Transmission Condition:</strong></p>
-            <div class="star-rating">
-              <span data-value="1">★</span>
-              <span data-value="2">★</span>
-              <span data-value="3">★</span>
-              <span data-value="4">★</span>
-              <span data-value="5">★</span>
-            </div>
-            <textarea placeholder="Add a comment..."></textarea>
+          
+          <div class="detail-item">
+            <span class="detail-label">Contact:</span>
+            <span><%= seller.phone %></span>
           </div>
-          <div class="specification">
-            <p><strong>3. Brake System:</strong></p>
-            <div class="star-rating">
-              <span data-value="1">★</span>
-              <span data-value="2">★</span>
-              <span data-value="3">★</span>
-              <span data-value="4">★</span>
-              <span data-value="5">★</span>
-            </div>
-            <textarea placeholder="Add a comment..."></textarea>
+
+          <div class="detail-item">
+            <span class="detail-label">Address:</span>
+            <span>
+              <%= seller.doorNo %>, <%= seller.street %>, 
+              <%= seller.city %>, <%= seller.state %>
+            </span>
           </div>
-          <div class="specification">
-            <p><strong>4. Suspension:</strong></p>
-            <div class="star-rating">
-              <span data-value="1">★</span>
-              <span data-value="2">★</span>
-              <span data-value="3">★</span>
-              <span data-value="4">★</span>
-              <span data-value="5">★</span>
-            </div>
-            <textarea placeholder="Add a comment..."></textarea>
-          </div>
-          <div class="specification">
-            <p><strong>5. Exterior Condition:</strong></p>
-            <div class="star-rating">
-              <span data-value="1">★</span>
-              <span data-value="2">★</span>
-              <span data-value="3">★</span>
-              <span data-value="4">★</span>
-              <span data-value="5">★</span>
-            </div>
-            <textarea placeholder="Add a comment..."></textarea>
-          </div>
-          <button class="submit-button">Submit</button>
+
+
         </div>
+      </div>
+
+      <div class="detail-card" style="margin-top: 30px; grid-column: 1 / -1;">
+        <h2>Mechanic's Review</h2>
+        
+        <form action="/mechanic_dashboard/submit-review/<%= vehicle._id %>" method="POST">
+  <h3>Submit Vehicle Review</h3>
+  
+  <div>
+    <label>Condition Rating:</label>
+    <select name="conditionRating" required>
+      <option value="">Select rating</option>
+      <option value="1">1 Star</option>
+      <option value="2">2 Stars</option>
+      <option value="3">3 Stars</option>
+      <option value="4">4 Stars</option>
+      <option value="5">5 Stars</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Mechanical Condition:</label>
+    <textarea name="mechanicalCondition" required></textarea>
+  </div>
+
+  <div>
+    <label>Body & Interior Condition:</label>
+    <textarea name="bodyCondition" required></textarea>
+  </div>
+
+  <div>
+    <label>Recommendations:</label>
+    <textarea name="recommendations" required></textarea>
+  </div>
+
+  <button type="submit">Submit Review</button>
+</form>
       </div>
     </main>
 
     <%- include('partials/footer') %>
 
     <script>
-      // Star Rating Functionality
-      document.querySelectorAll(".star-rating").forEach((ratingContainer) => {
-        const stars = ratingContainer.querySelectorAll("span");
-        stars.forEach((star) => {
-          star.addEventListener("click", () => {
-            const value = parseInt(star.getAttribute("data-value"));
-
-            // Highlight stars up to the selected one
-            stars.forEach((s, index) => {
-              if (index < value) {
-                s.classList.add("active");
-              } else {
-                s.classList.remove("active");
-              }
-            });
-
-            // Store the rating value for submission
-            ratingContainer.setAttribute("data-rating", value);
-          });
-        });
-      });
-
-      // Submit Button Functionality
-      const submitButton = document.querySelector(".submit-button");
-      submitButton.addEventListener("click", () => {
-        // Collect all ratings and comments
-        const ratings = [];
-        document
-          .querySelectorAll(".star-rating")
-          .forEach((ratingContainer, index) => {
-            const rating = ratingContainer.getAttribute("data-rating") || "0";
-            const comment = ratingContainer.nextElementSibling.value;
-            ratings.push({
-              specification: index + 1,
-              rating: rating,
-              comment: comment,
-            });
-          });
-
-        console.log("Submitted Ratings:", ratings);
-        alert("Your ratings and comments have been submitted!");
-        window.location.href = "/mechanic_dashboard/current-tasks";
+      document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Review form would be submitted in a real implementation');
+        // No actual submission happens as per requirements
       });
     </script>
   </body>

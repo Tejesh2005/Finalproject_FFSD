@@ -111,20 +111,13 @@
       <div class="vehicle-list">
         <% if (assignedVehicles && assignedVehicles.length > 0) { %>
           <% assignedVehicles.forEach(vehicle => { %>
-            <div
-              class="vehicle-card"
-              onclick="window.location.href='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'"
-            >
-              <img
-                src="<%= vehicle.vehicleImage %>"
-                alt="<%= vehicle.vehicleName %>"
-                class="car-image"
-              />
+            <div class="vehicle-card" onclick="window.location.href='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+              <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
               <h3><%= vehicle.vehicleName %></h3>
               <p><strong>Year:</strong> <%= vehicle.year %></p>
               <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
               <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
-              <button class="more-details">More Details</button>
+              <button class="more-details" onclick="window.location.href='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">More Details</button>
             </div>
           <% }); %>
         <% } else { %>
@@ -134,39 +127,5 @@
     </main>
 
     <%- include('partials/footer') %>
-
-    <script>
-      // Enhanced click handling
-      document.addEventListener("DOMContentLoaded", function () {
-        // Vehicle card click handling
-        document.querySelectorAll(".vehicle-card").forEach((card) => {
-          card.addEventListener("click", function (e) {
-            if (!e.target.closest("button")) {
-              const url = card.getAttribute("onclick").match(/'\/mechanic_dashboard\/vehicle-details\/[^']+'/)[0].replace(/'/g, "");
-              window.location.href = url;
-            }
-          });
-        });
-
-        // Button click handlers
-        document.querySelectorAll(".more-details").forEach((button) => {
-          button.addEventListener("click", function (e) {
-            e.stopPropagation();
-            const card = button.closest(".vehicle-card");
-            const url = card.getAttribute("onclick").match(/'\/mechanic_dashboard\/vehicle-details\/[^']+'/)[0].replace(/'/g, "");
-            window.location.href = url;
-          });
-        });
-
-        // Star Rating Functionality
-        document.querySelectorAll(".star-rating span").forEach((star) => {
-          star.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const rating = star.getAttribute("data-value");
-            alert(`You rated this vehicle ${rating} stars!`);
-          });
-        });
-      });
-    </script>
   </body>
 </html>

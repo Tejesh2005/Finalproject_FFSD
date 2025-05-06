@@ -149,6 +149,29 @@
         color: #666;
         font-size: 18px;
       }
+
+      .star-rating {
+    color: gold;
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+  
+  #reviewModal {
+    z-index: 1000;
+  }
+  
+  #reviewModal > div {
+    border-radius: 10px;
+    max-width: 600px;
+  }
+  
+  #reviewContent p {
+    margin: 10px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+
     </style>
   </head>
   <body>
@@ -175,7 +198,7 @@
                 <div class="car-info">Location: <%= car.sellerId.city %></div>
                 <div class="status-badge status-pending">Pending Inspection</div>
               </div>
-              <button class="view-button">
+              <button class="view-button" onclick="showReview('<%= car._id %>')">
                 View Details
               </button>
             </div>
@@ -187,5 +210,49 @@
         <% } %>
       </div>
     </div>
+
+    <div id="reviewModal" style="display:none; position:fixed; background:rgba(0,0,0,0.5); top:0; left:0; right:0; bottom:0;">
+      <div style="background:white; margin:100px auto; padding:20px; width:60%;">
+        <h2>Mechanic Review</h2>
+        <div id="reviewContent">
+          <p><strong>Rating:</strong> <span id="reviewRating"></span></p>
+          <p><strong>Mechanical:</strong> <span id="reviewMechanical"></span></p>
+          <p><strong>Body Condition:</strong> <span id="reviewBody"></span></p>
+          <p><strong>Recommendations:</strong> <span id="reviewRecommendations"></span></p>
+        </div>
+        <button onclick="closeModal()">Close</button>
+      </div>
+    </div>
+    <script>
+      // Improved showReview function
+      async function showReview(carId) {
+        try {
+          // Show loading state
+          document.getElementById('reviewContent').innerHTML = '<p>Loading review...</p>';
+          document.getElementById('reviewModal').style.display = 'block';
+          
+          const response = await fetch(`/auctionmanager/get-review/${carId}`);
+          const review = await response.json();
+          
+          if (review.conditionRating) {
+            document.getElementById('reviewContent').innerHTML = `
+              <p><strong>Rating:</strong> <span class="star-rating">${'★'.repeat(review.conditionRating)}</span></p>
+              <p><strong>Mechanical Condition:</strong> ${review.mechanicalCondition || 'Not provided'}</p>
+              <p><strong>Body Condition:</strong> ${review.bodyCondition || 'Not provided'}</p>
+              <p><strong>Recommendations:</strong> ${review.recommendations || 'Not provided'}</p>
+            `;
+          } else {
+            document.getElementById('reviewContent').innerHTML = '<p>No review submitted yet</p>';
+          }
+        } catch (error) {
+          console.error('Error loading review:', error);
+          document.getElementById('reviewContent').innerHTML = '<p>Error loading review</p>';
+        }
+      }
+    
+      function closeModal() {
+        document.getElementById('reviewModal').style.display = 'none';
+      }
+    </script>
   </body>
 </html>

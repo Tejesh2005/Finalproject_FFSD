@@ -57,6 +57,14 @@ const auctionRequestSchema = new mongoose.Schema({
   mechanicName: {
     type: String
   },
+
+  mechanicReview: {
+    mechanicalCondition: String,
+    bodyCondition: String,
+    recommendations: String,
+    conditionRating: Number,
+    submittedAt: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now

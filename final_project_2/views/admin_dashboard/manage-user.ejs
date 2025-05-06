@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pending Mechanics - DriveBidRent</title>
+  <title>Manage Users - DriveBidRent</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,12 +34,12 @@
       text-align: center;
     }
     
-    .mechanic-list {
+    .mechanic-list, .buyer-list, .seller-list {
       list-style: none;
       padding: 0;
     }
     
-    .mechanic-item {
+    .mechanic-item, .buyer-item, .seller-item {
       padding: 1rem;
       border-bottom: 1px solid #eee;
       display: flex;
@@ -48,7 +48,7 @@
       transition: all 0.5s ease;
     }
     
-    .mechanic-item.removing {
+    .mechanic-item.removing, .buyer-item.removing, .seller-item.removing {
       opacity: 0;
       transform: translateX(-100px);
       height: 0;
@@ -58,7 +58,7 @@
       overflow: hidden;
     }
     
-    .mechanic-info {
+    .mechanic-info, .buyer-info, .seller-info {
       flex-grow: 1;
     }
     
@@ -124,7 +124,7 @@
       gap: 1rem;
     }
     
-    .no-mechanics {
+    .no-mechanics, .no-buyers, .no-sellers {
       padding: 2rem;
       text-align: center;
       color: #666;
@@ -165,10 +165,11 @@
   <%- include('./partials/navbar') %>
 
   <div class="container">
-    <h1>Pending Mechanic Approvals</h1>
+    <h1>Manage Users</h1>
     
     <div id="alertContainer"></div>
     
+    <!-- Pending Mechanics Section -->
     <div class="card">
       <h2>Mechanics Waiting for Approval</h2>
       
@@ -183,7 +184,7 @@
                 </span>
               </div>
               <div class="action-buttons">
-                <button class="btn btn-blue" onclick="viewDetails('<%= user._id %>', '<%= user.firstName %>', '<%= user.lastName %>', '<%= user.email %>', '<%= user.phone %>', '<%= user.experienceYears || 0 %>', '<%= user.shopName || 'N/A' %>', '<%= user.repairBikes || false %>', '<%= user.repairCars || false %>', '<%= user.doorNo || '' %>', '<%= user.street || '' %>', '<%= user.city || '' %>', '<%= user.state || '' %>', '<%= user.googleAddressLink || '' %>')">
+                <button class="btn btn-blue" onclick="viewDetails('mechanic', '<%= user._id %>', '<%= user.firstName %>', '<%= user.lastName %>', '<%= user.email %>', '<%= user.phone %>', '<%= user.experienceYears || 0 %>', '<%= user.shopName || 'N/A' %>', '<%= user.repairBikes || false %>', '<%= user.repairCars || false %>', '<%= user.doorNo || '' %>', '<%= user.street || '' %>', '<%= user.city || '' %>', '<%= user.state || '' %>', '<%= user.googleAddressLink || '' %>', '<%= user.dateOfBirth || '' %>', '<%= user.drivingLicense || '' %>')">
                   View Details
                 </button>
                 <button class="btn btn-green" onclick="handleAction('<%= user._id %>', 'approve')">Approve</button>
@@ -196,16 +197,92 @@
         <% } %>
       </ul>
     </div>
+
+    <!-- Approved Mechanics Section -->
+    <div class="card">
+      <h2>Manage Mechanics</h2>
+      
+      <ul class="mechanic-list" id="approved-mechanic-list">
+        <% if (mechanics && mechanics.length > 0) { %>
+          <% mechanics.forEach(mechanic => { %>
+            <li class="mechanic-item" id="mechanic-<%= mechanic._id %>">
+              <div class="mechanic-info">
+                <strong><%= mechanic.firstName %> <%= mechanic.lastName %></strong> - <%= mechanic.email %> (Mechanic)
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-blue" onclick="viewDetails('mechanic', '<%= mechanic._id %>', '<%= mechanic.firstName %>', '<%= mechanic.lastName %>', '<%= mechanic.email %>', '<%= mechanic.phone %>', '<%= mechanic.experienceYears || 0 %>', '<%= mechanic.shopName || 'N/A' %>', '<%= mechanic.repairBikes || false %>', '<%= mechanic.repairCars || false %>', '<%= mechanic.doorNo || '' %>', '<%= mechanic.street || '' %>', '<%= mechanic.city || '' %>', '<%= mechanic.state || '' %>', '<%= mechanic.googleAddressLink || '' %>', '<%= mechanic.dateOfBirth || '' %>', '<%= mechanic.drivingLicense || '' %>')">
+                  View Details
+                </button>
+                <button class="btn btn-red" onclick="handleDelete('<%= mechanic._id %>', 'mechanic')">Delete</button>
+              </div>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li class="no-mechanics">No approved mechanics found</li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Buyers Section -->
+    <div class="card">
+      <h2>Manage Buyers</h2>
+      
+      <ul class="buyer-list" id="buyer-list">
+        <% if (buyers && buyers.length > 0) { %>
+          <% buyers.forEach(buyer => { %>
+            <li class="buyer-item" id="buyer-<%= buyer._id %>">
+              <div class="buyer-info">
+                <strong><%= buyer.firstName %> <%= buyer.lastName %></strong> - <%= buyer.email %> (Buyer)
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-blue" onclick="viewDetails('buyer', '<%= buyer._id %>', '<%= buyer.firstName %>', '<%= buyer.lastName %>', '<%= buyer.email %>', '<%= buyer.phone %>', null, null, null, null, '<%= buyer.doorNo || '' %>', '<%= buyer.street || '' %>', '<%= buyer.city || '' %>', '<%= buyer.state || '' %>', null, '<%= buyer.dateOfBirth || '' %>', '<%= buyer.drivingLicense || '' %>')">
+                  View Details
+                </button>
+                <button class="btn btn-red" onclick="handleDelete('<%= buyer._id %>', 'buyer')">Delete</button>
+              </div>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li class="no-buyers">No buyers found</li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Sellers Section -->
+    <div class="card">
+      <h2>Manage Sellers</h2>
+      
+      <ul class="seller-list" id="seller-list">
+        <% if (sellers && sellers.length > 0) { %>
+          <% sellers.forEach(seller => { %>
+            <li class="seller-item" id="seller-<%= seller._id %>">
+              <div class="seller-info">
+                <strong><%= seller.firstName %> <%= seller.lastName %></strong> - <%= seller.email %> (Seller)
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-blue" onclick="viewDetails('seller', '<%= seller._id %>', '<%= seller.firstName %>', '<%= seller.lastName %>', '<%= seller.email %>', '<%= seller.phone %>', null, null, null, null, '<%= seller.doorNo || '' %>', '<%= seller.street || '' %>', '<%= seller.city || '' %>', '<%= seller.state || '' %>', null, '<%= seller.dateOfBirth || '' %>', '<%= seller.drivingLicense || '' %>')">
+                  View Details
+                </button>
+                <button class="btn btn-red" onclick="handleDelete('<%= seller._id %>', 'seller')">Delete</button>
+              </div>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li class="no-sellers">No sellers found</li>
+        <% } %>
+      </ul>
+    </div>
   </div>
 
   <div id="detailsModal" class="modal">
     <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h2>Mechanic Details</h2>
+      <span class="close" id="closeModal">×</span>
+      <h2 id="modalTitle">User Details</h2>
       <div id="modalContent"></div>
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button id="modalApproveBtn" class="btn btn-green">Approve</button>
-        <button id="modalDeclineBtn" class="btn btn-red">Decline</button>
+      <div id="modalActions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button id="modalApproveBtn" class="btn btn-green" style="display: none;">Approve</button>
+        <button id="modalDeclineBtn" class="btn btn-red" style="display: none;">Decline</button>
+        <button id="modalDeleteBtn" class="btn btn-red" style="display: none;">Delete</button>
       </div>
     </div>
   </div>
@@ -215,12 +292,15 @@
   <script>
     const modal = document.getElementById('detailsModal');
     const closeModal = document.getElementById('closeModal');
+    const modalTitle = document.getElementById('modalTitle');
     const modalContent = document.getElementById('modalContent');
     const approveBtn = document.getElementById('modalApproveBtn');
     const declineBtn = document.getElementById('modalDeclineBtn');
-    let currentMechanicId = '';
+    const deleteBtn = document.getElementById('modalDeleteBtn');
+    let currentUserId = '';
+    let currentUserType = '';
 
-    // Modal functions remain the same
+    // Modal functions
     closeModal.onclick = function() {
       modal.style.display = 'none';
     }
@@ -231,50 +311,90 @@
       }
     }
 
-    function viewDetails(id, firstName, lastName, email, phone, experience, shopName, repairBikes, repairCars, doorNo, street, city, state, googleLink) {
-      currentMechanicId = id;
-      const detailsHtml = `
+    function viewDetails(userType, id, firstName, lastName, email, phone, experience, shopName, repairBikes, repairCars, doorNo, street, city, state, googleLink, dateOfBirth, drivingLicense) {
+      currentUserId = id;
+      currentUserType = userType;
+
+      // Set modal title based on user type
+      modalTitle.textContent = `${userType.charAt(0).toUpperCase() + userType.slice(1)} Details`;
+
+      // Prepare details HTML based on user type
+      let detailsHtml = `
         <div class="details-grid">
           <div>
             <p><strong>Name:</strong> ${firstName} ${lastName}</p>
             <p><strong>Email:</strong> ${email}</p>
             <p><strong>Phone:</strong> ${phone}</p>
+      `;
+
+      // Add fields specific to user type
+      if (userType === 'mechanic') {
+        detailsHtml += `
             <p><strong>Experience:</strong> ${experience || 'N/A'} ${experience ? 'years' : ''}</p>
           </div>
           <div>
             <p><strong>Shop Name:</strong> ${shopName || 'N/A'}</p>
             <p><strong>Repairs Bikes:</strong> ${repairBikes === 'true' ? 'Yes' : 'No'}</p>
             <p><strong>Repairs Cars:</strong> ${repairCars === 'true' ? 'Yes' : 'No'}</p>
+        `;
+      } else {
+        detailsHtml += `
+          </div>
+          <div>
+        `;
+      }
+
+      // Common fields for all user types
+      detailsHtml += `
             <p><strong>Address:</strong> ${doorNo || ''}, ${street || ''}, ${city || ''}, ${state || ''}</p>
+            <p><strong>Date of Birth:</strong> ${dateOfBirth ? new Date(dateOfBirth).toLocaleDateString('en-IN') : 'N/A'}</p>
+            <p><strong>Driving License:</strong> ${drivingLicense || 'N/A'}</p>
           </div>
         </div>
-        ${googleLink ? `<p><strong>Location:</strong> <a href="${googleLink}" target="_blank">View on Google Maps</a></p>` : ''}
       `;
+
+      if (userType === 'mechanic' && googleLink) {
+        detailsHtml += `<p><strong>Location:</strong> <a href="${googleLink}" target="_blank">View on Google Maps</a></p>`;
+      }
+
       modalContent.innerHTML = detailsHtml;
-      approveBtn.onclick = () => handleAction(id, 'approve');
-      declineBtn.onclick = () => handleAction(id, 'decline');
+
+      // Show/hide action buttons based on context
+      if (userType === 'mechanic' && document.getElementById(`mechanic-${id}`).parentElement.id === 'mechanic-list') {
+        // Pending mechanic: show Approve and Decline buttons
+        approveBtn.style.display = 'inline-block';
+        declineBtn.style.display = 'inline-block';
+        deleteBtn.style.display = 'none';
+        approveBtn.onclick = () => handleAction(id, 'approve');
+        declineBtn.onclick = () => handleAction(id, 'decline');
+      } else {
+        // Approved mechanic, buyer, or seller: show Delete button
+        approveBtn.style.display = 'none';
+        declineBtn.style.display = 'none';
+        deleteBtn.style.display = 'inline-block';
+        deleteBtn.onclick = () => handleDelete(id, userType);
+      }
+
       modal.style.display = 'block';
     }
 
-    // Updated handleAction function
+    // Handle mechanic approval/decline
     async function handleAction(id, action) {
-      console.log(id, action);
       const url = `/${action === 'approve' ? 'approve-user' : 'decline-user'}/${id}`;
       const confirmMessage = action === 'decline' ? 'Are you sure you want to decline and delete this mechanic?' : null;
-      console.log(url);
+      
       if (action === 'decline' && !confirm(confirmMessage)) {
         return;
       }
-      console.log('before fetch');
+
       try {
-        console.log('inside try');
         const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           }
         });
-        console.log('responce', response);
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -304,12 +424,58 @@
       }
     }
 
+    // Handle deletion for all user types
+    async function handleDelete(id, userType) {
+      const url = userType === 'buyer' ? `/delete-buyer/${id}` : userType === 'seller' ? `/delete-seller/${id}` : `/decline-user/${id}`;
+      const confirmMessage = `Are you sure you want to delete this ${userType}?`;
+      
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          showAlert(result.message, 'success');
+          const item = document.getElementById(`${userType}-${id}`);
+          if (item) {
+            item.classList.add('removing');
+            setTimeout(() => {
+              item.remove();
+              const list = document.getElementById(`${userType}-list`);
+              if (list.children.length === 0) {
+                list.innerHTML = `<li class="no-${userType}s">No ${userType}s found</li>`;
+              }
+            }, 500);
+          }
+          modal.style.display = 'none';
+        } else {
+          showAlert(result.message || `Error deleting ${userType}`, 'danger');
+        }
+      } catch (error) {
+        console.error(`Error deleting ${userType}:`, error);
+        showAlert(`Error deleting ${userType}. Please try again.`, 'danger');
+      }
+    }
+
     function showAlert(message, type = 'success') {
       const alertContainer = document.getElementById('alertContainer');
       const alertDiv = document.createElement('div');
       alertDiv.className = `alert alert-${type}`;
       alertDiv.innerHTML = `
-        <span class="alert-close" onclick="this.parentElement.style.display='none';">&times;</span>
+        <span class="alert-close" onclick="this.parentElement.style.display='none';">×</span>
         ${message}
       `;
       alertContainer.appendChild(alertDiv);

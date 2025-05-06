@@ -4,233 +4,163 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analytics - DriveBidRent</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      body {
+        background-color: #f4f4f4;
+        color: #333333;
+      }
+
+      section {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        color: #ff6b00;
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .analytics-card {
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .analytics-card h2 {
+        color: #ff6b00;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .analytics-card p {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333333;
+      }
+
+      .performance-table {
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 2rem;
+      }
+
+      .performance-table h2 {
+        color: #ff6b00;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+
+      th, td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f9f9f9;
+        color: #333333;
+        font-weight: 600;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .error-message {
+        color: #c62828;
+        text-align: center;
+        margin-top: 1rem;
+      }
+    </style>
   </head>
-  <body
-    style="
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    "
-  >
+  <body>
     <!-- Include the navbar partial -->
-    <%- include('./partials/navbar') %>
+    <%- include('partials/navbar', { currentPage: 'analytics' }) %>
 
     <!-- Analytics Content -->
-    <section style="padding: 2rem; max-width: 1200px; margin: 0 auto">
-      <h1 style="color: #ff6b00; text-align: center">Analytics</h1>
+    <section>
+      <h1>Analytics</h1>
 
-      <!-- Users Analytics -->
-      <div
-        style="
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1.5rem;
-          margin-top: 2rem;
-        "
-      >
-        <div
-          style="
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-          "
-        >
-          <h2 style="color: #ff6b00; font-size: 1.25rem">Total Users</h2>
-          <p style="font-size: 1.5rem; font-weight: bold">1,234</p>
-        </div>
-        <div
-          style="
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-          "
-        >
-          <h2 style="color: #ff6b00; font-size: 1.25rem">Active Users</h2>
-          <p style="font-size: 1.5rem; font-weight: bold">1,000</p>
-        </div>
-        <div
-          style="
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-          "
-        >
-          <h2 style="color: #ff6b00; font-size: 1.25rem">Inactive Users</h2>
-          <p style="font-size: 1.5rem; font-weight: bold">234</p>
-        </div>
-      </div>
+      <% if (error) { %>
+        <p class="error-message"><%= error %></p>
+      <% } %>
 
-      <!-- Rentals and Auctions -->
-      <div
-        style="
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1.5rem;
-          margin-top: 2rem;
-        "
-      >
-        <div
-          style="
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-          "
-        >
-          <h2 style="color: #ff6b00; font-size: 1.25rem">Total Rentals</h2>
-          <p style="font-size: 1.5rem; font-weight: bold">890</p>
+      <!-- Analytics Metrics -->
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h2>Total Users</h2>
+          <p><%= totalUsers.toLocaleString() %></p>
         </div>
-        <div
-          style="
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-          "
-        >
-          <h2 style="color: #ff6b00; font-size: 1.25rem">Auction Listings</h2>
-          <p style="font-size: 1.5rem; font-weight: bold">567</p>
+        <div class="analytics-card">
+          <h2>Total Cars Rented</h2>
+          <p><%= totalCarsRented.toLocaleString() %></p>
+        </div>
+        <div class="analytics-card">
+          <h2>Auction Listings</h2>
+          <p><%= totalAuctionListings.toLocaleString() %></p>
         </div>
       </div>
 
       <!-- Vehicle Sales Performance -->
-      <div
-        style="
-          background-color: #ffffff;
-          padding: 1.5rem;
-          border-radius: 0.5rem;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-          margin-top: 2rem;
-        "
-      >
-        <h2 style="color: #ff6b00">Vehicle Sales Performance</h2>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem">
-          <thead>
-            <tr style="background-color: #f9f9f9">
-              <th
-                style="
-                  padding: 0.75rem;
-                  text-align: left;
-                  border-bottom: 1px solid #ddd;
-                "
-              >
-                Car
-              </th>
-              <th
-                style="
-                  padding: 0.75rem;
-                  text-align: left;
-                  border-bottom: 1px solid #ddd;
-                "
-              >
-                Units Sold
-              </th>
-              <th
-                style="
-                  padding: 0.75rem;
-                  text-align: left;
-                  border-bottom: 1px solid #ddd;
-                "
-              >
-                Total Revenue
-              </th>
-              <th
-                style="
-                  padding: 0.75rem;
-                  text-align: left;
-                  border-bottom: 1px solid #ddd;
-                "
-              >
-                Avg Sale Price
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                Honda Civic
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                50
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹2,50,00,000
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹5,00,000
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                Toyota Innova
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                30
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹2,10,00,000
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹7,00,000
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                Maruti Swift
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                40
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹1,60,00,000
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹4,00,000
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                Hyundai Creta
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                25
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹1,50,00,000
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹6,00,000
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                Kia Seltos
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                20
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹1,40,00,000
-              </td>
-              <td style="padding: 0.75rem; border-bottom: 1px solid #ddd">
-                ₹7,00,000
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="performance-table">
+        <h2>Vehicle Sales Performance</h2>
+        <% if (vehiclePerformance.length > 0) { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Car</th>
+                <th>Units Sold</th>
+                <th>Total Revenue</th>
+                <th>Avg Sale Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% vehiclePerformance.forEach(perf => { %>
+                <tr>
+                  <td><%= perf.vehicleName || 'Unknown' %></td>
+                  <td><%= perf.unitsSold.toLocaleString() %></td>
+                  <td>₹<%= perf.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></td>
+                  <td>₹<%= perf.avgSalePrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>No vehicle sales data available.</p>
+        <% } %>
       </div>
     </section>
 
     <!-- Include the footer partial -->
-    <%- include('./partials/footer') %>
+    <%- include('partials/footer') %>
   </body>
-</html> 
+</html>

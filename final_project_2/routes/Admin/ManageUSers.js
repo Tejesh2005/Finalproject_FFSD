@@ -2,21 +2,37 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 
-// Get pending mechanics
+// Get pending mechanics, approved mechanics, buyers, and sellers
 router.get('/manage-user', async (req, res) => {
   try {
     const pendingMechanics = await User.find({ 
       userType: 'mechanic',
       approved_status: 'No'
     }).lean();
+
+    const approvedMechanics = await User.find({ 
+      userType: 'mechanic',
+      approved_status: 'Yes'
+    }).lean();
+
+    const buyers = await User.find({ 
+      userType: 'buyer'
+    }).lean();
+
+    const sellers = await User.find({ 
+      userType: 'seller'
+    }).lean();
     
     res.render('admin_dashboard/manage-user.ejs', { 
-      users: pendingMechanics
+      users: pendingMechanics,
+      mechanics: approvedMechanics,
+      buyers: buyers,
+      sellers: sellers
     });
   } catch (error) {
-    console.error('Error fetching pending mechanics:', error);
+    console.error('Error fetching users:', error);
     res.status(500).render('error', { 
-      message: 'Server error occurred while fetching pending mechanics' 
+      message: 'Server error occurred while fetching users' 
     });
   }
 });
@@ -49,12 +65,12 @@ router.post('/approve-user/:id', async (req, res) => {
     console.error('Error approving mechanic:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error approving mechanic' + error.message 
+      message: 'Error approving mechanic: ' + error.message 
     });
   }
 });
 
-// Decline mechanic
+// Decline mechanic (also used for deleting approved mechanics)
 router.post('/decline-user/:id', async (req, res) => {
   try {
     const userId = req.params.id;
@@ -73,13 +89,73 @@ router.post('/decline-user/:id', async (req, res) => {
     
     res.json({ 
       success: true, 
-      message: 'Mechanic declined and removed successfully' 
+      message: 'Mechanic deleted successfully' 
     });
   } catch (error) {
-    console.error('Error declining mechanic:', error);
+    console.error('Error deleting mechanic:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error declining mechanic' 
+      message: 'Error deleting mechanic' 
+    });
+  }
+});
+
+// Delete buyer
+router.post('/delete-buyer/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    const deletedUser = await User.findOneAndDelete({ 
+      _id: userId, 
+      userType: 'buyer' 
+    });
+    
+    if (!deletedUser) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Buyer not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Buyer deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Error deleting buyer:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error deleting buyer' 
+    });
+  }
+});
+
+// Delete seller
+router.post('/delete-seller/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    const deletedUser = await User.findOneAndDelete({ 
+      _id: userId, 
+      userType: 'seller' 
+    });
+    
+    if (!deletedUser) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Seller not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Seller deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Error deleting seller:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error deleting seller' 
     });
   }
 });

@@ -174,37 +174,27 @@
     <!-- Main content -->
     <main id="mainContent">
       <!-- Current Tasks Section -->
-      <section class="task-box">
-        <h2 class="task-heading">Current Tasks</h2>
-        <div class="vehicle-list">
-          <!-- Vehicle Card 1 -->
-          <div class="vehicle-card">
-            <img
-              src="https://images.dealer.com/ddc/vehicles/2025/Toyota/Camry/Sedan/color/Celestial%20Silver%20Metallic-1J9-136,136,136-640-en_US.jpg"
-              alt="Toyota Camry"
-              class="car-image"
-            />
-            <h3>Toyota Camry</h3>
-            <p><strong>Owner:</strong> Harmanpreet</p>
-            <p><strong>Mileage:</strong> 45,000 km</p>
-          </div>
-
-          <!-- Vehicle Card 2 -->
-          <div class="vehicle-card">
-            <img
-              src="https://www.fmdt.info/vehicle/honda/2020/civic-lx-32-white.png"
-              alt="Honda Civic"
-              class="car-image"
-            />
-            <h3>Honda Civic</h3>
-            <p><strong>Owner:</strong> Jos</p>
-            <p><strong>Mileage:</strong> 60,000 km</p>
-          </div>
-        </div>
-        <a href="/mechanic_dashboard/current-tasks" class="see-more"
-          >See More</a
-        >
-      </section>
+<section class="task-box">
+  <h2 class="task-heading">Current Tasks</h2>
+  <div class="vehicle-list">
+      <% if (displayedVehicles.length > 0) { %>
+          <% displayedVehicles.forEach(vehicle => { %>
+              <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+                  <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
+                  <h3><%= vehicle.vehicleName %></h3>
+                  <p><strong>Year:</strong> <%= vehicle.year %></p>
+                  <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
+                  <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
+              </div>
+          <% }); %>
+      <% } else { %>
+          <p class="no-tasks">No vehicles currently assigned to you.</p>
+      <% } %>
+  </div>
+  <% if (assignedVehicles.length > 3) { %>
+      <a href="/mechanic_dashboard/current-tasks" class="see-more">See More (<%= assignedVehicles.length - 3 %> more)</a>
+  <% } %>
+</section>
 
       <!-- Past Tasks Section -->
       <section class="task-box">

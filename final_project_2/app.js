@@ -45,6 +45,7 @@ const app = express();
 
 const DriverDashboard = require("./routes/Driver/Dashboard.js"); // Import the DriverDashboard route
 
+const index = require("./routes/Mechanic/index.js");
 const currentTasks = require("./routes/Mechanic/current-tasks.js"); 
 const pendingTasks = require("./routes/Mechanic/pending-tasks.js");
 const pastTasks = require("./routes/Mechanic/past-tasks.js"); // Import the pastTasks route   
@@ -528,19 +529,19 @@ app.get("/seller_dashboard/view-rentals", async (req, res) => {
 app.use("/driver_dashboard", DriverDashboard);
 
 // Mechanic Dashboard routes
-app.get("/mechanic_dashboard/index", async (req, res) => {
-  if (!req.session.userId || req.session.userType !== "mechanic") {
-    return res.redirect("/login");
-  }
+// app.get("/mechanic_dashboard/index", async (req, res) => {
+//   if (!req.session.userId || req.session.userType !== "mechanic") {
+//     return res.redirect("/login");
+//   }
 
-  try {
-    const user = await User.findById(req.session.userId);
-    res.render("mechanic_dashboard/index.ejs", { user });
-  } catch (err) {
-    console.error(err);
-    res.render("mechanic_dashboard/index.ejs", { user: {} });
-  }
-});
+//   try {
+//     const user = await User.findById(req.session.userId);
+//     res.render("mechanic_dashboard/index.ejs", { user });
+//   } catch (err) {
+//     console.error(err);
+//     res.render("mechanic_dashboard/index.ejs", { user: {} });
+//   }
+// });
 
 app.use("/auctionmanager", AuctionManagerHomeRoute);
 app.use("/auctionmanager", Auctionrequests);
@@ -567,6 +568,7 @@ app.use("/mechanic_dashboard",currentTasks); // Mount the currentTasks route
 app.use("/mechanic_dashboard",pendingTasks); // Mount the pendingTasks route
 app.use("/mechanic_dashboard",pastTasks); // Mount the pastTasks route
 app.use("/mechanic_dashboard", profile);
+app.use("/mechanic_dashboard", index);
 app.get("/mechanic_dashboard/mcar-details", (req, res) => {
   res.render("mechanic_dashboard/mcar-details.ejs");
 });

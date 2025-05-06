@@ -70,6 +70,33 @@
         margin-bottom: 0.5rem;
       }
 
+      /* Rental Info (Buyer Details, Dates, Money Received) */
+      .rental-info {
+        margin-top: 1.5rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .rental-info h3 {
+        color: #333;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+      }
+
+      .rental-info p {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .rental-info p strong {
+        color: #333;
+      }
+
       /* Details Section */
       .details-section {
         flex: 1;
@@ -140,6 +167,57 @@
         background-color: #ff8c3f;
       }
 
+      /* Popup Styling */
+      .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .popup-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .popup-content h2 {
+        color: #ff6b00;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .popup-content p {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+      }
+
+      .popup-content button {
+        background-color: #ff6b00;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.3rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.3s ease;
+      }
+
+      .popup-content button:hover {
+        background-color: #ff8c3f;
+      }
+
       @media (max-width: 768px) {
         .rental-details-container {
           flex-direction: column;
@@ -150,6 +228,15 @@
   <body>
     <!-- Include Navbar Partial -->
     <%- include('partials/navbar', { currentPage: 'view-rentals' }) %>
+
+    <!-- Popup for unavailable rental -->
+    <div class="popup-overlay" id="rentalStatusPopup">
+      <div class="popup-content">
+        <h2>Rental Status</h2>
+        <p>This car has been taken by someone for rental.</p>
+        <button onclick="closePopup()">Close</button>
+      </div>
+    </div>
 
     <!-- Rental Details Content -->
     <section class="rental-details-container">
@@ -170,6 +257,33 @@
             <h3><%= rental.vehicleName %></h3>
             <p class="cost-info">Cost per day: ₹<%= rental.costPerDay %></p>
             <p class="location-info">Location: <%= rental.location || 'Location not specified' %></p>
+          </div>
+
+          <!-- New Rental Info Section -->
+          <div class="rental-info">
+            <h3>Rental Information</h3>
+            <% if (rental.status === 'unavailable' && rental.buyerId) { %>
+              <p>
+                <strong>Renter Name:</strong> <%= rental.buyerId.firstName %> <%= rental.buyerId.lastName %>
+              </p>
+              <p>
+                <strong>Email:</strong> <%= rental.buyerId.email %>
+              </p>
+              <p>
+                <strong>Phone:</strong> <%= rental.buyerId.phone %>
+              </p>
+              <p>
+                <strong>Pickup Date:</strong> <%= formattedPickupDate %>
+              </p>
+              <p>
+                <strong>Drop Date:</strong> <%= formattedDropDate %>
+              </p>
+              <p>
+                <strong>Money Received:</strong> ₹<%= moneyReceived !== null ? moneyReceived.toFixed(2) : 'Not specified' %>
+              </p>
+            <% } else { %>
+              <p>No rental information available.</p>
+            <% } %>
           </div>
         </div>
         
@@ -239,5 +353,22 @@
 
     <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
+
+    <script>
+      // Show popup if rental is unavailable
+      document.addEventListener('DOMContentLoaded', function() {
+        const rentalStatus = "<%= rental ? rental.status : '' %>";
+        const popup = document.getElementById('rentalStatusPopup');
+
+        if (rentalStatus === 'unavailable') {
+          popup.style.display = 'flex';
+        }
+      });
+
+      // Close popup function
+      function closePopup() {
+        document.getElementById('rentalStatusPopup').style.display = 'none';
+      }
+    </script>
   </body>
 </html>

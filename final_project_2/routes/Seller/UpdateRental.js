@@ -29,11 +29,16 @@ router.get('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
       return res.redirect('/seller_dashboard/view-rentals');
     }
     
+    // Check if current date is before return date
+    const currentDate = new Date();
+    const isBeforeReturnDate = rental.dropDate && currentDate < new Date(rental.dropDate);
+    
     res.render('seller_dashboard/update-rental', {
       user,
       rental,
       error: null,
-      success: null
+      success: null,
+      isBeforeReturnDate
     });
   } catch (err) {
     console.error('Error:', err);
@@ -41,7 +46,8 @@ router.get('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
       user: {},
       rental: null,
       error: 'Failed to load rental data',
-      success: null
+      success: null,
+      isBeforeReturnDate: false
     });
   }
 });
@@ -64,6 +70,21 @@ router.post('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
       return res.redirect('/seller_dashboard/view-rentals');
     }
     
+    // Check if current date is before return date
+    const currentDate = new Date();
+    const isBeforeReturnDate = rental.dropDate && currentDate < new Date(rental.dropDate);
+    
+    // If changing from unavailable to available when before return date, show error
+    if (rental.status === 'unavailable' && req.body['status'] === 'available' && isBeforeReturnDate) {
+      return res.render('seller_dashboard/update-rental', {
+        user,
+        rental,
+        error: 'Cannot change status from unavailable to available before the return date',
+        success: null,
+        isBeforeReturnDate
+      });
+    }
+    
     // Update fields
     rental.costPerDay = parseFloat(req.body['rental-cost']);
     rental.driverAvailable = req.body['driver-available'] === 'yes';
@@ -81,7 +102,8 @@ router.post('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
       user,
       rental,
       success: 'Rental updated successfully!',
-      error: null
+      error: null,
+      isBeforeReturnDate
     });
   } catch (err) {
     console.error('Error:', err);
@@ -89,7 +111,8 @@ router.post('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
       user: {},
       rental: null,
       error: 'Failed to update rental',
-      success: null
+      success: null,
+      isBeforeReturnDate: false
     });
   }
 });

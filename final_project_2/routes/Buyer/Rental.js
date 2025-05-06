@@ -21,7 +21,7 @@ router.post('/rental', async (req, res) => {
   try {
     console.log('POST /rental - Received request:', req.body);
 
-    const { rentalCarId, buyerId, sellerId, pickupDate, dropDate, totalCost } = req.body;
+    const { rentalCarId, buyerId, sellerId, pickupDate, dropDate, totalCost, includeDriver } = req.body;
 
     // Validate required fields
     if (!rentalCarId || !buyerId || !sellerId || !pickupDate || !dropDate || !totalCost) {
@@ -37,13 +37,14 @@ router.post('/rental', async (req, res) => {
     }
 
     // Update RentalRequest with dates, buyerId, and status
-    console.log('Updating RentalRequest with:', { buyerId, pickupDate, dropDate });
+    console.log('Updating RentalRequest with:', { buyerId, pickupDate, dropDate, includeDriver });
     const updatedRentalRequest = await RentalRequest.findByIdAndUpdate(
       rentalCarId,
       {
         buyerId,
         pickupDate,
         dropDate,
+        includeDriver: includeDriver || false, // Set default value if not provided
         status: 'unavailable'
       },
       { new: true }
@@ -51,12 +52,13 @@ router.post('/rental', async (req, res) => {
     console.log('Updated RentalRequest:', updatedRentalRequest);
 
     // Create a new RentalCost entry
-    console.log('Creating RentalCost with:', { rentalCarId, buyerId, sellerId, totalCost });
+    console.log('Creating RentalCost with:', { rentalCarId, buyerId, sellerId, totalCost, includeDriver });
     const rentalCost = new RentalCost({
       rentalCarId,
       buyerId,
       sellerId,
-      totalCost
+      totalCost,
+      includeDriver: includeDriver || false // Set default value if not provided
     });
 
     const savedRentalCost = await rentalCost.save();

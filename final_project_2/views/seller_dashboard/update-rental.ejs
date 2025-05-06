@@ -134,6 +134,13 @@
         font-size: 1rem;
         background-color: white;
       }
+      
+      .note {
+        font-size: 0.9rem;
+        color: #666;
+        font-style: italic;
+        margin-top: 0.5rem;
+      }
     </style>
   </head>
   <body>
@@ -157,7 +164,7 @@
       <% } %>
       
       <% if (rental) { %>
-        <form class="update-form" action="/seller_dashboard/update-rental/<%= rental._id %>" method="POST">
+        <form class="update-form" action="/seller_dashboard/update-rental/<%= rental._id %>" method="POST" id="rental-form">
           <div class="form-group">
             <label class="form-label">Cost per day (₹)</label>
             <input type="number" class="form-control" name="rental-cost" 
@@ -188,14 +195,25 @@
 
           <div class="form-group">
             <label class="form-label">Status</label>
-            <select class="select-dropdown" name="status" required>
+            <select class="select-dropdown" name="status" id="status-dropdown" required>
               <option value="available" <%= rental.status === 'available' ? 'selected' : '' %>>Available</option>
               <option value="unavailable" <%= rental.status === 'unavailable' ? 'selected' : '' %>>Unavailable</option>
             </select>
+            
+            <% if (isBeforeReturnDate && rental.status === 'unavailable') { %>
+              <p class="note">
+                Note: This rental cannot be changed from unavailable to available before the return date: 
+                <%= new Date(rental.dropDate).toLocaleDateString() %>
+              </p>
+            <% } %>
           </div>
           
           <button type="submit" class="btn">Update Rental</button>
           <a href="/seller_dashboard/view-rentals" class="back-btn">Back to Rentals</a>
+          
+          <!-- Store original status for JavaScript validation -->
+          <input type="hidden" id="original-status" value="<%= rental.status %>">
+          <input type="hidden" id="is-before-return-date" value="<%= isBeforeReturnDate %>">
         </form>
       <% } else { %>
         <div class="error-message">
@@ -214,6 +232,10 @@
         const driverYes = document.querySelector('input[value="yes"]');
         const driverNo = document.querySelector('input[value="no"]');
         const driverRateContainer = document.getElementById('driver-rate-container');
+        const statusDropdown = document.getElementById('status-dropdown');
+        const originalStatus = document.getElementById('original-status').value;
+        const isBeforeReturnDate = document.getElementById('is-before-return-date').value === 'true';
+        const rentalForm = document.getElementById('rental-form');
         
         function toggleDriverRate() {
           driverRateContainer.style.display = driverYes.checked ? 'block' : 'none';
@@ -229,6 +251,17 @@
         
         // Initialize on page load
         toggleDriverRate();
+        
+        // Validate form submission - prevent changing from unavailable to available before return date
+        rentalForm.addEventListener('submit', function(event) {
+          if (originalStatus === 'unavailable' && 
+              statusDropdown.value === 'available' && 
+              isBeforeReturnDate) {
+            event.preventDefault();
+            alert('Cannot change status from unavailable to available before the return date');
+            statusDropdown.value = 'unavailable';
+          }
+        });
       });
     </script>
   </body>

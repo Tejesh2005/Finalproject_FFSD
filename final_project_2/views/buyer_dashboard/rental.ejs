@@ -105,9 +105,25 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+        .driver-option {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .driver-option label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
         #totalCost {
             margin: 1rem 0;
             font-weight: 500;
+        }
+        .cost-breakdown {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
         }
         .success-message {
             text-align: center;
@@ -198,8 +214,18 @@
                 
                 <label for="dropDate">Drop Date:</label>
                 <input type="date" id="dropDate" onchange="calculateCost()">
+                
+                <% if (driverAvailable) { %>
+                <div class="driver-option">
+                    <label for="includeDriver">
+                        <input type="checkbox" id="includeDriver" onchange="calculateCost()">
+                        Include Driver (₹<%= driverRate %>/day)
+                    </label>
+                </div>
+                <% } %>
             </div>
             <p id="totalCost">Total Cost: ₹0</p>
+            <div id="costBreakdown" class="cost-breakdown"></div>
             <div class="placebid-btn" onclick="submitRental()">Rent Now</div>
         </div>
     </div>
@@ -211,8 +237,15 @@
         const rentalCarId = '<%= rentalId %>';
         const buyerId = '<%= user._id %>';
         const sellerId = '<%= seller._id %>';
+        <% if (driverAvailable) { %>
+        const driverRate = <%= driverRate %>;
+        const driverAvailable = true;
+        <% } else { %>
+        const driverAvailable = false;
+        const driverRate = 0;
+        <% } %>
 
-        console.log('Initial Data:', { costPerDay, rentalCarId, buyerId, sellerId });
+        console.log('Initial Data:', { costPerDay, rentalCarId, buyerId, sellerId, driverAvailable, driverRate });
 
         function openPopup() {
             console.log('Opening popup');
@@ -227,8 +260,18 @@
                     
                     <label for="dropDate">Drop Date:</label>
                     <input type="date" id="dropDate" onchange="calculateCost()">
+                    
+                    ${driverAvailable ? `
+                    <div class="driver-option">
+                        <label for="includeDriver">
+                            <input type="checkbox" id="includeDriver" onchange="calculateCost()">
+                            Include Driver (₹${driverRate}/day)
+                        </label>
+                    </div>
+                    ` : ''}
                 </div>
                 <p id="totalCost">Total Cost: ₹0</p>
+                <div id="costBreakdown" class="cost-breakdown"></div>
                 <div class="placebid-btn" onclick="submitRental()">Rent Now</div>
             `;
         }
@@ -242,17 +285,34 @@
         function calculateCost() {
             const pickupDate = new Date(document.getElementById('pickupDate').value);
             const dropDate = new Date(document.getElementById('dropDate').value);
+            const includeDriver = driverAvailable && document.getElementById('includeDriver')?.checked;
 
-            console.log('Calculating cost:', { pickupDate, dropDate });
+            console.log('Calculating cost:', { pickupDate, dropDate, includeDriver });
 
             if (pickupDate && dropDate && dropDate > pickupDate) {
                 const timeDiff = dropDate - pickupDate;
                 const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                const totalCost = days * costPerDay;
+                const vehicleCost = days * costPerDay;
+                const driverCost = includeDriver ? days * driverRate : 0;
+                const totalCost = vehicleCost + driverCost;
+                
                 document.getElementById('totalCost').textContent = `Total Cost: ₹${totalCost}`;
-                console.log('Calculated cost:', totalCost);
+                
+                // Show cost breakdown
+                const costBreakdownEl = document.getElementById('costBreakdown');
+                if (includeDriver) {
+                    costBreakdownEl.innerHTML = `
+                        Vehicle: ₹${vehicleCost} (₹${costPerDay} × ${days} days)<br>
+                        Driver: ₹${driverCost} (₹${driverRate} × ${days} days)
+                    `;
+                } else {
+                    costBreakdownEl.innerHTML = `Vehicle: ₹${vehicleCost} (₹${costPerDay} × ${days} days)`;
+                }
+                
+                console.log('Calculated cost:', { days, vehicleCost, driverCost, totalCost });
             } else {
                 document.getElementById('totalCost').textContent = 'Total Cost: ₹0';
+                document.getElementById('costBreakdown').innerHTML = '';
                 console.log('Invalid dates for cost calculation');
             }
         }
@@ -260,8 +320,9 @@
         async function submitRental() {
             const pickupDate = document.getElementById('pickupDate').value;
             const dropDate = document.getElementById('dropDate').value;
+            const includeDriver = driverAvailable && document.getElementById('includeDriver')?.checked;
 
-            console.log('Submitting rental:', { pickupDate, dropDate });
+            console.log('Submitting rental:', { pickupDate, dropDate, includeDriver });
 
             if (!pickupDate || !dropDate) {
                 console.log('Validation failed: Missing dates');
@@ -286,7 +347,8 @@
                 sellerId,
                 pickupDate,
                 dropDate,
-                totalCost
+                totalCost,
+                includeDriver
             };
 
             console.log('Sending rental data to server:', rentalData);

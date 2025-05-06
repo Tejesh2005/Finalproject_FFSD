@@ -54,6 +54,16 @@ const RentalRequestSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  buyerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  pickupDate: {
+    type: Date
+  },
+  dropDate: {
+    type: Date
+  },
   status: {
     type: String,
     enum: ['available', 'unavailable'],

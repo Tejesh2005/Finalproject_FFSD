@@ -112,8 +112,9 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         });
       }
 
-      // Pass the rental data directly to the template
+      // Pass the rental data directly to the template, including the rentalId
       return res.render('buyer_dashboard/rental.ejs', {
+        rentalId: rental._id, // Pass the _id as rentalId
         vehicleName: rental.vehicleName,
         vehicleImage: rental.vehicleImage,
         year: rental.year,
@@ -125,7 +126,7 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         costPerDay: rental.costPerDay,
         driverAvailable: rental.driverAvailable,
         driverRate: rental.driverRate,
-        sellerId: rental.sellerId,
+        seller: rental.sellerId, // Rename sellerId to seller for clarity
         user
       });
     }

@@ -38,4 +38,25 @@ router.get('/get-review/:id', async (req, res) => {
   }
 });
 
+// Update car status
+router.post('/update-status/:id',  async (req, res) => {
+  try {
+    const { status } = req.body;
+    const car = await AuctionRequest.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!car) {
+      return res.status(404).json({ error: 'Car not found' });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error updating car status:', err);
+    res.status(500).json({ error: 'Failed to update car status' });
+  }
+});
+
 module.exports = router;

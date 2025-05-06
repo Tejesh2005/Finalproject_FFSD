@@ -47,7 +47,7 @@
       .detail-value {
         flex: 1;
       }
-      .logout-btn {
+      .logout-btn, .update-btn {
         background-color: #ff6b00;
         color: white;
         border: none;
@@ -55,14 +55,57 @@
         border-radius: 0.5rem;
         cursor: pointer;
         font-size: 1rem;
-        margin-top: 2rem;
+        margin-top: 1rem;
         display: block;
         width: 100%;
         text-align: center;
         transition: background-color 0.3s;
       }
-      .logout-btn:hover {
+      .logout-btn:hover, .update-btn:hover {
         background-color: #e05d00;
+      }
+      .password-update-container {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        background-color: #f9f9f9;
+      }
+      .password-update-container h2 {
+        color: #ff6b00;
+        margin-top: 0;
+      }
+      .input-group {
+        margin-bottom: 1rem;
+      }
+      .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #555;
+      }
+      .input-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+      }
+      .alert {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.25rem;
+        display: none;
+      }
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
       }
     </style>
   </head>
@@ -74,24 +117,24 @@
     <div class="profile-container">
       <div class="profile-header">
         <div class="profile-info">
-          <h1>Admin User</h1>
+          <h1><%= admin.firstName %> <%= admin.lastName %></h1>
           <p>Administrator</p>
-          <p>admin@drivebidrent.com</p>
+          <p><%= admin.email %></p>
         </div>
       </div>
 
       <div class="profile-details">
         <div class="detail-row">
           <div class="detail-label">Full Name:</div>
-          <div class="detail-value">Admin User</div>
+          <div class="detail-value"><%= admin.firstName %> <%= admin.lastName %></div>
         </div>
         <div class="detail-row">
           <div class="detail-label">Email:</div>
-          <div class="detail-value">admin@drivebidrent.com</div>
+          <div class="detail-value"><%= admin.email %></div>
         </div>
         <div class="detail-row">
           <div class="detail-label">Phone:</div>
-          <div class="detail-value">+91 9876543210</div>
+          <div class="detail-value"><%= admin.phone %></div>
         </div>
         <div class="detail-row">
           <div class="detail-label">Admin Since:</div>
@@ -102,6 +145,28 @@
           <div class="detail-value">Full administrative access</div>
         </div>
 
+        <!-- Password Update Section -->
+        <div class="password-update-container">
+          <h2>Update Password</h2>
+          <div id="passwordAlert" class="alert"></div>
+          
+          <form id="passwordUpdateForm">
+            <div class="input-group">
+              <label for="currentPassword">Current Password</label>
+              <input type="password" id="currentPassword" name="currentPassword" required>
+            </div>
+            <div class="input-group">
+              <label for="newPassword">New Password</label>
+              <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            <div class="input-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <button type="submit" class="update-btn">Update Password</button>
+          </form>
+        </div>
+
         <button class="logout-btn" onclick="logout()">Logout</button>
       </div>
     </div>
@@ -110,11 +175,62 @@
     <%- include('./partials/footer') %>
 
     <script>
+      // Password update form submission
+      document.getElementById('passwordUpdateForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Client-side validation
+        if (newPassword !== confirmPassword) {
+          showAlert('New passwords do not match', 'danger');
+          return;
+        }
+        
+        try {
+          const response = await fetch('/update-admin-password', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            showAlert(data.message, 'success');
+            document.getElementById('passwordUpdateForm').reset();
+          } else {
+            showAlert(data.message, 'danger');
+          }
+        } catch (error) {
+          showAlert('An error occurred. Please try again.', 'danger');
+          console.error('Error:', error);
+        }
+      });
+      
+      // Show alert function
+      function showAlert(message, type) {
+        const alertDiv = document.getElementById('passwordAlert');
+        alertDiv.textContent = message;
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.style.display = 'block';
+        
+        // Hide alert after 5 seconds
+        setTimeout(() => {
+          alertDiv.style.display = 'none';
+        }, 5000);
+      }
+
+      // Logout function
       function logout() {
         // Add your logout functionality here
         alert("You have been logged out successfully!");
         // Typically you would redirect to login page:
-        // window.location.href = './login.html';
+         window.location.href = '/';
       }
     </script>
   </body>

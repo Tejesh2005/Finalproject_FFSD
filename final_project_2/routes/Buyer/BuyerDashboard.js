@@ -114,6 +114,9 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
       if (page === 'driver' && req.query.id) {
         // Your existing driver logic
       }
+      if(page==='about'){
+        return res.render('buyer_dashboard/Aboutus.ejs', { user });
+      }
 
       return res.render(`buyer_dashboard/${page}.ejs`, { user });
     }

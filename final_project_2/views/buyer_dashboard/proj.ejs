@@ -157,10 +157,14 @@
             right: 1rem;
             background: none;
             border: none;
-            color: #ff6b00;
+            color: #ccc;
             font-size: 1.5rem;
             cursor: pointer;
             transition: color 0.3s ease;
+        }
+
+        .heart-btn[data-liked="true"] {
+            color: #ff6b00;
         }
 
         .car-card img {
@@ -314,7 +318,7 @@
         <div class="card-container">
             <div class="car-card">
                 <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
+                <button class="heart-btn" data-liked="false" data-auction-id="1">❤</button>
                 <img src="https://i.ibb.co/T9F2sFp/Screenshot-2025-02-20-002536.png" alt="Kia Sonet HTK plus">
                 <h3>Kia Sonet HTK Plus</h3>
                 <p class="auction-date">Auction on: <strong>25/02/2025</strong></p>
@@ -332,8 +336,8 @@
 
             <div class="car-card">
                 <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://i.ibb.co/DDmhB48D/Screenshot-2025-02-23-153301.png" alt="Maruti Zen 2007 model">
+                <button class="heart-btn" data-liked="false" data-auction-id="2">❤</button>
+                <img src="https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png" alt="Maruti Zen 2007 model">
                 <h3>Maruti Zen Estilo Lxi</h3>
                 <p class="auction-date">Auction on: <strong>07/03/2025</strong></p>
                 <div class="car-details">
@@ -350,7 +354,7 @@
 
             <div class="car-card">
                 <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
+                <button class="heart-btn" data-liked="false" data-auction-id="3">❤</button>
                 <img src="https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png" alt="Skoda">
                 <h3>Skoda Rapid</h3>
                 <p class="auction-date">Auction on: <strong>10/03/2025</strong></p>
@@ -382,7 +386,7 @@
                         <% if (new Date() - rental.createdAt < 7 * 24 * 60 * 60 * 1000) { %>
                             <span class="new-tag">New</span>
                         <% } %>
-                        <button class="heart-btn" data-liked="false">❤</button>
+                        <button class="heart-btn" data-liked="false" data-rental-id="<%= rental._id %>">❤</button>
                         <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>">
                         <h3><%= rental.vehicleName %></h3>
                         <p class="rental-cost">Cost/km: <strong>₹<%= rental.costPerKm %></strong></p>
@@ -474,53 +478,87 @@
 
     <script>
         // Heart button functionality
-        document.querySelectorAll('.heart-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const isLiked = button.getAttribute('data-liked') === 'true';
-                button.setAttribute('data-liked', !isLiked);
-                button.style.color = !isLiked ? '#ff6b00' : '#ccc';
-                
-                const rentalId = button.closest('.car-card').querySelector('a[href*="id="]').href.split('id=')[1];
-                fetch('/api/wishlist', {
-                    method: isLiked ? 'DELETE' : 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ rentalId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        button.setAttribute('data-liked', isLiked);
-                        button.style.color = isLiked ? '#ff6b00' : '#ccc';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    button.setAttribute('data-liked', isLiked);
-                    button.style.color = isLiked ? '#ff6b00' : '#ccc';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize wishlist status
+            initializeWishlistStatus();
+            
+            // Add event listeners to heart buttons
+            document.querySelectorAll('.heart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const isLiked = this.getAttribute('data-liked') === 'true';
+                    const rentalId = this.getAttribute('data-rental-id');
+                    const auctionId = this.getAttribute('data-auction-id');
+                    
+                    // Toggle liked state
+                    this.setAttribute('data-liked', !isLiked);
+                    this.style.color = !isLiked ? '#ff6b00' : '#ccc';
+                    
+                    // Send request to server
+                    fetch('/api/wishlist', {
+                        method: isLiked ? 'DELETE' : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            rentalId: rentalId || null,
+                            auctionId: auctionId || null,
+                            type: rentalId ? 'rental' : 'auction'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            // If operation failed, revert the button state
+                            this.setAttribute('data-liked', isLiked);
+                            this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                            console.error('Wishlist operation failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        // If there was an error, revert the button state
+                        this.setAttribute('data-liked', isLiked);
+                        this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                        console.error('Error:', error);
+                    });
                 });
             });
         });
 
         // Initialize heart buttons based on wishlist
-        document.addEventListener('DOMContentLoaded', () => {
+        function initializeWishlistStatus() {
             fetch('/api/wishlist')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.wishlist) {
-                        document.querySelectorAll('.car-card').forEach(card => {
-                            const rentalId = card.querySelector('a[href*="id="]').href.split('id=')[1];
-                            const heartBtn = card.querySelector('.heart-btn');
-                            if (data.wishlist.includes(rentalId)) {
-                                heartBtn.setAttribute('data-liked', 'true');
-                                heartBtn.style.color = '#ff6b00';
+                    if (data.success) {
+                        // Set heart buttons for rentals
+                        document.querySelectorAll('.heart-btn[data-rental-id]').forEach(button => {
+                            const rentalId = button.getAttribute('data-rental-id');
+                            if (data.wishlist.rentals && data.wishlist.rentals.includes(rentalId)) {
+                                button.setAttribute('data-liked', 'true');
+                                button.style.color = '#ff6b00';
+                            } else {
+                                button.setAttribute('data-liked', 'false');
+                                button.style.color = '#ccc';
+                            }
+                        });
+                        
+                        // Set heart buttons for auctions
+                        document.querySelectorAll('.heart-btn[data-auction-id]').forEach(button => {
+                            const auctionId = button.getAttribute('data-auction-id');
+                            if (data.wishlist.auctions && data.wishlist.auctions.includes(auctionId)) {
+                                button.setAttribute('data-liked', 'true');
+                                button.style.color = '#ff6b00';
+                            } else {
+                                button.setAttribute('data-liked', 'false');
+                                button.style.color = '#ccc';
                             }
                         });
                     }
                 })
-                .catch(error => console.error('Error loading wishlist:', error));
-        });
+                .catch(error => {
+                    console.error('Error loading wishlist:', error);
+                });
+        }
     </script>
 </body>
-</html> 
+</html>

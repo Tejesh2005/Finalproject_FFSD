@@ -126,10 +126,14 @@
             right: 1rem;
             background: none;
             border: none;
-            color: #ff6b00;
+            color: #ccc;
             font-size: 1.5rem;
             cursor: pointer;
             transition: color 0.3s ease;
+        }
+
+        .heart-btn[data-liked="true"] {
+            color: #ff6b00;
         }
 
         .car-card img {
@@ -305,7 +309,7 @@
                         <% if (new Date() - rental.createdAt < 7 * 24 * 60 * 60 * 1000) { %>
                             <span class="new-tag">New</span>
                         <% } %>
-                        <button class="heart-btn" data-liked="false">❤</button>
+                        <button class="heart-btn" data-liked="false" data-rental-id="<%= rental._id %>">❤</button>
                         <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>">
                         <h3><%= rental.vehicleName %></h3>
                         <p class="rental-cost">Cost/km: <strong>₹<%= rental.costPerKm %></strong></p>
@@ -339,54 +343,73 @@
 
     <script>
         // Heart button functionality
-        document.querySelectorAll('.heart-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const isLiked = this.getAttribute('data-liked') === 'true';
-                this.setAttribute('data-liked', !isLiked);
-                this.style.color = !isLiked ? '#ff6b00' : '#ccc';
-                
-                const rentalId = this.closest('.car-card').querySelector('a[href*="id="]').href.split('id=')[1];
-                
-                fetch('/api/wishlist', {
-                    method: isLiked ? 'DELETE' : 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ rentalId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize wishlist status
+            initializeWishlistStatus();
+            
+            // Add event listeners to heart buttons
+            document.querySelectorAll('.heart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const isLiked = this.getAttribute('data-liked') === 'true';
+                    const rentalId = this.getAttribute('data-rental-id');
+                    
+                    // Toggle liked state
+                    this.setAttribute('data-liked', !isLiked);
+                    this.style.color = !isLiked ? '#ff6b00' : '#ccc';
+                    
+                    // Send request to server
+                    fetch('/api/wishlist', {
+                        method: isLiked ? 'DELETE' : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            rentalId: rentalId,
+                            type: 'rental'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            // If operation failed, revert the button state
+                            this.setAttribute('data-liked', isLiked);
+                            this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                            console.error('Wishlist operation failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        // If there was an error, revert the button state
                         this.setAttribute('data-liked', isLiked);
                         this.style.color = isLiked ? '#ff6b00' : '#ccc';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    this.setAttribute('data-liked', isLiked);
-                    this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                        console.error('Error:', error);
+                    });
                 });
             });
         });
 
         // Initialize heart buttons based on wishlist
-        document.addEventListener('DOMContentLoaded', () => {
+        function initializeWishlistStatus() {
             fetch('/api/wishlist')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.wishlist) {
-                        document.querySelectorAll('.car-card').forEach(card => {
-                            const rentalId = card.querySelector('a[href*="id="]').href.split('id=')[1];
-                            const heartBtn = card.querySelector('.heart-btn');
-                            if (data.wishlist.includes(rentalId)) {
-                                heartBtn.setAttribute('data-liked', 'true');
-                                heartBtn.style.color = '#ff6b00';
+                    if (data.success) {
+                        // Set heart buttons for rentals
+                        document.querySelectorAll('.heart-btn[data-rental-id]').forEach(button => {
+                            const rentalId = button.getAttribute('data-rental-id');
+                            if (data.wishlist.rentals && data.wishlist.rentals.includes(rentalId)) {
+                                button.setAttribute('data-liked', 'true');
+                                button.style.color = '#ff6b00';
+                            } else {
+                                button.setAttribute('data-liked', 'false');
+                                button.style.color = '#ccc';
                             }
                         });
                     }
                 })
-                .catch(error => console.error('Error loading wishlist:', error));
-        });
+                .catch(error => {
+                    console.error('Error loading wishlist:', error);
+                });
+        }
     </script>
 </body>
 </html>

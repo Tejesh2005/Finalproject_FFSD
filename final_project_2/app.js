@@ -45,6 +45,10 @@ const app = express();
 
 const DriverDashboard = require("./routes/Driver/Dashboard.js"); // Import the DriverDashboard route
 
+const currentTasks = require("./routes/Mechanic/current-tasks.js"); 
+const pendingTasks = require("./routes/Mechanic/pending-tasks.js");
+const pastTasks = require("./routes/Mechanic/past-tasks.js"); // Import the pastTasks route   
+const profile = require("./routes/Mechanic/profile.js"); // Import the profile route
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb+srv://Jeevan:Bunny123@cluster0.2jrrwqn.mongodb.net/DriveBidRent")
@@ -559,24 +563,10 @@ app.listen(PORT, () => {
 
 module.exports = app;
 
-app.get("/mechanic_dashboard/current-tasks", (req, res) => {
-  res.render("mechanic_dashboard/current-tasks.ejs");
-});
-app.get("/mechanic_dashboard/pending-tasks", (req, res) => {
-  res.render("mechanic_dashboard/pending-tasks.ejs");
-});
-app.get("/mechanic_dashboard/past-tasks", (req, res) => {
-  res.render("mechanic_dashboard/past-tasks.ejs");
-});
-app.get("/mechanic_dashboard/profile", (req, res) => {
-  res.render("mechanic_dashboard/profile.ejs");
-});
+app.use("/mechanic_dashboard",currentTasks); // Mount the currentTasks route
+app.use("/mechanic_dashboard",pendingTasks); // Mount the pendingTasks route
+app.use("/mechanic_dashboard",pastTasks); // Mount the pastTasks route
+app.use("/mechanic_dashboard", profile);
 app.get("/mechanic_dashboard/mcar-details", (req, res) => {
   res.render("mechanic_dashboard/mcar-details.ejs");
-});
-app.get("/mechanic_dashboard/update-profile", (req, res) => {
-  res.render("mechanic_dashboard/update-profile.ejs");
-});
-app.get("/mechanic_dashboard/update-password", (req, res) => {
-  res.render("mechanic_dashboard/update-password.ejs");
 });

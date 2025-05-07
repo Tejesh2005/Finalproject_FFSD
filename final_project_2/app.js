@@ -52,6 +52,25 @@ const pastTasks = require("./routes/Mechanic/past-tasks.js"); // Import the past
 const profile = require("./routes/Mechanic/profile.js"); // Import the profile route
 const mcardetails = require("./routes/Mechanic/mcardetails.js")
 
+// Authentication middleware
+const isAuthenticated = (req, res, next) => {
+  if (req.session.userId) {
+    return next();
+  }
+  res.redirect('/login');
+};
+
+// Role-specific middleware for auction manager
+const isAuctionManager = (req, res, next) => {
+  if (req.session.userId && req.session.userType === 'auction_manager') {
+    return next();
+  }
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+  // If user is logged in but not an auction manager
+  return res.status(403).send('Access denied. This area is only for auction managers.');
+};
 
 // Connect to MongoDB
 mongoose
@@ -378,6 +397,9 @@ app.post("/login", async (req, res) => {
     }else if (req.session.userType === "admin") {
       res.redirect("/admin");
     }
+    else if (req.session.userType === "auction_manager") {
+      res.redirect("/auctionmanager/home1");
+    }
   } catch (err) {
     console.error(err);
     res.render("login", { error: "An error occurred during login" });
@@ -531,19 +553,27 @@ app.get("/seller_dashboard/view-rentals", async (req, res) => {
 
 app.use("/driver_dashboard", DriverDashboard);
 
-
-app.use("/auctionmanager", AuctionManagerHomeRoute);
-app.use("/auctionmanager", Auctionrequests);
-app.use("/auctionmanager", AssignMechanic);
-app.use("/auctionmanager", Pendingcars);
-app.use("/auctionmanager", approvedCars);
-app.use("/auctionmanager", PendingCarDetails);
+// Apply auction manager authentication to all auction manager routes
+app.use("/auctionmanager", isAuctionManager, AuctionManagerHomeRoute);
+app.use("/auctionmanager", isAuctionManager, Auctionrequests);
+app.use("/auctionmanager", isAuctionManager, AssignMechanic);
+app.use("/auctionmanager", isAuctionManager, Pendingcars);
+app.use("/auctionmanager", isAuctionManager, approvedCars);
+app.use("/auctionmanager", isAuctionManager, PendingCarDetails);
 
 app.use("/", AdminHomepage);
 app.use("/", ManageUsers);
 app.use("/", adminProfile);
 app.use("/", Analytics);
 app.use("/", ManageEarnings);
+
+// Mount mechanic dashboard routes
+app.use("/mechanic_dashboard", currentTasks);
+app.use("/mechanic_dashboard", pendingTasks);
+app.use("/mechanic_dashboard", pastTasks);
+app.use("/mechanic_dashboard", profile);
+app.use("/mechanic_dashboard", index);
+app.use("/mechanic_dashboard", mcardetails);
 
 // Start the server
 const PORT = process.env.PORT || 3000;
@@ -552,11 +582,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
-app.use("/mechanic_dashboard",currentTasks); // Mount the currentTasks route
-app.use("/mechanic_dashboard",pendingTasks); // Mount the pendingTasks route
-app.use("/mechanic_dashboard",pastTasks); // Mount the pastTasks route
-app.use("/mechanic_dashboard", profile);
-app.use("/mechanic_dashboard", index);
-app.use("/mechanic_dashboard", mcardetails);
-

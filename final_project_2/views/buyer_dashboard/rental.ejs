@@ -105,6 +105,17 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+        .date-note {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        .error-message {
+            color: #d9534f;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
         .driver-option {
             margin-top: 1rem;
             padding: 0.75rem;
@@ -210,10 +221,14 @@
             <h2>Select Rental Dates</h2>
             <div class="date-inputs">
                 <label for="pickupDate">Pickup Date:</label>
-                <input type="date" id="pickupDate" onchange="calculateCost()">
+                <input type="date" id="pickupDate" onchange="validatePickupDate(); calculateCost();">
+                <div id="pickupDateError" class="error-message"></div>
+                <div class="date-note">Pickup date must be within 3 days from today.</div>
                 
                 <label for="dropDate">Drop Date:</label>
-                <input type="date" id="dropDate" onchange="calculateCost()">
+                <input type="date" id="dropDate" onchange="validateDropDate(); calculateCost();">
+                <div id="dropDateError" class="error-message"></div>
+                <div class="date-note">Drop date must be after pickup date.</div>
                 
                 <% if (driverAvailable) { %>
                 <div class="driver-option">
@@ -256,10 +271,14 @@
                 <h2>Select Rental Dates</h2>
                 <div class="date-inputs">
                     <label for="pickupDate">Pickup Date:</label>
-                    <input type="date" id="pickupDate" onchange="calculateCost()">
+                    <input type="date" id="pickupDate" onchange="validatePickupDate(); calculateCost();">
+                    <div id="pickupDateError" class="error-message"></div>
+                    <div class="date-note">Pickup date must be within 3 days from today.</div>
                     
                     <label for="dropDate">Drop Date:</label>
-                    <input type="date" id="dropDate" onchange="calculateCost()">
+                    <input type="date" id="dropDate" onchange="validateDropDate(); calculateCost();">
+                    <div id="dropDateError" class="error-message"></div>
+                    <div class="date-note">Drop date must be after pickup date.</div>
                     
                     ${driverAvailable ? `
                     <div class="driver-option">
@@ -274,12 +293,94 @@
                 <div id="costBreakdown" class="cost-breakdown"></div>
                 <div class="placebid-btn" onclick="submitRental()">Rent Now</div>
             `;
+            
+            // Set date constraints for pickup (within 3 days from today)
+            const today = new Date();
+            const maxPickupDate = new Date();
+            maxPickupDate.setDate(today.getDate() + 3);
+            
+            const pickupInput = document.getElementById('pickupDate');
+            pickupInput.min = formatDate(today);
+            pickupInput.max = formatDate(maxPickupDate);
+            
+            // Set min date for drop date based on today
+            const dropDateInput = document.getElementById('dropDate');
+            const minDropDate = new Date(today);
+            minDropDate.setDate(today.getDate() + 1);
+            dropDateInput.min = formatDate(minDropDate);
+            
+            // Initialize cost calculation
+            calculateCost();
+        }
+
+        function formatDate(date) {
+            // Format date to YYYY-MM-DD for input[type="date"]
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function validatePickupDate() {
+            const pickupDateInput = document.getElementById('pickupDate');
+            const pickupDateError = document.getElementById('pickupDateError');
+            
+            const today = new Date();
+            const maxPickupDate = new Date();
+            maxPickupDate.setDate(today.getDate() + 3);
+            
+            const selectedPickupDate = new Date(pickupDateInput.value);
+            
+            // Check if pickup date is within 3 days from today
+            if (selectedPickupDate < today || selectedPickupDate > maxPickupDate) {
+                pickupDateError.textContent = 'Pickup date must be within 3 days from today.';
+                pickupDateError.style.display = 'block';
+                pickupDateInput.value = '';
+            } else {
+                pickupDateError.style.display = 'none';
+                // Update min drop date based on selected pickup date
+                const dropDateInput = document.getElementById('dropDate');
+                const minDropDate = new Date(selectedPickupDate);
+                minDropDate.setDate(selectedPickupDate.getDate() + 1);
+                dropDateInput.min = formatDate(minDropDate);
+                if (dropDateInput.value && new Date(dropDateInput.value) <= selectedPickupDate) {
+                    dropDateInput.value = '';
+                }
+            }
+        }
+
+        function validateDropDate() {
+            const pickupDateInput = document.getElementById('pickupDate');
+            const dropDateInput = document.getElementById('dropDate');
+            const dropDateError = document.getElementById('dropDateError');
+            
+            if (!pickupDateInput.value) {
+                dropDateError.textContent = 'Please select a pickup date first.';
+                dropDateError.style.display = 'block';
+                dropDateInput.value = '';
+                return;
+            }
+            
+            const pickupDate = new Date(pickupDateInput.value);
+            const dropDate = new Date(dropDateInput.value);
+            
+            // Check if drop date is after pickup date
+            if (dropDate <= pickupDate) {
+                dropDateError.textContent = 'Drop date must be after pickup date.';
+                dropDateError.style.display = 'block';
+                
+                // Set drop date to day after pickup
+                const minDropDate = new Date(pickupDate);
+                minDropDate.setDate(pickupDate.getDate() + 1);
+                dropDateInput.value = formatDate(minDropDate);
+            } else {
+                dropDateError.style.display = 'none';
+            }
         }
 
         function closePopup() {
             console.log('Closing popup');
             document.getElementById('rentalPopup').style.display = 'none';
-            document.getElementById('popupContent').innerHTML = ''; // Clear content
         }
 
         function calculateCost() {
@@ -327,6 +428,25 @@
             if (!pickupDate || !dropDate) {
                 console.log('Validation failed: Missing dates');
                 alert('Please select both pickup and drop dates.');
+                return;
+            }
+
+            // Validate dates one more time
+            const today = new Date();
+            const maxPickupDate = new Date();
+            maxPickupDate.setDate(today.getDate() + 3);
+            
+            const selectedPickupDate = new Date(pickupDate);
+            const selectedDropDate = new Date(dropDate);
+            
+            // Check if pickup date is within 3 days from today
+            if (selectedPickupDate < today || selectedPickupDate > maxPickupDate) {
+                alert('Pickup date must be within 3 days from today.');
+                return;
+            }
+            
+            if (selectedDropDate <= selectedPickupDate) {
+                alert('Drop date must be after pickup date.');
                 return;
             }
 

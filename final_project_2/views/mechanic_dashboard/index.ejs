@@ -174,60 +174,50 @@
     <!-- Main content -->
     <main id="mainContent">
       <!-- Current Tasks Section -->
-      <section class="task-box">
-        <h2 class="task-heading">Current Tasks</h2>
-        <div class="vehicle-list">
-          <% if (displayedVehicles.length > 0) { %>
-              <% displayedVehicles.forEach(vehicle => { %>
-                  <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
-                      <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
-                      <h3><%= vehicle.vehicleName %></h3>
-                      <p><strong>Year:</strong> <%= vehicle.year %></p>
-                      <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
-                      <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
-                  </div>
-              <% }); %>
-          <% } else { %>
-              <p class="no-tasks">No vehicles currently assigned to you.</p>
-          <% } %>
-        </div>
-        <% if (assignedVehicles.length > 3) { %>
-            <a href="/mechanic_dashboard/current-tasks" class="see-more">See More (<%= assignedVehicles.length - 3 %> more)</a>
-        <% } %>
-      </section>
+<section class="task-box">
+  <h2 class="task-heading">Current Tasks</h2>
+  <div class="vehicle-list">
+      <% if (displayedVehicles.length > 0) { %>
+          <% displayedVehicles.forEach(vehicle => { %>
+              <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+                  <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
+                  <h3><%= vehicle.vehicleName %></h3>
+                  <p><strong>Year:</strong> <%= vehicle.year %></p>
+                  <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
+                  <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
+                  <p><strong>Auction Date:</strong> <%= vehicle.auctionDate.toLocaleDateString() %></p>
+              </div>
+          <% }); %>
+      <% } else { %>
+          <p class="no-tasks">No vehicles currently assigned to you.</p>
+      <% } %>
+  </div>
+  <% if (assignedVehicles.length > 3) { %>
+      <a href="/mechanic_dashboard/current-tasks" class="see-more">See More (<%= assignedVehicles.length - 3 %> more)</a>
+  <% } %>
+</section>
 
-      <!-- Past Tasks Section -->
-      <section class="task-box">
-        <h2 class="task-heading">Past Tasks</h2>
-        <div class="vehicle-list">
-          <!-- Vehicle Card 1 -->
-          <div class="vehicle-card">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0liXqot7djQh19sJg3fwPhQO72MAIaWlNEQ&s"
-              alt="Toyota Corolla"
-              class="car-image"
-            />
-            <h3>Toyota Corolla</h3>
-            <p><strong>Owner:</strong> David</p>
-            <p><strong>Rating:</strong> ★★★★☆</p>
-            <p><strong>Comment:</strong> Well-maintained, minor scratches.</p>
-          </div>
-
-          <!-- Vehicle Card 2 -->
-          <div class="vehicle-card">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-CHWXxQ2DHr8EUh5-rIoE59uvvo5_-4nKGQ&s"
-              alt="Nissan Altima"
-              class="car-image"
-            />
-            <h3>Nissan Altima</h3>
-            <p><strong>Owner:</strong> Ellisa</p>
-            <p><strong>Rating:</strong> ★★★★★</p>
-            <p><strong>Comment:</strong> Excellent condition, like new.</p>
-          </div>
-        </div>
-        <a href="/mechanic_dashboard/past-tasks" class="see-more">See More</a>
-      </section>
+<!-- Past Tasks Section -->
+<section class="task-box">
+  <h2 class="task-heading">Past Tasks</h2>
+  <div class="vehicle-list">
+      <% if (completedTasks && completedTasks.length > 0) { %>
+          <% completedTasks.forEach(vehicle => { %>
+              <div class="vehicle-card">
+                  <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
+                  <h3><%= vehicle.vehicleName %></h3>
+                  <p><strong>Year:</strong> <%= vehicle.year %></p>
+                  <% if (vehicle.mechanicReview && vehicle.mechanicReview.conditionRating) { %>
+                      <p><strong>Your Rating:</strong> <%= '★'.repeat(vehicle.mechanicReview.conditionRating) %></p>
+                  <% } %>
+              </div>
+          <% }); %>
+      <% } else { %>
+          <p class="no-tasks">No completed tasks yet.</p>
+      <% } %>
+  </div>
+  <a href="/mechanic_dashboard/past-tasks" class="see-more">See More</a>
+</section>
     </main>
 
     <%- include('partials/footer') %>

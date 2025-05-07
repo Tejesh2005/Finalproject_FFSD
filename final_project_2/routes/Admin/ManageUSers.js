@@ -1,10 +1,26 @@
+
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 
+// Middleware to check admin login
+const isAdminLoggedIn = (req, res, next) => {
+  if (!req.session.userId || req.session.userType !== 'admin') {
+    return res.redirect('/login');
+  }
+  next();
+};
+
 // Get pending mechanics, approved mechanics, buyers, and sellers
-router.get('/manage-user', async (req, res) => {
+router.get('/manage-user', isAdminLoggedIn, async (req, res) => {
   try {
+    // Verify admin user exists
+    const adminUser = await User.findById(req.session.userId);
+    if (!adminUser || adminUser.userType !== 'admin') {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
     const pendingMechanics = await User.find({ 
       userType: 'mechanic',
       approved_status: 'No'
@@ -38,9 +54,15 @@ router.get('/manage-user', async (req, res) => {
 });
 
 // Approve mechanic
-router.post('/approve-user/:id', async (req, res) => {
-  console.log('User ID:', req.params.id); // Log the user ID for debugging
+router.post('/approve-user/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    // Verify admin user exists
+    const adminUser = await User.findById(req.session.userId);
+    if (!adminUser || adminUser.userType !== 'admin') {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
     const userId = req.params.id;
     
     const updatedUser = await User.findByIdAndUpdate(
@@ -71,8 +93,15 @@ router.post('/approve-user/:id', async (req, res) => {
 });
 
 // Decline mechanic (also used for deleting approved mechanics)
-router.post('/decline-user/:id', async (req, res) => {
+router.post('/decline-user/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    // Verify admin user exists
+    const adminUser = await User.findById(req.session.userId);
+    if (!adminUser || adminUser.userType !== 'admin') {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
     const userId = req.params.id;
     
     const deletedUser = await User.findOneAndDelete({ 
@@ -101,8 +130,15 @@ router.post('/decline-user/:id', async (req, res) => {
 });
 
 // Delete buyer
-router.post('/delete-buyer/:id', async (req, res) => {
+router.post('/delete-buyer/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    // Verify admin user exists
+    const adminUser = await User.findById(req.session.userId);
+    if (!adminUser || adminUser.userType !== 'admin') {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
     const userId = req.params.id;
     
     const deletedUser = await User.findOneAndDelete({ 
@@ -131,8 +167,15 @@ router.post('/delete-buyer/:id', async (req, res) => {
 });
 
 // Delete seller
-router.post('/delete-seller/:id', async (req, res) => {
+router.post('/delete-seller/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    // Verify admin user exists
+    const adminUser = await User.findById(req.session.userId);
+    if (!adminUser || adminUser.userType !== 'admin') {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
     const userId = req.params.id;
     
     const deletedUser = await User.findOneAndDelete({ 

@@ -310,69 +310,40 @@
         <p>Buy or Rent—Drive Your Dream with <strong class="oneL">Ease!</strong></p>
     </div>
 
-    <!-- Auctions Section -->
-    <section class="auctions">
-        <h2>Featured Auctions</h2>
-        <div class="card-container">
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false" data-auction-id="1">❤</button>
-                <img src="https://i.ibb.co/T9F2sFp/Screenshot-2025-02-20-002536.png" alt="Kia Sonet HTK plus">
-                <h3>Kia Sonet HTK Plus</h3>
-                <p class="auction-date">Auction on: <strong>25/02/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2023</p>
-                    <p><strong>Mileage:</strong> 25 km</p>
-                    <p><strong>Condition:</strong> Excellent</p>
-                    <p><strong>Estimated Price:</strong> 7lakhs-9lakhs</p>
+<!-- Auctions Section -->
+<section class="auctions">
+    <h2>Featured Auctions</h2>
+    <div class="card-container">
+        <% if (featuredAuctions && featuredAuctions.length > 0) { %>
+            <% featuredAuctions.forEach(auction => { %>
+                <div class="car-card">
+                    <span class="hot-tag">Hot</span>
+                    <button class="heart-btn" data-liked="false" data-auction-id="<%= auction._id %>">❤</button>
+                    <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>">
+                    <h3><%= auction.vehicleName %></h3>
+                    <p class="auction-date">Auction on: <strong><%= new Date(auction.auctionDate).toLocaleDateString() %></strong></p>
+                    <div class="car-details">
+                        <p><strong>Year:</strong> <%= auction.year %></p>
+                        <p><strong>Mileage:</strong> <%= auction.mileage %> km</p>
+                        <p><strong>Condition:</strong> <%= auction.condition.charAt(0).toUpperCase() + auction.condition.slice(1) %></p>
+                        <p><strong>Estimated Price:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
+                    </div>
+                    <div class="button-container">
+                        <a href="/auction_detail?id=<%= auction._id %>" class="details-btn">Details</a>
+                        <a href="/auction?id=<%= auction._id %>" class="bid-btn">Place Bid</a>
+                    </div>
                 </div>
-                <div class="button-container">
-                    <a href="/auction?id=1" class="details-btn">Details</a>
-                    <a href="/auction?id=1" class="bid-btn">Place Bid</a>
-                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="no-items">
+                <p>No auctions available at the moment.</p>
             </div>
-
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false" data-auction-id="2">❤</button>
-                <img src="https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png" alt="Maruti Zen 2007 model">
-                <h3>Maruti Zen Estilo Lxi</h3>
-                <p class="auction-date">Auction on: <strong>07/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2009</p>
-                    <p><strong>Mileage:</strong> 35 km</p>
-                    <p><strong>Condition:</strong> Good</p>
-                    <p><strong>Estimated Price:</strong> 70,000-1.5lak</p>
-                </div>
-                <div class="button-container">
-                    <a href="/auction?id=2" class="details-btn">Details</a>
-                    <a href="/auction?id=2" class="bid-btn">Place Bid</a>
-                </div>
-            </div>
-
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false" data-auction-id="3">❤</button>
-                <img src="https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png" alt="Skoda">
-                <h3>Skoda Rapid</h3>
-                <p class="auction-date">Auction on: <strong>10/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2017</p>
-                    <p><strong>Mileage:</strong> 15 km</p>
-                    <p><strong>Condition:</strong> Excellent</p>
-                    <p><strong>Estimated Price:</strong> 15lakhs-20lakhs</p>
-                </div>
-                <div class="button-container">
-                    <a href="/auction?id=3" class="details-btn">Details</a>
-                    <a href="/auction?id=3" class="bid-btn">Place Bid</a>
-                </div>
-            </div>
-        </div>
-        <div class="more-btn-container">
-            <a href="/buyer_dashboard?page=auctions" class="more-btn">More Auctions</a>
-        </div>
-    </section>
-
+        <% } %>
+    </div>
+    <div class="more-btn-container">
+        <a href="/buyer_dashboard?page=auctions" class="more-btn">More Auctions</a>
+    </div>
+</section>
     <!-- Rentals Section - Limited to 3 cars -->
     <section class="rentals">
         <h2>Featured Rentals</h2>
@@ -417,8 +388,8 @@
     <!-- Include Footer -->
     <%- include('partials/footer') %>
 
+    // Replace the existing heart button script in proj.ejs with this updated version
     <script>
-        // Heart button functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize wishlist status
             initializeWishlistStatus();
@@ -433,6 +404,13 @@
                     // Toggle liked state
                     this.setAttribute('data-liked', !isLiked);
                     this.style.color = !isLiked ? '#ff6b00' : '#ccc';
+                    
+                    // Store in localStorage for persistence between page reloads
+                    if (auctionId) {
+                        localStorage.setItem(`auction_${auctionId}_liked`, !isLiked ? 'true' : 'false');
+                    } else if (rentalId) {
+                        localStorage.setItem(`rental_${rentalId}_liked`, !isLiked ? 'true' : 'false');
+                    }
                     
                     // Send request to server
                     fetch('/api/wishlist', {
@@ -452,6 +430,14 @@
                             // If operation failed, revert the button state
                             this.setAttribute('data-liked', isLiked);
                             this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                            
+                            // Revert localStorage
+                            if (auctionId) {
+                                localStorage.setItem(`auction_${auctionId}_liked`, isLiked ? 'true' : 'false');
+                            } else if (rentalId) {
+                                localStorage.setItem(`rental_${rentalId}_liked`, isLiked ? 'true' : 'false');
+                            }
+                            
                             console.error('Wishlist operation failed:', data.message);
                         }
                     })
@@ -459,14 +445,43 @@
                         // If there was an error, revert the button state
                         this.setAttribute('data-liked', isLiked);
                         this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                        
+                        // Revert localStorage
+                        if (auctionId) {
+                            localStorage.setItem(`auction_${auctionId}_liked`, isLiked ? 'true' : 'false');
+                        } else if (rentalId) {
+                            localStorage.setItem(`rental_${rentalId}_liked`, isLiked ? 'true' : 'false');
+                        }
+                        
                         console.error('Error:', error);
                     });
                 });
             });
         });
-
+    
         // Initialize heart buttons based on wishlist
         function initializeWishlistStatus() {
+            // First try to set button states from localStorage for immediate visual feedback
+            document.querySelectorAll('.heart-btn').forEach(button => {
+                const rentalId = button.getAttribute('data-rental-id');
+                const auctionId = button.getAttribute('data-auction-id');
+                
+                if (rentalId) {
+                    const storedState = localStorage.getItem(`rental_${rentalId}_liked`);
+                    if (storedState === 'true') {
+                        button.setAttribute('data-liked', true);
+                        button.style.color = '#ff6b00';
+                    }
+                } else if (auctionId) {
+                    const storedState = localStorage.getItem(`auction_${auctionId}_liked`);
+                    if (storedState === 'true') {
+                        button.setAttribute('data-liked', true);
+                        button.style.color = '#ff6b00';
+                    }
+                }
+            });
+            
+            // Then fetch server data to ensure consistency
             fetch('/api/wishlist')
                 .then(response => response.json())
                 .then(data => {
@@ -474,30 +489,33 @@
                         // Set heart buttons for rentals
                         document.querySelectorAll('.heart-btn[data-rental-id]').forEach(button => {
                             const rentalId = button.getAttribute('data-rental-id');
-                            if (data.wishlist.rentals && data.wishlist.rentals.includes(rentalId)) {
-                                button.setAttribute('data-liked', 'true');
-                                button.style.color = '#ff6b00';
-                            } else {
-                                button.setAttribute('data-liked', 'false');
-                                button.style.color = '#ccc';
-                            }
+                            const isLiked = data.wishlist.rentals && data.wishlist.rentals.includes(rentalId);
+                            
+                            // Update localStorage to match server
+                            localStorage.setItem(`rental_${rentalId}_liked`, isLiked ? 'true' : 'false');
+                            
+                            // Update button state
+                            button.setAttribute('data-liked', isLiked);
+                            button.style.color = isLiked ? '#ff6b00' : '#ccc';
                         });
                         
                         // Set heart buttons for auctions
                         document.querySelectorAll('.heart-btn[data-auction-id]').forEach(button => {
                             const auctionId = button.getAttribute('data-auction-id');
-                            if (data.wishlist.auctions && data.wishlist.auctions.includes(auctionId)) {
-                                button.setAttribute('data-liked', 'true');
-                                button.style.color = '#ff6b00';
-                            } else {
-                                button.setAttribute('data-liked', 'false');
-                                button.style.color = '#ccc';
-                            }
+                            const isLiked = data.wishlist.auctions && data.wishlist.auctions.includes(auctionId);
+                            
+                            // Update localStorage to match server
+                            localStorage.setItem(`auction_${auctionId}_liked`, isLiked ? 'true' : 'false');
+                            
+                            // Update button state
+                            button.setAttribute('data-liked', isLiked);
+                            button.style.color = isLiked ? '#ff6b00' : '#ccc';
                         });
                     }
                 })
                 .catch(error => {
                     console.error('Error loading wishlist:', error);
+                    // We already set states from localStorage, so no need for fallback
                 });
         }
     </script>

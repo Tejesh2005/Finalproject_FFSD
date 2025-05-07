@@ -3,420 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveBidRent - Auctions</title>
-   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    <title>DriveBidRent - Available Auctions</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "montserrat", sans-serif;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
 
-body {
-    background-color: #ffffff;
-    color: #333333;
-}
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
 
-/* Heading Section */
-.heading1 {
-    width: 800px;
-    height: 400px;
-    padding-top: 250px;
-    padding-left: 500px;
-    padding-right: 20px;
-    margin: 150px auto 85px auto;
-    border: 3px solid #ff6b00;
-    border-radius: 15px;
-    box-shadow: 10px 10px 50px rgba(255, 107, 0, 0.3);
-    background: linear-gradient(135deg, #ff6b00, #ff9a44, #ffffff);
-    opacity: 1;
-    border: none;
-}
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #ff6b00, #ff9a44);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
 
-.heading1 h1 {
-    font-family: "Montserrat", sans-serif;
-    font-size: 29px;
-    transition: text-shadow 0.3s ease-in-out;
-    margin-bottom: 10px;
-    color: #ff6b00;
-}
+        /* Filters Section */
+        .filters {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-.heading1 p {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    line-height: 1.5;
-    font-size: 16px;
-    font-weight: 500;
-    color: #333333;
-}
+        .filters h3 {
+            margin-bottom: 1rem;
+            color: #ff6b00;
+        }
 
-.heading1 h1:hover {
-    text-shadow: 0px 0px 15px #ff6b00;
-}
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
 
-.oneL {
-    color: #ff6b00;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+        .filter-group {
+            margin-bottom: 1rem;
+        }
 
-/* Sections */
-section {
-    padding: 4rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
 
-section h2 {
-    color: #ff6b00;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-}
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
 
-.card-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
+        .filter-buttons {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
 
-.more-btn {
-    align-content: flex-end;
-}
+        .filter-btn {
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
 
-/* Auctions Section Heading */
-.auctions h2 {
-    color: #ff6b00;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    line-height: 1.5;
-}
+        .filter-btn:hover {
+            background-color: #e65c00;
+        }
 
-/* Rentals and Drivers Section Headings */
-.rentals h2,
-.drivers h2 {
-    color: #ff6b00;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    line-height: 1.5;
-}
+        .reset-btn {
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
 
-/* Car Cards */
-.car-card {
-    background-color: #ffffff;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #ff6b00;
-    height: 550px;
-}
+        .reset-btn:hover {
+            background-color: #e5e5e5;
+        }
 
-.car-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
-}
+        /* Auctions Grid */
+        .auctions-container {
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-.hot-tag {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background-color: #ff6b00;
-    color: white;
-    padding: 2px 15px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 400;
-    margin-top: 50%;
-    margin-left: 4%;
-}
+        .car-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
 
-.heart-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    color: #ff6b00;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
+        /* Car Cards from your original css */
+        .car-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #ff6b00;
+            height: 550px;
+            display: flex;
+            flex-direction: column;
+        }
 
-.car-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
+        }
 
-.car-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-    color: #ff6b00;
-}
+        .hot-tag, .new-tag {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: #ff6b00;
+            color: white;
+            padding: 2px 15px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 400;
+        }
 
-.auction-date, .rental-cost, .costperday {
-    color: #666666;
-    margin-bottom: 1rem;
-}
+        .heart-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
 
-.car-details {
-    background-color: #f9f9f9;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-}
+        .heart-btn[data-liked="true"] {
+            color: #ff6b00;
+        }
 
-.car-details p {
-    margin-bottom: 0.5rem;
-    color: #333333;
-}
+        .car-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
 
-.details-btn {
-    display: inline-block;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
+        .car-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #ff6b00;
+        }
 
-.placebid-btn {
-    display: inline;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    margin-left: 35px;
-    padding-left: 30px;
-    padding-right: 30px;
-}
+        .auction-date {
+            color: #666666;
+            margin-bottom: 1rem;
+        }
 
-.placebid-btn:hover {
-    background-color: #e65c00;
-}
+        .car-details {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
 
-.bid-btn {
-    display: inline;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    margin-left: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
+        .car-details p {
+            margin-bottom: 0.5rem;
+            color: #333333;
+        }
 
-.bid-btn:hover {
-    background-color: #e65c00;
-}
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
 
-.details-btn:hover {
-    background-color: #e65c00;
-}
+        .details-btn {
+            display: inline-block;
+            background-color: #ff6b00;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            flex: 1;
+            margin-right: 0.5rem;
+            text-align: center;
+        }
 
-/* More Button Container */
-.more-btn-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-}
+        .bid-btn {
+            display: inline-block;
+            background-color: #ff6b00;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            flex: 1;
+            margin-left: 0.5rem;
+            text-align: center;
+        }
 
-/* More Button */
-.more-btn {
-    display: inline-block;
-    background-color: #ff6b00;
-    color: white;
-    padding: 0.75rem 2rem;
-    border-radius: 0.3rem;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    text-align: center;
-}
+        .bid-btn:hover,
+        .details-btn:hover {
+            background-color: #e65c00;
+        }
 
-.more-btn:hover {
-    background-color: #e65c00;
-}
+        /* No Items Message */
+        .no-items {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 2rem;
+            color: #666;
+            font-size: 1.2rem;
+        }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .nav-container {
-        flex-direction: column;
-        gap: 1rem;
-    }
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
 
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+        .pagination button {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
 
-    .hero {
-        margin-top: 8rem;
-    }
-}
+        .pagination button.active {
+            background-color: #ff6b00;
+            color: white;
+            border-color: #ff6b00;
+        }
 
-section {
-    position: relative;
-    overflow: hidden;
-}
+        .pagination button:hover:not(.active) {
+            background-color: #e5e5e5;
+        }
 
-section::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, #ff6b00, #ff9a44, transparent);
-}
-   </style>
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .car-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .car-container {
+                grid-template-columns: 1fr;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .details-btn,
+            .bid-btn {
+                margin: 0;
+                width: 100%;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<!-- Include Navigation Bar -->
-<%- include('partials/navbar') %>
+    <!-- Include Navigation Bar -->
+    <%- include('partials/navbar') %>
 
-    <!-- Auctions Section -->
-    <section class="auctions">
-        <h2>Auctions</h2>
-        <div class="card-container">
-            <!-- Car 1 -->
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://i.ibb.co/T9F2sFp/Screenshot-2025-02-20-002536.png" alt="Kia Sonet HTK plus">
-                <h3>Kia Sonet HTK Plus</h3>
-                <p class="auction-date">Auction on: <strong>25/02/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2023</p>
-                    <p><strong>Mileage:</strong> 25 km</p>
-                    <p><strong>Condition:</strong> Excellent</p>
-                    <p><strong>Estimated Price:</strong> 7lakhs-9lakhs</p>
-                </div>
-                <a href="/auction?id=1" class="details-btn">More Details</a>
-                <a href="/auction?id=1" class="bid-btn">Place a bid</a>
-            </div>
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Available Auctions</h1>
+        <p>Find your dream car at the best price through our transparent auction system</p>
+    </div>
 
-            <!-- Car 2 -->
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://i.ibb.co/DDmhB48D/Screenshot-2025-02-23-153301.png" alt="Maruti Zen 2007 model">
-                <h3>Maruti Zen Estilo Lxi</h3>
-                <p class="auction-date">Auction on: <strong>07/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2009</p>
-                    <p><strong>Mileage:</strong> 35 km</p>
-                    <p><strong>Condition:</strong> Good</p>
-                    <p><strong>Estimated Price:</strong> 70,000-1.5lak</p>
-                </div>
-                <a href="/auction?id=2" class="details-btn">More Details</a>
-                <a href="/auction?id=2" class="bid-btn">Place a bid</a>
+    <!-- Filters Section -->
+    <div class="filters">
+        <h3>Filter Auctions</h3>
+        <form class="filter-form" method="GET" action="/buyer_dashboard">
+            <input type="hidden" name="page" value="auctions">
+            
+            <div class="filter-group">
+                <label for="search">Search by Name</label>
+                <input type="text" id="search" name="search" placeholder="Search for vehicles..." value="<%= locals.search || '' %>">
             </div>
+            
+            <div class="filter-group">
+                <label for="condition">Condition</label>
+                <select id="condition" name="condition">
+                    <option value="">All Conditions</option>
+                    <option value="excellent" <%= locals.condition === 'excellent' ? 'selected' : '' %>>Excellent</option>
+                    <option value="good" <%= locals.condition === 'good' ? 'selected' : '' %>>Good</option>
+                    <option value="fair" <%= locals.condition === 'fair' ? 'selected' : '' %>>Fair</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="fuelType">Fuel Type</label>
+                <select id="fuelType" name="fuelType">
+                    <option value="">All Types</option>
+                    <option value="petrol" <%= locals.fuelType === 'petrol' ? 'selected' : '' %>>Petrol</option>
+                    <option value="diesel" <%= locals.fuelType === 'diesel' ? 'selected' : '' %>>Diesel</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="transmission">Transmission</label>
+                <select id="transmission" name="transmission">
+                    <option value="">All Types</option>
+                    <option value="manual" <%= locals.transmission === 'manual' ? 'selected' : '' %>>Manual</option>
+                    <option value="automatic" <%= locals.transmission === 'automatic' ? 'selected' : '' %>>Automatic</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="minPrice">Min Price (₹)</label>
+                <input type="number" id="minPrice" name="minPrice" placeholder="Min Price" value="<%= locals.minPrice || '' %>">
+            </div>
+            
+            <div class="filter-group">
+                <label for="maxPrice">Max Price (₹)</label>
+                <input type="number" id="maxPrice" name="maxPrice" placeholder="Max Price" value="<%= locals.maxPrice || '' %>">
+            </div>
+            
+            <div class="filter-buttons">
+                <button type="submit" class="filter-btn">Apply Filters</button>
+                <button type="reset" class="filter-btn reset-btn" onclick="window.location='/buyer_dashboard?page=auctions'">Reset Filters</button>
+            </div>
+        </form>
+    </div>
 
-            <!-- Car 3 -->
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png" alt="Skoda">
-                <h3>Skoda Rapid</h3>
-                <p class="auction-date">Auction on: <strong>10/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2017</p>
-                    <p><strong>Mileage:</strong> 15 km</p>
-                    <p><strong>Condition:</strong> Excellent</p>
-                    <p><strong>Estimated Price:</strong> 15lakhs-20lakhs</p>
+    <!-- Auctions List -->
+    <div class="auctions-container">
+        <div class="car-container">
+            <% if (auctions && auctions.length > 0) { %>
+                <% auctions.forEach(auction => { %>
+                    <div class="car-card">
+                        <% if (new Date() - new Date(auction.auctionDate) < -7 * 24 * 60 * 60 * 1000) { %>
+                            <span class="hot-tag">Hot</span>
+                        <% } else if (new Date() - new Date(auction.createdAt) < 3 * 24 * 60 * 60 * 1000) { %>
+                            <span class="new-tag">New</span>
+                        <% } %>
+                        <button class="heart-btn" data-liked="false" data-auction-id="<%= auction._id %>">❤</button>
+                        <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>">
+                        <h3><%= auction.vehicleName %></h3>
+                        <p class="auction-date">Auction on: <strong><%= new Date(auction.auctionDate).toLocaleDateString() %></strong></p>
+                        <div class="car-details">
+                            <p><strong>Year:</strong> <%= auction.year %></p>
+                            <p><strong>Mileage:</strong> <%= auction.mileage %> km</p>
+                            <p><strong>Fuel Type:</strong> <%= auction.fuelType.charAt(0).toUpperCase() + auction.fuelType.slice(1) %></p>
+                            <p><strong>Transmission:</strong> <%= auction.transmission.charAt(0).toUpperCase() + auction.transmission.slice(1) %></p>
+                            <p><strong>Condition:</strong> <%= auction.condition.charAt(0).toUpperCase() + auction.condition.slice(1) %></p>
+                            <p><strong>Starting Bid:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
+                        </div>
+                        <div class="button-container">
+                            <a href="/auction_detail?id=<%= auction._id %>" class="details-btn">Details</a>
+                            <a href="/auction?id=<%= auction._id %>" class="bid-btn">Place Bid</a>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-items">
+                    <p>No auctions available at the moment. Please check back later.</p>
                 </div>
-                <a href="/auction?id=3" class="details-btn">More Details</a>
-                <a href="/auction?id=3" class="bid-btn">Place a bid</a>
-            </div>
-
-            <!-- Car 4 -->
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://trident-group.s3.ap-south-1.amazonaws.com/hyundai/models/colors/1705922962.png" alt="Hyundai Creta">
-                <h3>Hyundai Creta</h3>
-                <p class="auction-date">Auction on: <strong>15/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2021</p>
-                    <p><strong>Mileage:</strong> 20 km</p>
-                    <p><strong>Condition:</strong> Good</p>
-                    <p><strong>Estimated Price:</strong> 10lakhs-12lakhs</p>
-                </div>
-                <a href="/auction?id=4" class="details-btn">More Details</a>
-                <a href="/auction?id=4" class="bid-btn">Place a bid</a>
-            </div>
-
-            <!-- Car 5 -->
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://akm-img-a-in.tosshub.com/indiatoday/images/story/201609/toyota-fortuner_story_647_091416044216.jpg?VersionId=PPZmXaEGWYlavAlxVYwgTxA1OJQm6rSi&size=690:388" alt="Toyota Fortuner">
-                <h3>Toyota Fortuner</h3>
-                <p class="auction-date">Auction on: <strong>20/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2020</p>
-                    <p><strong>Mileage:</strong> 25 km</p>
-                    <p><strong>Condition:</strong> Good</p>
-                    <p><strong>Estimated Price:</strong> 25lakhs-30lakhs</p>
-                </div>
-                <a href="/auction?id=5" class="details-btn">More Details</a>
-                <a href="/auction?id=5" class="bid-btn">Place a bid</a>
-            </div>
-
-            <!-- Car 6 -->
-            <div class="car-card">
-                <span class="hot-tag">Hot</span>
-                <button class="heart-btn" data-liked="false">❤</button>
-                <img src="https://offers.caimahindra.com/uploads/product/Thar%20Deep%20Grey.png" alt="Mahindra Thar">
-                <h3>Mahindra Thar</h3>
-                <p class="auction-date">Auction on: <strong>25/03/2025</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2022</p>
-                    <p><strong>Mileage:</strong> 10 km</p>
-                    <p><strong>Condition:</strong> Excellent</p>
-                    <p><strong>Estimated Price:</strong> 12lakhs-15lakhs</p>
-                </div>
-                <a href="/auction?id=6" class="details-btn">More Details</a>
-                <a href="/auction?id=6" class="bid-btn">Place a bid</a>
-            </div>
+            <% } %>
         </div>
-    </section>
+
+        <!-- Pagination (can be implemented later if needed) -->
+        <!-- <div class="pagination">
+            <button>1</button>
+            <button class="active">2</button>
+            <button>3</button>
+            <button>Next</button>
+        </div> -->
+    </div>
 
     <!-- Include Footer -->
     <%- include('partials/footer') %>
 
     <script>
         // Heart button functionality
-        document.querySelectorAll('.heart-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const isLiked = button.getAttribute('data-liked') === 'true';
-                button.setAttribute('data-liked', !isLiked);
-                button.style.color = !isLiked ? '#ff6b00' : '#ffffff';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize wishlist status
+            initializeWishlistStatus();
+            
+            // Add event listeners to heart buttons
+            document.querySelectorAll('.heart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const isLiked = this.getAttribute('data-liked') === 'true';
+                    const auctionId = this.getAttribute('data-auction-id');
+                    
+                    // Toggle liked state
+                    this.setAttribute('data-liked', !isLiked);
+                    this.style.color = !isLiked ? '#ff6b00' : '#ccc';
+                    
+                    // Send request to server
+                    fetch('/api/wishlist', {
+                        method: isLiked ? 'DELETE' : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            auctionId: auctionId,
+                            type: 'auction'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            // If operation failed, revert the button state
+                            this.setAttribute('data-liked', isLiked);
+                            this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                            console.error('Wishlist operation failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        // If there was an error, revert the button state
+                        this.setAttribute('data-liked', isLiked);
+                        this.style.color = isLiked ? '#ff6b00' : '#ccc';
+                        console.error('Error:', error);
+                    });
+                });
             });
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-        const savedProfile = JSON.parse(localStorage.getItem('profile')) || {};
-        if (savedProfile.name) {
-            document.getElementById('profile-name').textContent = savedProfile.name;
+        // Initialize heart buttons based on wishlist
+        function initializeWishlistStatus() {
+            fetch('/api/wishlist')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Set heart buttons for auctions
+                        document.querySelectorAll('.heart-btn[data-auction-id]').forEach(button => {
+                            const auctionId = button.getAttribute('data-auction-id');
+                            if (data.wishlist.auctions && data.wishlist.auctions.includes(auctionId)) {
+                                button.setAttribute('data-liked', 'true');
+                                button.style.color = '#ff6b00';
+                            } else {
+                                button.setAttribute('data-liked', 'false');
+                                button.style.color = '#ccc';
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading wishlist:', error);
+                });
         }
-    });
     </script>
 </body>
 </html>

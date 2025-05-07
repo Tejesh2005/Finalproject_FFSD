@@ -142,7 +142,7 @@
         }
 
         .car-card {
-            background-color: #Wffffff;
+            background-color: #ffffff;
             border-radius: 1rem;
             padding: 1.5rem;
             position: relative;
@@ -213,21 +213,24 @@
         <h1>Wishlist - Auctions</h1>
         <div class="card-container" id="auction-wishlist">
             <% if (auctionWishlist && auctionWishlist.length > 0) { %>
-                <% auctionWishlist.forEach(car => { %>
-                    <div class="car-card" data-id="<%= car.id %>">
-                        <button class="heart-btn" data-liked="true" onclick="removeFromAuctionWishlist('<%= car.id %>')">❤</button>
-                        <img src="<%= car.image %>" alt="<%= car.name %>">
-                        <h3><%= car.name %></h3>
-                        <p class="auction-date">Auction on: <strong><%= car.auctionDate %></strong></p>
+                <% auctionWishlist.forEach(auction => { %>
+                    <div class="car-card" data-id="<%= auction._id %>">
+                        <button class="heart-btn" data-liked="true" onclick="removeFromAuctionWishlist('<%= auction._id %>')">❤</button>
+                        <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>">
+                        <h3><%= auction.vehicleName %></h3>
+                        <p class="auction-date">Auction on: <strong><%= new Date(auction.auctionDate).toLocaleDateString() %></strong></p>
                         <div class="car-details">
-                            <p><strong>Year:</strong> <%= car.year %></p>
-                            <p><strong>Mileage:</strong> <%= car.mileage %></p>
-                            <p><strong>Condition:</strong> <%= car.condition %></p>
-                            <p><strong>Estimated Price:</strong> <%= car.price %></p>
+                            <p><strong>Year:</strong> <%= auction.year %></p>
+                            <p><strong>Mileage:</strong> <%= auction.mileage %> km</p>
+                            <p><strong>Condition:</strong> <%= auction.condition.charAt(0).toUpperCase() + auction.condition.slice(1) %></p>
+                            <p><strong>Starting Price:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
+                            <% if (auction.sellerId) { %>
+                                <p><strong>Seller:</strong> <%= auction.sellerId.firstName %> <%= auction.sellerId.lastName %></p>
+                            <% } %>
                         </div>
                         <div class="button-container">
-                            <a href="/auction?id=<%= car.id %>" class="details-btn">View more</a>
-                            <a href="/auction?id=<%= car.id %>" class="placebid-btn">Place a bid</a>
+                            <a href="/auction_detail?id=<%= auction._id %>" class="details-btn">View more</a>
+                            <a href="/auction?id=<%= auction._id %>" class="placebid-btn">Place a bid</a>
                         </div>
                     </div>
                 <% }); %>
@@ -251,15 +254,20 @@
                         <h3><%= rental.vehicleName %></h3>
                         <p class="rental-cost">Cost/day: <strong>₹<%= rental.costPerDay %></strong></p>
                         <div class="car-details">
-                            <p><strong>City:</strong> <%= rental.city || 'Not specified' %></p>
+                            <% if (rental.sellerId && rental.sellerId.city) { %>
+                                <p><strong>City:</strong> <%= rental.sellerId.city || 'Not specified' %></p>
+                            <% } %>
                             <p><strong>Year:</strong> <%= rental.year %></p>
                             <p><strong>AC:</strong> <%= rental.AC === 'available' ? 'Yes' : 'No' %></p>
                             <p><strong>Capacity:</strong> <%= rental.capacity %> passengers</p>
                             <p><strong>Driver:</strong> <%= rental.driverAvailable ? 'Yes' : 'No' %></p>
+                            <% if (rental.sellerId) { %>
+                                <p><strong>Seller:</strong> <%= rental.sellerId.firstName %> <%= rental.sellerId.lastName %></p>
+                            <% } %>
                         </div>
                         <div class="button-container">
-                            <a href="/rental?id=<%= rental._id %>" class="details-btn">View more</a>
-                            <a href="/rental?id=<%= rental._id %>" class="rent-btn">Rent it</a>
+                            <a href="/buyer_dashboard?page=rental&id=<%= rental._id %>" class="details-btn">View more</a>
+                            <a href="/buyer_dashboard?page=rental&id=<%= rental._id %>" class="rent-btn">Rent it</a>
                         </div>
                     </div>
                 <% }); %>

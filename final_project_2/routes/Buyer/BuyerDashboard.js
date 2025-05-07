@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const RentalRequest = require('../../models/RentalRequest');
+const AuctionRequest = require('../../models/AuctionRequest');
+const Wishlist = require('../../models/Wishlist');
 
 // Middleware to check if user is logged in
 const isBuyerLoggedIn = (req, res, next) => {
@@ -24,17 +26,76 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
 
     // Dashboard home with featured listings
     if (page === 'dashboard') {
+      // Fetch featured rentals
       const featuredRentals = await RentalRequest.find({ status: 'available' })
         .sort({ createdAt: -1 })
         .limit(3)
         .populate('sellerId', 'firstName lastName')
         .exec();
 
+      // Fetch featured auctions - only approved and started auctions
+      const featuredAuctions = await AuctionRequest.find({ 
+        status: 'approved', 
+        started_auction: 'yes' 
+      })
+        .sort({ auctionDate: 1 }) // Sort by upcoming auction date
+        .limit(3)
+        .populate('sellerId', 'firstName lastName')
+        .exec();
+
       return res.render('buyer_dashboard/proj.ejs', {
         featuredRentals,
+        featuredAuctions, // Pass auction data to template
         user,
         error: null,
         success: null
+      });
+    }
+
+    // All auctions page with search/filter
+    if (page === 'auctions') {
+      const { search, condition, fuelType, transmission, minPrice, maxPrice } = req.query;
+      const query = { 
+        status: 'approved', 
+        started_auction: 'yes' 
+      };
+
+      if (search) {
+        query.vehicleName = { $regex: search, $options: 'i' };
+      }
+
+      if (condition) {
+        query.condition = condition;
+      }
+
+      if (fuelType) {
+        query.fuelType = fuelType;
+      }
+
+      if (transmission) {
+        query.transmission = transmission;
+      }
+
+      if (minPrice || maxPrice) {
+        query.startingBid = {};
+        if (minPrice) query.startingBid.$gte = parseFloat(minPrice);
+        if (maxPrice) query.startingBid.$lte = parseFloat(maxPrice);
+      }
+
+      const auctions = await AuctionRequest.find(query)
+        .sort({ auctionDate: 1 })
+        .populate('sellerId', 'firstName lastName email phone city state')
+        .exec();
+
+      return res.render('buyer_dashboard/auctions.ejs', {
+        auctions,
+        user,
+        search,
+        condition,
+        fuelType,
+        transmission,
+        minPrice,
+        maxPrice
       });
     }
 
@@ -99,6 +160,53 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
       });
     }
 
+    // Wishlist page
+    if (page === 'wishlist') {
+      try {
+        // Get user's wishlist items
+        let wishlist = await Wishlist.findOne({ userId: req.session.userId });
+        
+        // If no wishlist exists yet, create an empty one
+        if (!wishlist) {
+          wishlist = new Wishlist({
+            userId: req.session.userId,
+            auctions: [],
+            rentals: []
+          });
+          await wishlist.save();
+        }
+        
+        console.log("Wishlist found:", wishlist);
+        console.log("Auction IDs in wishlist:", wishlist.auctions);
+        console.log("Rental IDs in wishlist:", wishlist.rentals);
+        
+        // Get rental items details
+        const rentalWishlist = await RentalRequest.find({
+          _id: { $in: wishlist.rentals || [] }
+        }).populate('sellerId', 'firstName lastName');
+        
+        // Get auction items details
+        const auctionWishlist = await AuctionRequest.find({
+          _id: { $in: wishlist.auctions || [] }
+        }).populate('sellerId', 'firstName lastName');
+        
+        console.log("Found auction items:", auctionWishlist.length);
+        console.log("Found rental items:", rentalWishlist.length);
+        
+        return res.render('buyer_dashboard/wishlist', { 
+          user, 
+          auctionWishlist,
+          rentalWishlist
+        });
+      } catch (err) {
+        console.error('Error fetching wishlist:', err);
+        return res.status(500).render('buyer_dashboard/error', {
+          user,
+          message: 'Failed to load wishlist data: ' + err.message
+        });
+      }
+    }
+
     // Single rental view
     if (page === 'rental' && req.query.id) {
       const rental = await RentalRequest.findById(req.query.id)
@@ -131,30 +239,58 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
       });
     }
 
-    // All other pages (auctions, drivers, etc.)
+    // Single auction detail view
+    if (page === 'auction_detail' && req.query.id) {
+      const auction = await AuctionRequest.findById(req.query.id)
+        .populate('sellerId', 'firstName lastName email phone city state')
+        .populate('assignedMechanic', 'firstName lastName')
+        .exec();
+
+      if (!auction) {
+        return res.status(404).render('buyer_dashboard/error.ejs', {
+          user,
+          message: 'Auction not found'
+        });
+      }
+
+      // Format mechanic name if available
+      if (auction.assignedMechanic) {
+        auction.mechanicName = `${auction.assignedMechanic.firstName} ${auction.assignedMechanic.lastName}`;
+      }
+
+      return res.render('buyer_dashboard/auction_detail.ejs', {
+        auction,
+        seller: auction.sellerId,
+        user
+      });
+    }
+
+    // Single auction view for bidding
     if (page === 'auction' && req.query.id) {
-      // Get auction data from database
-      const auctionId = req.query.id;
-      
-      // This is where you'd normally fetch the auction data
-      // Since we don't have actual auction data, we'll create placeholder data
+      const auction = await AuctionRequest.findById(req.query.id)
+        .populate('sellerId', 'firstName lastName email phone city state')
+        .exec();
+
+      if (!auction) {
+        return res.status(404).render('buyer_dashboard/error.ejs', {
+          user,
+          message: 'Auction not found'
+        });
+      }
+
+      // Format data for the template
       const auctionData = {
-        name: "Vehicle Name", // Required by the template
-        image: "https://placeholder.com/car.jpg", // Required by the template
-        description: "Vehicle description",
-        startPrice: 10000,
-        currentBid: 12000,
-        endDate: new Date(),
-        seller: {
-          name: "Seller Name",
-          email: "seller@example.com"
-        },
-        specifications: {
-          year: 2020,
-          mileage: "15000 km",
-          condition: "Excellent",
-          fuelType: "Petrol"
-        }
+        id: auction._id,
+        name: auction.vehicleName,
+        image: auction.vehicleImage,
+        year: auction.year,
+        mileage: auction.mileage,
+        condition: auction.condition,
+        fuelType: auction.fuelType,
+        transmission: auction.transmission,
+        startPrice: auction.startingBid,
+        auctionDate: auction.auctionDate,
+        seller: auction.sellerId
       };
       
       return res.render('buyer_dashboard/auction.ejs', {
@@ -164,9 +300,8 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
     }
 
     const validPages = [
-      'auctions', 
       'drivers', 'driver',
-      'profile', 'wishlist',
+      'profile',
       'purchase', 'purchase_details',
       'about'
     ];
@@ -199,194 +334,263 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
   }
 });
 
-// Profile route
-router.get('/profile', isBuyerLoggedIn, async (req, res) => {
+// Direct route for auction detail
+router.get('/auction_detail', isBuyerLoggedIn, async (req, res) => {
   try {
+    if (!req.query.id) {
+      return res.status(404).render('buyer_dashboard/error.ejs', {
+        user: req.session.user || {},
+        message: 'Auction ID is required'
+      });
+    }
+
     const user = await User.findById(req.session.userId);
     if (!user) {
       req.session.destroy();
       return res.redirect('/login');
     }
-    res.render('buyer_dashboard/profile.ejs', { user });
+
+    const auction = await AuctionRequest.findById(req.query.id)
+      .populate('sellerId', 'firstName lastName email phone city state')
+      .populate('assignedMechanic', 'firstName lastName')
+      .exec();
+
+    if (!auction) {
+      return res.status(404).render('buyer_dashboard/error.ejs', {
+        user,
+        message: 'Auction not found'
+      });
+    }
+
+    // Format mechanic name if available
+    if (auction.assignedMechanic) {
+      auction.mechanicName = `${auction.assignedMechanic.firstName} ${auction.assignedMechanic.lastName}`;
+    }
+
+    return res.render('buyer_dashboard/auction_detail.ejs', {
+      auction,
+      seller: auction.sellerId,
+      user
+    });
   } catch (err) {
-    console.error(err);
-    res.render('buyer_dashboard/profile.ejs', { 
-      error: 'Failed to load user data', 
-      user: {} 
+    console.error('Error in auction_detail route:', err);
+    return res.status(500).render('buyer_dashboard/error.ejs', {
+      user: req.session.user || {},
+      message: 'An error occurred while loading the auction details'
     });
   }
 });
 
-// Update profile route
-router.post('/update-profile', isBuyerLoggedIn, async (req, res) => {
+// Direct route for auction bidding page
+router.get('/auction', isBuyerLoggedIn, async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, doorNo, street, city, state } = req.body;
-    
-    // Validate email if changed
-    if (email) {
-      const existingUser = await User.findOne({ 
-        email, 
-        _id: { $ne: req.session.userId } 
+    if (!req.query.id) {
+      return res.status(404).render('buyer_dashboard/error.ejs', {
+        user: req.session.user || {},
+        message: 'Auction ID is required'
       });
-      if (existingUser) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Email already in use' 
-        });
-      }
     }
-    
-    const updateData = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      doorNo,
-      street,
-      city,
-      state
-    };
-    
-    // Remove empty fields
-    Object.keys(updateData).forEach(key => {
-      if (updateData[key] === undefined || updateData[key] === '') {
-        delete updateData[key];
-      }
-    });
 
-    const user = await User.findByIdAndUpdate(
-      req.session.userId,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    );
-    
-    if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-    
-    // Update session
-    req.session.userName = `${user.firstName} ${user.lastName}`;
-    
-    res.json({ 
-      success: true, 
-      message: 'Profile updated successfully',
-      user: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        doorNo: user.doorNo,
-        street: user.street,
-        city: user.city,
-        state: user.state
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'An error occurred while updating profile' 
-    });
-  }
-});
-
-// Change password route
-router.post('/change-password', isBuyerLoggedIn, async (req, res) => {
-  try {
-    const { oldPassword, newPassword, confirmPassword } = req.body;
-    
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'All fields are required' 
-      });
-    }
-    
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'New passwords do not match' 
-      });
-    }
-    
-    if (newPassword.length < 8) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Password must be at least 8 characters' 
-      });
-    }
-    
     const user = await User.findById(req.session.userId);
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
+    const auction = await AuctionRequest.findById(req.query.id)
+      .populate('sellerId', 'firstName lastName email phone city state')
+      .exec();
+
+    if (!auction) {
+      return res.status(404).render('buyer_dashboard/error.ejs', {
+        user,
+        message: 'Auction not found'
       });
     }
+
+    // Format data for the template
+    const auctionData = {
+      id: auction._id,
+      name: auction.vehicleName,
+      image: auction.vehicleImage,
+      year: auction.year,
+      mileage: auction.mileage,
+      condition: auction.condition,
+      fuelType: auction.fuelType,
+      transmission: auction.transmission,
+      startPrice: auction.startingBid,
+      auctionDate: auction.auctionDate,
+      seller: auction.sellerId
+    };
     
-    const isMatch = await user.comparePassword(oldPassword);
-    if (!isMatch) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Current password is incorrect' 
-      });
-    }
-    
-    user.password = newPassword;
-    await user.save();
-    
-    res.json({ 
-      success: true, 
-      message: 'Password changed successfully' 
+    return res.render('buyer_dashboard/auction.ejs', {
+      ...auctionData,
+      user
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'An error occurred while changing password' 
+    console.error('Error in auction route:', err);
+    return res.status(500).render('buyer_dashboard/error.ejs', {
+      user: req.session.user || {},
+      message: 'An error occurred while loading the auction'
     });
   }
 });
 
-// Update preferences route
-router.post('/update-preferences', isBuyerLoggedIn, async (req, res) => {
+// API to get wishlist items
+router.get('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
   try {
-    const { notificationPreference } = req.body;
+    let wishlist = await Wishlist.findOne({ userId: req.session.userId });
     
-    if (!['all', 'important', 'none'].includes(notificationPreference)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid preference' 
+    if (!wishlist) {
+      // Create empty wishlist if it doesn't exist
+      wishlist = new Wishlist({
+        userId: req.session.userId,
+        auctions: [],
+        rentals: []
       });
+      await wishlist.save();
     }
     
-    const user = await User.findByIdAndUpdate(
-      req.session.userId,
-      { $set: { notificationPreference } },
-      { new: true }
-    );
-    
-    if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-    
-    res.json({ 
-      success: true, 
-      message: 'Preferences updated successfully' 
+    res.json({
+      success: true,
+      wishlist: {
+        auctions: wishlist.auctions || [],
+        rentals: wishlist.rentals || []
+      }
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'An error occurred while updating preferences' 
+    console.error('Error fetching wishlist data:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve wishlist'
     });
   }
 });
+
+// API to add to wishlist
+router.post('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
+  try {
+    const { rentalId, auctionId, type } = req.body;
+    
+    // Validate input
+    if (!type || (type === 'rental' && !rentalId) || (type === 'auction' && !auctionId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+    
+    // Get or create wishlist
+    let wishlist = await Wishlist.findOne({ userId: req.session.userId });
+    
+    if (!wishlist) {
+      wishlist = new Wishlist({
+        userId: req.session.userId,
+        auctions: [],
+        rentals: []
+      });
+    }
+    
+    // Add item to wishlist
+    if (type === 'rental' && rentalId) {
+      // Check if rental exists
+      const rental = await RentalRequest.findById(rentalId);
+      if (!rental) {
+        return res.status(404).json({
+          success: false,
+          message: 'Rental not found'
+        });
+      }
+      
+      // Add rental to wishlist if not already there
+      if (!wishlist.rentals.includes(rentalId)) {
+        wishlist.rentals.push(rentalId);
+      }
+    } else if (type === 'auction' && auctionId) {
+      // Check if auction exists
+      const auction = await AuctionRequest.findById(auctionId);
+      if (!auction) {
+        return res.status(404).json({
+          success: false,
+          message: 'Auction not found'
+        });
+      }
+      
+      // Add auction to wishlist if not already there
+      if (!wishlist.auctions.includes(auctionId)) {
+        wishlist.auctions.push(auctionId);
+      }
+    }
+    
+    await wishlist.save();
+    
+    res.json({
+      success: true,
+      message: 'Item added to wishlist',
+      wishlist: {
+        auctions: wishlist.auctions,
+        rentals: wishlist.rentals
+      }
+    });
+  } catch (err) {
+    console.error('Error adding to wishlist:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update wishlist'
+    });
+  }
+});
+
+// API to remove from wishlist
+router.delete('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
+  try {
+    const { rentalId, auctionId, type } = req.body;
+    
+    // Validate input
+    if (!type || (type === 'rental' && !rentalId) || (type === 'auction' && !auctionId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+    
+    // Get wishlist
+    const wishlist = await Wishlist.findOne({ userId: req.session.userId });
+    
+    if (!wishlist) {
+      return res.status(404).json({
+        success: false,
+        message: 'Wishlist not found'
+      });
+    }
+    
+    // Remove item from wishlist
+    if (type === 'rental' && rentalId) {
+      wishlist.rentals = wishlist.rentals.filter(id => id.toString() !== rentalId);
+    } else if (type === 'auction' && auctionId) {
+      wishlist.auctions = wishlist.auctions.filter(id => id.toString() !== auctionId);
+    }
+    
+    await wishlist.save();
+    
+    res.json({
+      success: true,
+      message: 'Item removed from wishlist',
+      wishlist: {
+        auctions: wishlist.auctions,
+        rentals: wishlist.rentals
+      }
+    });
+  } catch (err) {
+    console.error('Error removing from wishlist:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to remove from wishlist'
+    });
+  }
+});
+
+// Profile route and other routes from your original file...
+// ...
 
 module.exports = router;

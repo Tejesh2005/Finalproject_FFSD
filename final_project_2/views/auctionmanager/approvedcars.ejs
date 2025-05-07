@@ -126,62 +126,31 @@
         </div>
       </div>
 
-    <!-- Cards Container -->
-    <div class="cards-container">
-      <!-- Car Card 1 -->
-      <div class="car-card" onclick="window.location.href='approvedcars.html'">
+ <!-- Cards Container -->
+ <div class="cards-container">
+  <% if (approvedCars && approvedCars.length > 0) { %>
+    <% approvedCars.forEach(function(car) { %>
+      <div class="car-card" onclick="window.location.href='/auctionmanager/cardetails/<%= car._id %>'">
         <div class="car-image-container">
-          <img src="/images/tata_harrier.png" alt="Tata Harrier" class="car-image" />
+          <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
         </div>
         <div class="car-details">
-          <div class="car-name">Tata Harrier</div>
-          <div class="car-condition">Condition: Excellent</div>
+          <div class="car-name"><%= car.vehicleName %></div>
+          <div class="car-condition">Condition: <%= car.condition.charAt(0).toUpperCase() + car.condition.slice(1) %></div>
+          <div style="margin-top: 10px; color: #555;">
+            Seller: <%= car.sellerId.firstName %> <%= car.sellerId.lastName %>
+          </div>
+          <div style="color: #555;">
+            Location: <%= car.sellerId.city %>
+          </div>
         </div>
       </div>
-
-      <!-- Car Card 2 -->
-      <div class="car-card" onclick="window.location.href='approvedcars.html'">
-        <div class="car-image-container">
-          <img src="/images/land_rover.png" alt="Land Rover" class="car-image" />
-        </div>
-        <div class="car-details">
-          <div class="car-name">Land Rover</div>
-          <div class="car-condition">Condition: Good</div>
-        </div>
-      </div>
-
-      <!-- Car Card 3 -->
-      <div class="car-card" onclick="window.location.href='approvedcars.html'">
-        <div class="car-image-container">
-          <img src="/images/toyota_innova.png" alt="Toyota Innova" class="car-image" />
-        </div>
-        <div class="car-details">
-          <div class="car-name">Toyota Innova</div>
-          <div class="car-condition">Condition: Fair</div>
-        </div>
-      </div>
-
-      <!-- Car Card 4 -->
-      <div class="car-card" onclick="window.location.href='approvedcars.html'">
-        <div class="car-image-container">
-          <img src="/images/ford_mus.png" alt="Ford Mustang" class="car-image" />
-        </div>
-        <div class="car-details">
-          <div class="car-name">Ford Mustang</div>
-          <div class="car-condition">Condition: Excellent</div>
-        </div>
-      </div>
-
-      <!-- Car Card 5 -->
-      <div class="car-card" onclick="window.location.href='approvedcars.html'">
-        <div class="car-image-container">
-          <img src="/images/honda_civic.png" alt="Honda Civic" class="car-image" />
-        </div>
-        <div class="car-details">
-          <div class="car-name">Honda Civic</div>
-          <div class="car-condition">Condition: Good</div>
-        </div>
-      </div>
+    <% }); %>
+  <% } else { %>
+    <div style="text-align: center; padding: 40px; color: #666; font-size: 18px;">
+      No approved cars available
     </div>
-  </body>
+  <% } %>
+</div>
+</body>
 </html>

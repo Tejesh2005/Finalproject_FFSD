@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../../models/User');
 const RentalRequest = require('../../models/RentalRequest');
 const AuctionRequest = require('../../models/AuctionRequest');
+const AuctionBid = require('../../models/AuctionBid');
 const Wishlist = require('../../models/Wishlist');
 
 // Middleware to check if user is logged in
@@ -45,7 +46,7 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
 
       return res.render('buyer_dashboard/proj.ejs', {
         featuredRentals,
-        featuredAuctions, // Pass auction data to template
+        featuredAuctions,
         user,
         error: null,
         success: null
@@ -222,7 +223,7 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
 
       // Pass the rental data directly to the template, including the rentalId
       return res.render('buyer_dashboard/rental.ejs', {
-        rentalId: rental._id, // Pass the _id as rentalId
+        rentalId: rental._id,
         vehicleName: rental.vehicleName,
         vehicleImage: rental.vehicleImage,
         year: rental.year,
@@ -234,7 +235,7 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         costPerDay: rental.costPerDay,
         driverAvailable: rental.driverAvailable,
         driverRate: rental.driverRate,
-        seller: rental.sellerId, // Rename sellerId to seller for clarity
+        seller: rental.sellerId,
         user
       });
     }
@@ -278,23 +279,18 @@ router.get('/buyer_dashboard', isBuyerLoggedIn, async (req, res) => {
         });
       }
 
-      // Format data for the template
-      const auctionData = {
-        id: auction._id,
-        name: auction.vehicleName,
-        image: auction.vehicleImage,
-        year: auction.year,
-        mileage: auction.mileage,
-        condition: auction.condition,
-        fuelType: auction.fuelType,
-        transmission: auction.transmission,
-        startPrice: auction.startingBid,
-        auctionDate: auction.auctionDate,
-        seller: auction.sellerId
-      };
-      
+      // Fetch current bid (most recent bid marked as current)
+      const currentBid = await AuctionBid.findOne({ auctionId: req.query.id, isCurrentBid: true })
+        .sort({ bidTime: -1 });
+
+      // Check if the logged-in user is the current bidder
+      const isCurrentBidder = currentBid && req.session.userId === currentBid.buyerId.toString();
+
       return res.render('buyer_dashboard/auction.ejs', {
-        ...auctionData,
+        auction,
+        currentBid,
+        isLoggedIn: !!req.session.userId,
+        isCurrentBidder,
         user
       });
     }
@@ -408,23 +404,18 @@ router.get('/auction', isBuyerLoggedIn, async (req, res) => {
       });
     }
 
-    // Format data for the template
-    const auctionData = {
-      id: auction._id,
-      name: auction.vehicleName,
-      image: auction.vehicleImage,
-      year: auction.year,
-      mileage: auction.mileage,
-      condition: auction.condition,
-      fuelType: auction.fuelType,
-      transmission: auction.transmission,
-      startPrice: auction.startingBid,
-      auctionDate: auction.auctionDate,
-      seller: auction.sellerId
-    };
-    
+    // Fetch current bid (most recent bid marked as current)
+    const currentBid = await AuctionBid.findOne({ auctionId: req.query.id, isCurrentBid: true })
+      .sort({ bidTime: -1 });
+
+    // Check if the logged-in user is the current bidder
+    const isCurrentBidder = currentBid && req.session.userId === currentBid.buyerId.toString();
+
     return res.render('buyer_dashboard/auction.ejs', {
-      ...auctionData,
+      auction,
+      currentBid,
+      isLoggedIn: !!req.session.userId,
+      isCurrentBidder,
       user
     });
   } catch (err) {
@@ -433,6 +424,69 @@ router.get('/auction', isBuyerLoggedIn, async (req, res) => {
       user: req.session.user || {},
       message: 'An error occurred while loading the auction'
     });
+  }
+});
+
+// Route to handle bid placement
+router.post('/auction/place-bid', isBuyerLoggedIn, async (req, res) => {
+  try {
+    const { auctionId, bidAmount } = req.body;
+    const buyerId = req.session.userId;
+
+    if (!auctionId || !bidAmount) {
+      return res.status(400).json({ success: false, message: 'Auction ID and bid amount are required' });
+    }
+
+    const bidValue = parseFloat(bidAmount);
+    if (isNaN(bidValue) || bidValue <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid bid amount' });
+    }
+
+    // Fetch auction
+    const auction = await AuctionRequest.findById(auctionId);
+    if (!auction) {
+      return res.status(404).json({ success: false, message: 'Auction not found' });
+    }
+
+    // Check if auction has started
+    if (auction.started_auction !== 'yes') {
+      return res.status(400).json({ success: false, message: 'Auction has not started yet' });
+    }
+
+    // Fetch current bid
+    const currentBid = await AuctionBid.findOne({ auctionId, isCurrentBid: true })
+      .sort({ bidTime: -1 });
+
+    // Check if the buyer is the current bidder
+    if (currentBid && currentBid.buyerId.toString() === buyerId) {
+      return res.status(400).json({ success: false, message: 'You already have the current bid' });
+    }
+
+    // Validate bid amount
+    const minBid = currentBid ? currentBid.bidAmount + 2000 : auction.startingBid;
+    if (bidValue < minBid) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Your bid must be at least ₹${minBid.toLocaleString()}` 
+      });
+    }
+
+    // Create new bid
+    const newBid = new AuctionBid({
+      auctionId,
+      sellerId: auction.sellerId,
+      buyerId,
+      bidAmount: bidValue,
+      isCurrentBid: true
+    });
+
+    // Save the bid (pre-save middleware will handle making previous bids non-current)
+    await newBid.save();
+
+    return res.json({ success: true, message: 'Bid placed successfully' });
+  } catch (error) {
+    console.error('Error placing bid:', error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -534,7 +588,7 @@ router.post('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error('Error adding to wishlist:', err);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to update wishlist'
     });
@@ -583,14 +637,11 @@ router.delete('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error('Error removing from wishlist:', err);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to remove from wishlist'
     });
   }
 });
-
-// Profile route and other routes from your original file...
-// ...
 
 module.exports = router;

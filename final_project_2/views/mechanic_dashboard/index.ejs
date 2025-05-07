@@ -197,27 +197,6 @@
   <% } %>
 </section>
 
-<!-- Past Tasks Section -->
-<section class="task-box">
-  <h2 class="task-heading">Past Tasks</h2>
-  <div class="vehicle-list">
-      <% if (completedTasks && completedTasks.length > 0) { %>
-          <% completedTasks.forEach(vehicle => { %>
-              <div class="vehicle-card">
-                  <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
-                  <h3><%= vehicle.vehicleName %></h3>
-                  <p><strong>Year:</strong> <%= vehicle.year %></p>
-                  <% if (vehicle.mechanicReview && vehicle.mechanicReview.conditionRating) { %>
-                      <p><strong>Your Rating:</strong> <%= '★'.repeat(vehicle.mechanicReview.conditionRating) %></p>
-                  <% } %>
-              </div>
-          <% }); %>
-      <% } else { %>
-          <p class="no-tasks">No completed tasks yet.</p>
-      <% } %>
-  </div>
-  <a href="/mechanic_dashboard/past-tasks" class="see-more">See More</a>
-</section>
     </main>
 
     <%- include('partials/footer') %>

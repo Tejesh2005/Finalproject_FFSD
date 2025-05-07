@@ -52,7 +52,7 @@ const auctionRequestSchema = new mongoose.Schema({
   },
   started_auction: {
     type: String,
-    enum: ['yes', 'no'],
+    enum: ['yes', 'no', 'ended'], // Added 'ended'
     default: 'no'
   },
   assignedMechanic: {
@@ -62,7 +62,6 @@ const auctionRequestSchema = new mongoose.Schema({
   mechanicName: {
     type: String
   },
-
   mechanicReview: {
     mechanicalCondition: String,
     bodyCondition: String,
@@ -74,7 +73,6 @@ const auctionRequestSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-
 });
 
 const AuctionRequest = mongoose.model('AuctionRequest', auctionRequestSchema);

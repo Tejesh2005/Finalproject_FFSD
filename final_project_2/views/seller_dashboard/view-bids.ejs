@@ -67,6 +67,54 @@
       .bids-list ul li:last-child {
         border-bottom: none;
       }
+
+      /* Popup Styles */
+      .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .popup-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .popup-content h2 {
+        color: #ff6b00;
+        margin-bottom: 1rem;
+      }
+
+      .popup-content p {
+        color: #333;
+        margin-bottom: 1rem;
+      }
+
+      .close-btn {
+        background: #ff6b00;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .close-btn:hover {
+        background: #e65c00;
+      }
     </style>
   </head>
   <body>
@@ -110,7 +158,32 @@
       </div>
     </section>
 
+    <!-- Popup for Auction Ended -->
+    <% if (auction.started_auction === 'ended' && currentBid) { %>
+      <div class="popup-overlay" id="auctionEndedPopup">
+        <div class="popup-content">
+          <h2>Auction Ended</h2>
+          <p>The auction for <%= helpers.capitalize(auction.vehicleName) %> has ended.</p>
+          <p><strong>Final Bid Amount:</strong> ₹<%= currentBid.bidAmount.toLocaleString('en-IN') %></p>
+          <p><strong>Winner:</strong> <%= helpers.capitalize(currentBid.buyerId.firstName) %> <%= helpers.capitalize(currentBid.buyerId.lastName) %> (<%= currentBid.buyerId.email %>)</p>
+          <button class="close-btn" onclick="closePopup()">Close</button>
+        </div>
+      </div>
+    <% } %>
+
     <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
+
+    <script>
+      // Show popup if auction has ended
+      if (document.getElementById('auctionEndedPopup')) {
+        document.getElementById('auctionEndedPopup').style.display = 'flex';
+      }
+
+      // Close popup function
+      function closePopup() {
+        document.getElementById('auctionEndedPopup').style.display = 'none';
+      }
+    </script>
   </body>
 </html>

@@ -1,12 +1,41 @@
 const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
+const AuctionBid = require('../../models/AuctionBid');
+
+// Helper function to safely capitalize strings
+const safeCapitalize = (str) => {
+  if (!str || typeof str !== 'string') return 'Not specified';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+// Helper function to format date
+const formatDate = (date) => {
+  if (!date) return 'Not specified';
+  try {
+    return new Date(date).toLocaleString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  } catch (e) {
+    return 'Invalid date';
+  }
+};
+
+// Helper function to format currency
+const formatCurrency = (amount) => {
+  if (!amount || isNaN(amount)) return '₹0';
+  return `₹${Number(amount).toLocaleString('en-IN')}`;
+};
 
 router.get('/approvedcars', async (req, res) => {
   try {
-    // Fetch all cars with status 'approved' and populate seller info
     const approvedCars = await AuctionRequest.find({ status: 'approved' })
-      .populate('sellerId', 'firstName lastName city');
+      .populate('sellerId', 'firstName lastName city email');
     
     res.render('auctionmanager/approvedcars', { approvedCars });
   } catch (err) {
@@ -15,15 +44,11 @@ router.get('/approvedcars', async (req, res) => {
   }
 });
 
-// Add new route to handle starting an auction
+// Route to start an auction
 router.post('/start-auction/:id', async (req, res) => {
   try {
     const carId = req.params.id;
-    
-    // Update the started_auction field to 'yes'
     await AuctionRequest.findByIdAndUpdate(carId, { started_auction: 'yes' });
-    
-    // Redirect back to the approved cars page
     res.redirect('/auctionmanager/approvedcars');
   } catch (err) {
     console.error('Error starting auction:', err);
@@ -31,16 +56,48 @@ router.post('/start-auction/:id', async (req, res) => {
   }
 });
 
-// Add route for viewing bids
+// Route to stop an auction
+router.post('/stop-auction/:id', async (req, res) => {
+  try {
+    const carId = req.params.id;
+    await AuctionRequest.findByIdAndUpdate(carId, { started_auction: 'ended' });
+    res.redirect('/auctionmanager/approvedcars');
+  } catch (err) {
+    console.error('Error stopping auction:', err);
+    res.status(500).json({ error: 'Failed to stop auction' });
+  }
+});
+
+// Route to view bids
 router.get('/view-bids/:id', async (req, res) => {
   try {
     const carId = req.params.id;
-    // You'll need to implement this view to show bids
-    // For now, just redirecting to a placeholder route
-    res.redirect(`/auctionmanager/bids/${carId}`);
+    const auction = await AuctionRequest.findById(carId)
+      .populate('sellerId', 'firstName lastName email city')
+      .lean();
+    
+    if (!auction) {
+      return res.redirect('/auctionmanager/approvedcars');
+    }
+
+    // Fetch bids for this auction
+    const bids = await AuctionBid.getBidsForAuction(carId);
+    const currentBid = bids.find(bid => bid.isCurrentBid) || null;
+    const pastBids = bids.filter(bid => !bid.isCurrentBid).slice(0, 3); // Get up to 3 past bids
+
+    res.render('auctionmanager/view-bids', {
+      auction,
+      currentBid,
+      pastBids,
+      helpers: {
+        capitalize: safeCapitalize,
+        formatDate,
+        formatCurrency
+      }
+    });
   } catch (err) {
     console.error('Error viewing bids:', err);
-    res.status(500).json({ error: 'Failed to view bids' });
+    res.redirect('/auctionmanager/approvedcars');
   }
 });
 

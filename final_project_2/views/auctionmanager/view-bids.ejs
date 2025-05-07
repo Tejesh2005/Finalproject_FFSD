@@ -66,60 +66,6 @@
       padding: 0 20px;
     }
 
-    /* Auction Details Section */
-    .auction-details {
-      background-color: white;
-      border-radius: 15px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    .car-image-container {
-      width: 300px;
-      height: 200px;
-      overflow: hidden;
-      border-radius: 10px;
-      margin-right: 30px;
-      margin-bottom: 20px;
-    }
-
-    .car-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .details-section {
-      flex: 1;
-      min-width: 300px;
-    }
-
-    .car-name {
-      font-size: 28px;
-      font-weight: bold;
-      color: #ff6b00;
-      margin-bottom: 15px;
-    }
-
-    .detail-row {
-      display: flex;
-      margin-bottom: 10px;
-    }
-
-    .detail-label {
-      width: 120px;
-      font-weight: 600;
-      color: #555;
-    }
-
-    .detail-value {
-      flex: 1;
-      color: #333;
-    }
-
     /* Bids Section */
     .bids-section {
       background-color: white;
@@ -230,65 +176,8 @@
       background-color: #2a66cf;
     }
 
-    /* Test Bid Form */
-    .test-bid-form {
-      background-color: #f8f9fa;
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 30px;
-      border: 1px dashed #aaa;
-    }
-
-    .test-bid-form h3 {
-      margin-bottom: 15px;
-      color: #666;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: #555;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      font-size: 16px;
-    }
-
-    .submit-btn {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .submit-btn:hover {
-      background-color: #218838;
-    }
-
     /* Responsive Design */
     @media (max-width: 768px) {
-      .auction-details {
-        flex-direction: column;
-      }
-      
-      .car-image-container {
-        width: 100%;
-        margin-right: 0;
-      }
-      
       .bid-info {
         flex-direction: column;
       }
@@ -308,57 +197,17 @@
 
   <!-- Main Container -->
   <div class="container">
-    <!-- Auction Details Section -->
-    <div class="auction-details">
-      <div class="car-image-container">
-        <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>" class="car-image" />
-      </div>
-      <div class="details-section">
-        <div class="car-name"><%= auction.vehicleName %></div>
-        <div class="detail-row">
-          <div class="detail-label">Condition:</div>
-          <div class="detail-value"><%= helpers.capitalize(auction.condition) %></div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Year:</div>
-          <div class="detail-value"><%= auction.year %></div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Mileage:</div>
-          <div class="detail-value"><%= auction.mileage %> km</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Fuel Type:</div>
-          <div class="detail-value"><%= helpers.capitalize(auction.fuelType) %></div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Transmission:</div>
-          <div class="detail-value"><%= helpers.capitalize(auction.transmission) %></div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Starting Bid:</div>
-          <div class="detail-value"><%= helpers.formatCurrency(auction.startingBid) %></div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Seller:</div>
-          <div class="detail-value"><%= auction.sellerId.firstName %> <%= auction.sellerId.lastName %> (<%= auction.sellerId.email %>)</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Location:</div>
-          <div class="detail-value"><%= auction.sellerId.city %></div>
-        </div>
-      </div>
-    </div>
-
     <!-- Bids Section -->
     <div class="bids-section">
       <div class="section-title">
-        <span>Auction Bids</span>
+        <span>Bids on <%= helpers.capitalize(auction.vehicleName) %></span>
         <div>
           <a href="/auctionmanager/approvedcars" class="action-btn back-btn">Back to Cars</a>
-          <form action="/auctionmanager/stop-auction/<%= auction._id %>" method="POST" style="display: inline;">
-            <button type="submit" class="action-btn stop-auction-btn">Stop Auction</button>
-          </form>
+          <% if (auction.started_auction === 'yes') { %>
+            <form action="/auctionmanager/stop-auction/<%= auction._id %>" method="POST" style="display: inline;">
+              <button type="submit" class="action-btn stop-auction-btn">Stop Auction</button>
+            </form>
+          <% } %>
         </div>
       </div>
 
@@ -368,27 +217,27 @@
           <div class="bid-amount"><%= helpers.formatCurrency(currentBid.bidAmount) %></div>
           <div class="bid-info">
             <div>
-              <strong>Bidder:</strong> <%= currentBid.buyerId.firstName %> <%= currentBid.buyerId.lastName %> (<%= currentBid.buyerId.email %>)
+              <strong>Bidder:</strong> <%= helpers.capitalize(currentBid.buyerId.firstName) %> <%= helpers.capitalize(currentBid.buyerId.lastName) %> (<%= currentBid.buyerId.email %>)
             </div>
             <div><strong>Time:</strong> <%= helpers.formatDate(currentBid.bidTime) %></div>
           </div>
         </div>
       <% } else { %>
         <div class="no-bids">
-          <p>No bids have been placed yet. Starting bid is <%= helpers.formatCurrency(auction.startingBid) %>.</p>
+          <p>No bids have been placed yet.</p>
         </div>
       <% } %>
 
       <!-- Past Bids -->
       <% if (pastBids && pastBids.length > 0) { %>
-        <div class="past-bids-title">Previous Bids</div>
+        <div class="past-bids-title">Bid History (Last 3)</div>
         <div class="past-bids">
           <% pastBids.forEach(function(bid) { %>
             <div class="past-bid-card">
               <div class="past-bid-amount"><%= helpers.formatCurrency(bid.bidAmount) %></div>
               <div class="bid-info">
                 <div>
-                  <strong>Bidder:</strong> <%= bid.buyerId.firstName %> <%= bid.buyerId.lastName %> (<%= bid.buyerId.email %>)
+                  <strong>Bidder:</strong> <%= helpers.capitalize(bid.buyerId.firstName) %> <%= helpers.capitalize(bid.buyerId.lastName) %> (<%= bid.buyerId.email %>)
                 </div>
                 <div><strong>Time:</strong> <%= helpers.formatDate(bid.bidTime) %></div>
               </div>
@@ -396,30 +245,7 @@
           <% }); %>
         </div>
       <% } %>
-
-      <!-- Test Bid Form (for development purposes) -->
-      <div class="test-bid-form">
-        <h3>Add Test Bid (Development Only)</h3>
-        <form action="/auctionmanager/add-test-bid/<%= auction._id %>" method="POST">
-          <div class="form-group">
-            <label for="buyerId">Buyer ID</label>
-            <input type="text" id="buyerId" name="buyerId" class="form-control" placeholder="Enter buyer ID" required>
-          </div>
-          <div class="form-group">
-            <label for="bidAmount">Bid Amount</label>
-            <input type="number" id="bidAmount" name="bidAmount" class="form-control" placeholder="Enter bid amount" required>
-          </div>
-          <button type="submit" class="submit-btn">Add Test Bid</button>
-        </form>
-      </div>
     </div>
   </div>
-
-  <script>
-    // Auto refresh the page every 30 seconds
-    setTimeout(function() {
-      window.location.reload();
-    }, 30000);
-  </script>
 </body>
 </html>

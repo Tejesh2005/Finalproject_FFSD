@@ -27,6 +27,10 @@
         justify-content: space-between;
         align-items: center;
         height: 80px;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
       }
 
       .logo {
@@ -72,7 +76,6 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border: 1px solid #ddd;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
       }
 
       .car-card:hover {
@@ -113,6 +116,50 @@
         color: #ff6b00; /* Orange text for condition */
         font-weight: bold;
       }
+
+      /* Auction Button Styles */
+      .auction-button {
+        background-color: #ff6b00;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 15px;
+        width: 150px;
+        text-align: center;
+      }
+
+      .auction-button:hover {
+        background-color: #e05e00;
+      }
+
+      .view-bids-button {
+        background-color: #3a86ff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 15px;
+        width: 150px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .view-bids-button:hover {
+        background-color: #2a66cf;
+      }
+
+      .button-container {
+        margin-top: auto;
+        align-self: flex-end;
+      }
     </style>
   </head>
   <body>
@@ -130,7 +177,7 @@
  <div class="cards-container">
   <% if (approvedCars && approvedCars.length > 0) { %>
     <% approvedCars.forEach(function(car) { %>
-      <div class="car-card" onclick="window.location.href='/auctionmanager/cardetails/<%= car._id %>'">
+      <div class="car-card">
         <div class="car-image-container">
           <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
         </div>
@@ -144,6 +191,15 @@
             Location: <%= car.sellerId.city %>
           </div>
         </div>
+        <div class="button-container">
+          <% if (car.started_auction === 'no') { %>
+            <form action="/auctionmanager/start-auction/<%= car._id %>" method="POST">
+              <button type="submit" class="auction-button">Start Auction</button>
+            </form>
+          <% } else { %>
+            <a href="/auctionmanager/view-bids/<%= car._id %>" class="view-bids-button">View Bids</a>
+          <% } %>
+        </div>
       </div>
     <% }); %>
   <% } else { %>
@@ -152,5 +208,42 @@
     </div>
   <% } %>
 </div>
+
+<script>
+  // JavaScript to handle form submission and prevent page reloads (optional enhancement)
+  document.addEventListener('DOMContentLoaded', function() {
+    const auctionForms = document.querySelectorAll('form[action^="/auctionmanager/start-auction/"]');
+    
+    auctionForms.forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+          const response = await fetch(this.action, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            // Replace the button with the View Bids button
+            const buttonContainer = this.parentElement;
+            const carId = this.action.split('/').pop();
+            
+            buttonContainer.innerHTML = `
+              <a href="/auctionmanager/view-bids/${carId}" class="view-bids-button">View Bids</a>
+            `;
+          } else {
+            console.error('Failed to start auction');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      });
+    });
+  });
+</script>
+
 </body>
 </html>

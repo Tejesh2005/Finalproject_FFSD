@@ -218,6 +218,50 @@
         font-size: 1.2rem;
         margin-bottom: 1.5rem;
       }
+      
+      /* Alert Modal */
+      .alert-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 101;
+        overflow-y: auto;
+      }
+      
+      .alert-content {
+        background-color: #fff;
+        margin: 15% auto;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 1rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        text-align: center;
+        padding: 2rem;
+      }
+      
+      .alert-message {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #ff6b00;
+      }
+      
+      .alert-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #ff6b00, #ff9a44);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        cursor: pointer;
+      }
 
       /* Responsive Design */
       @media (max-width: 768px) {
@@ -243,14 +287,12 @@
       <% if (auctions && auctions.length > 0) { %>
         <div class="auction-grid" id="auction-listings">
           <% auctions.forEach(auction => { %>
-            <div class="auction-card" data-id="<%= auction._id %>">
-              <a href="/seller_dashboard/auction-details/<%= auction._id %>">
-                <img 
-                  src="<%= auction.vehicleImage || 'https://via.placeholder.com/300x200?text=No+Image' %>" 
-                  alt="<%= auction.vehicleName || 'Vehicle image' %>" 
-                  class="auction-image"
-                >
-              </a>
+            <div class="auction-card" onclick="openModal('<%= auction._id %>')">
+              <img 
+                src="<%= auction.vehicleImage || 'https://via.placeholder.com/300x200?text=No+Image' %>" 
+                alt="<%= auction.vehicleName || 'Vehicle image' %>" 
+                class="auction-image"
+              >
               <div class="auction-info">
                 <div class="auction-title"><%= auction.vehicleName || 'Unnamed Vehicle' %></div>
                 <p>
@@ -259,6 +301,11 @@
                     <%= helpers.capitalize(auction.status || 'pending') %>
                   </span>
                 </p>
+                <% if (auction.started_auction === 'yes') { %>
+                  <p><strong>Auction:</strong> Started</p>
+                <% } else { %>
+                  <p><strong>Auction:</strong> Not Started</p>
+                <% } %>
               </div>
             </div>
           <% }); %>
@@ -279,6 +326,10 @@
                   <div class="vehicle-status-container">
                     <strong>Status: </strong>
                     <span id="modalVehicleStatus" class=""></span>
+                  </div>
+                  <div class="auction-status-container">
+                    <strong>Auction: </strong>
+                    <span id="modalAuctionStarted"></span>
                   </div>
                 </div>
               </div>
@@ -316,6 +367,14 @@
             </div>
           </div>
         </div>
+        
+        <!-- Alert Modal -->
+        <div id="alertModal" class="alert-modal">
+          <div class="alert-content">
+            <div class="alert-message" id="alertMessage"></div>
+            <button class="alert-btn" onclick="closeAlertModal()">OK</button>
+          </div>
+        </div>
       <% } else { %>
         <div class="no-auctions">
           <p>You haven't listed any vehicles for auction yet.</p>
@@ -342,12 +401,14 @@
             condition: "<%= helpers.capitalize(auction.condition || 'Not specified') %>",
             auctionDate: "<%= helpers.formatDate(auction.auctionDate) %>",
             startingBid: "<%= auction.startingBid ? `₹${auction.startingBid}` : 'Not specified' %>",
-            status: "<%= auction.status || 'pending' %>"
+            status: "<%= auction.status || 'pending' %>",
+            started_auction: "<%= auction.started_auction || 'no' %>"
           }<%= index < auctions.length - 1 ? ',' : '' %>
         <% }); %>
       ];
       
       const modal = document.getElementById("vehicleModal");
+      const alertModal = document.getElementById("alertModal");
       
       // Function to open the modal and populate with vehicle data
       function openModal(auctionId) {
@@ -370,19 +431,48 @@
         statusElement.textContent = auction.status.charAt(0).toUpperCase() + auction.status.slice(1);
         statusElement.className = `status-${auction.status}`;
         
+        // Set auction started status
+        const auctionStartedElement = document.getElementById("modalAuctionStarted");
+        auctionStartedElement.textContent = auction.started_auction === 'yes' ? 'Started' : 'Not Started';
+        
         // Add View Bids button if applicable
         const viewBidsContainer = document.getElementById("viewBidsContainer");
         viewBidsContainer.innerHTML = '';
+        
         if (auction.status === 'approved' || auction.status === 'assignedMechanic') {
-          const viewBidsBtn = document.createElement('a');
-          viewBidsBtn.href = `/seller_dashboard/view-bids?auctionId=${auction.id}`;
-          viewBidsBtn.className = 'card-btn';
-          viewBidsBtn.textContent = 'View Bids';
-          viewBidsContainer.appendChild(viewBidsBtn);
+          if (auction.started_auction === 'yes') {
+            // If auction is approved and started, allow viewing bids
+            const viewBidsBtn = document.createElement('a');
+            viewBidsBtn.href = `/seller_dashboard/view-bids/${auction.id}`;
+            viewBidsBtn.className = 'card-btn';
+            viewBidsBtn.textContent = 'View Bids';
+            viewBidsContainer.appendChild(viewBidsBtn);
+          } else {
+            // If auction is approved but not started, show button that triggers alert
+            const notStartedBtn = document.createElement('button');
+            notStartedBtn.className = 'card-btn';
+            notStartedBtn.textContent = 'View Bids';
+            notStartedBtn.onclick = function(e) {
+              e.preventDefault();
+              showAlert("Auction has not yet started. Please wait for the auction manager to start the auction.");
+            };
+            viewBidsContainer.appendChild(notStartedBtn);
+          }
         }
         
         // Show modal
         modal.style.display = "block";
+      }
+      
+      // Function to show alert modal
+      function showAlert(message) {
+        document.getElementById("alertMessage").textContent = message;
+        alertModal.style.display = "block";
+      }
+      
+      // Function to close the alert modal
+      function closeAlertModal() {
+        alertModal.style.display = "none";
       }
       
       // Function to close the modal
@@ -394,6 +484,9 @@
       window.onclick = function(event) {
         if (event.target === modal) {
           closeModal();
+        }
+        if (event.target === alertModal) {
+          closeAlertModal();
         }
       }
       

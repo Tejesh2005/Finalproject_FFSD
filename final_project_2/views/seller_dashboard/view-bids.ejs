@@ -5,153 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Bids - DriveBidRent</title>
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
 
-body {
-  background-color: #ffffff;
-  color: #333333;
-}
+      body {
+        background-color: #ffffff;
+        color: #333333;
+      }
 
-/* Seller Dashboard Content */
-.seller-dashboard {
-  padding: 4rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+      /* Seller Dashboard Content */
+      .seller-dashboard {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-.seller-dashboard h1 {
-  color: #ff6b00;
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
+      .seller-dashboard h1 {
+        color: #ff6b00;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
 
-/* View Bids Container */
-.view-bids-container {
-  display: flex;
-  gap: 2rem;
-  margin-top: 2rem;
-}
+      /* Bids List */
+      .bids-list {
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
 
-/* Left Side: Bids List and Graph */
-.left-side {
-  flex: 2;
-}
+      .bids-list h2 {
+        color: #ff6b00;
+        margin-bottom: 1rem;
+      }
 
-.bids-list {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
+      .bids-list h3 {
+        color: #333333;
+        margin: 1rem 0;
+        font-size: 1.2rem;
+      }
 
-.bids-list h2 {
-  color: #ff6b00;
-  margin-bottom: 1rem;
-}
+      .bids-list ul {
+        list-style: none;
+        padding: 0;
+      }
 
-.bids-list ul {
-  list-style: none;
-  padding: 0;
-}
+      .bids-list ul li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+        color: #333333;
+      }
 
-.bids-list ul li {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #eee;
-  color: #333333;
-}
-
-.bids-list ul li:last-child {
-  border-bottom: none;
-}
-
-.bid-history-graph {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.bid-history-graph h2 {
-  color: #ff6b00;
-  margin-bottom: 1rem;
-}
-
-/* Right Side: Auction End Timer and Contact */
-.right-side {
-  flex: 1;
-}
-
-.auction-end-timer {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.auction-end-timer h2 {
-  color: #ff6b00;
-  margin-bottom: 1rem;
-}
-
-#countdown {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333333;
-}
-
-.contact-bidder {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.contact-bidder h2 {
-  color: #ff6b00;
-  margin-bottom: 1rem;
-}
-
-.contact-bidder p {
-  margin-bottom: 1rem;
-  color: #333333;
-}
-
-.card-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #ff6b00, #ff9a44);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background 0.3s ease;
-  margin: 0.5rem;
-  width: calc(100% - 1rem);
-  text-align: center;
-  cursor: pointer;
-}
-
-.card-btn:hover {
-  background: linear-gradient(135deg, #ff9a44, #ff6b00);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .view-bids-container {
-    flex-direction: column;
-  }
-}
+      .bids-list ul li:last-child {
+        border-bottom: none;
+      }
     </style>
   </head>
   <body>
@@ -160,127 +75,42 @@ body {
 
     <!-- View Bids Content -->
     <section class="seller-dashboard">
-      <h1>Bids on Honda Civic</h1>
-      <div class="view-bids-container">
-        <!-- Left Side: Bids List and Graph -->
-        <div class="left-side">
-          <!-- Bids List -->
-          <div class="bids-list">
-            <h2>Bids</h2>
-            <ul>
+      <h1>Bids on <%= helpers.capitalize(auction.vehicleName) %></h1>
+      <!-- Bids List -->
+      <div class="bids-list">
+        <h2>Bids</h2>
+        <!-- Current Bid -->
+        <h3>Current Bid</h3>
+        <ul>
+          <% if (currentBid) { %>
+            <li>
+              ₹<%= currentBid.bidAmount.toLocaleString('en-IN') %> - Bidder: 
+              <strong><%= helpers.capitalize(currentBid.buyerId.firstName) %> <%= helpers.capitalize(currentBid.buyerId.lastName) %></strong>
+              (<%= helpers.formatDate(currentBid.bidTime) %>)
+            </li>
+          <% } else { %>
+            <li>No bids yet.</li>
+          <% } %>
+        </ul>
+        <!-- Bid History -->
+        <h3>Bid History (Last 3)</h3>
+        <ul>
+          <% if (bidHistory && bidHistory.length > 0) { %>
+            <% bidHistory.forEach(bid => { %>
               <li>
-                ₹5,20,000 - Bidder: <strong>John Doe</strong> (01/10/2023 10:00
-                AM)
+                ₹<%= bid.bidAmount.toLocaleString('en-IN') %> - Bidder: 
+                <strong><%= helpers.capitalize(bid.buyerId.firstName) %> <%= helpers.capitalize(bid.buyerId.lastName) %></strong>
+                (<%= helpers.formatDate(bid.bidTime) %>)
               </li>
-              <li>
-                ₹5,10,000 - Bidder: <strong>Jane Smith</strong> (01/10/2023
-                09:30 AM)
-              </li>
-              <li>
-                ₹5,05,000 - Bidder: <strong>Alice Johnson</strong> (01/10/2023
-                09:00 AM)
-              </li>
-              <li>
-                ₹5,00,000 - Bidder: <strong>Bob Brown</strong> (01/10/2023 08:30
-                AM)
-              </li>
-            </ul>
-          </div>
-
-          <!-- Bid History Graph -->
-          <div class="bid-history-graph">
-            <h2>Bid History</h2>
-            <canvas id="bidHistoryChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Right Side: Auction End Timer and Contact -->
-        <div class="right-side">
-          <!-- Auction End Timer -->
-          <div class="auction-end-timer">
-            <h2>Auction Ends In</h2>
-            <div id="countdown">
-              <span id="days">00</span>d : <span id="hours">00</span>h :
-              <span id="minutes">00</span>m : <span id="seconds">00</span>s
-            </div>
-          </div>
-
-          <!-- Contact Highest Bidder -->
-          <div class="contact-bidder">
-            <h2>Contact Highest Bidder</h2>
-            <p>Highest Bidder: <strong>John Doe</strong></p>
-            <p>Bid Amount: <strong>₹5,20,000</strong></p>
-            <button class="card-btn" id="contact-bidder">Contact Bidder</button>
-          </div>
-        </div>
+            <% }); %>
+          <% } else { %>
+            <li>No past bids available.</li>
+          <% } %>
+        </ul>
       </div>
     </section>
 
     <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
-    
-    <!-- Chart.js for Bid History Graph -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      // Bid History Graph
-      const ctx = document.getElementById("bidHistoryChart").getContext("2d");
-      const bidHistoryChart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: ["08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM"],
-          datasets: [
-            {
-              label: "Bid Amount (₹)",
-              data: [500000, 505000, 510000, 520000],
-              borderColor: "#ff6b00",
-              tension: 0.1,
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
-
-      // Auction End Timer
-      const countdownDate = new Date("2025-06-05T12:00:00").getTime();
-
-      const countdown = setInterval(() => {
-        const now = new Date().getTime();
-        const distance = countdownDate - now;
-
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        document.getElementById("days").innerText = days;
-        document.getElementById("hours").innerText = hours;
-        document.getElementById("minutes").innerText = minutes;
-        document.getElementById("seconds").innerText = seconds;
-
-        if (distance < 0) {
-          clearInterval(countdown);
-          document.getElementById("countdown").innerHTML = "Auction Ended";
-        }
-      }, 1000);
-
-      // Contact Bidder Button
-      const contactBidderButton = document.getElementById("contact-bidder");
-      contactBidderButton.addEventListener("click", () => {
-        alert("Contacting the highest bidder...");
-      });
-      
-      // Logout button functionality
-      document.querySelector('.logout-btn').addEventListener('click', () => {
-        window.location.href = '/logout';
-      });
-    </script>
   </body>
 </html>

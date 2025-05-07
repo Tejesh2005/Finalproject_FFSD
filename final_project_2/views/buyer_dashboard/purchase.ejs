@@ -1,4 +1,3 @@
-<!-- This file should be saved as views/buyer_dashboard/purchase.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -224,37 +223,27 @@
     <!-- Auction Purchases Section -->
     <section class="purchases-section">
         <h2>Auction Purchases</h2>
+        <% if (auctionPurchases && auctionPurchases.length > 0) { %>
         <div class="card-container">
-            <!-- Car 1 -->
+            <% auctionPurchases.forEach(purchase => { %>
             <div class="car-card">
                 <span class="status-tag purchased">Purchased</span>
-                <img src="https://di-honda-enrollment.s3.amazonaws.com/2021/model-pages/civic_hatchback/trims/Hatchback+Sport+Touring.jpg" alt="Honda Civic">
-                <h3>Honda Civic</h3>
-                <p class="purchase-date">Purchased on: <strong>15/01/2025</strong></p>
+                <img src="<%= purchase.vehicleImage %>" alt="<%= purchase.vehicleName %>">
+                <h3><%= purchase.vehicleName %></h3>
+                <p class="purchase-date">Purchased on: <strong><%= new Date(purchase.purchaseDate).toLocaleDateString() %></strong></p>
                 <div class="car-details">
-                    <p><strong>Year:</strong> 2022</p>
-                    <p><strong>Mileage:</strong> 12,000 km</p>
-                    <p><strong>Purchase Price:</strong> ₹12,50,000</p>
-                    <p><strong>Documents:</strong> <a href="#" class="doc-link">View</a></p>
+                    <p><strong>Year:</strong> <%= purchase.year %></p>
+                    <p><strong>Mileage:</strong> <%= purchase.mileage %> km</p>
+                    <p><strong>Purchase Price:</strong> ₹<%= purchase.purchasePrice.toLocaleString() %></p>
+                    <p><strong>Seller:</strong> <%= purchase.sellerName %></p>
                 </div>
-                <a href="/purchase_details" class="details-btn">More Details</a>
+                <a href="/purchase_details?id=<%= purchase._id %>" class="details-btn">More Details</a>
             </div>
-
-            <!-- Car 2 -->
-            <div class="car-card">
-                <span class="status-tag purchased">Purchased</span>
-                <img src="https://i.ibb.co/NfJHnXw/Screenshot-2025-02-23-162450.png" alt="Skoda">
-                <h3>Skoda</h3>
-                <p class="purchase-date">Purchased on: <strong>12/12/2024</strong></p>
-                <div class="car-details">
-                    <p><strong>Year:</strong> 2021</p>
-                    <p><strong>Mileage:</strong> 14,068 km</p>
-                    <p><strong>Purchase Price:</strong> ₹5,00,000</p>
-                    <p><strong>Documents:</strong> <a href="#" class="doc-link">View</a></p>
-                </div>
-                <a href="/purchase_details" class="details-btn">More Details</a>
-            </div>
+            <% }); %>
         </div>
+        <% } else { %>
+        < culprit style="text-align: center; color: #666;">You haven't purchased any vehicles from auctions yet.</p>
+        <% } %>
     </section>
 
     <!-- Current Rentals Section -->
@@ -281,6 +270,47 @@
         <% } else { %>
         <p style="text-align: center; color: #666;">You don't have any active rentals.</p>
         <% } %>
+    </section>
+
+    <!-- Current Driver Bookings -->
+    <section class="driver-section">
+        <h2>Current Driver Bookings</h2>
+        <div class="card-container">
+            <!-- Driver 1 -->
+            <div class="car-card">
+                <span class="status-tag active">Active</span>
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e" alt="Driver John">
+                <h3>John Smith</h3>
+                <p class="booking-period">Period: <strong>22/02/2025 - 24/02/2025</strong></p>
+                <div class="car-details">
+                    <p><strong>Daily Rate:</strong> ₹1,500</p>
+                    <p><strong>Experience:</strong> 8 years</p>
+                    <p><strong>Languages:</strong> English, Hindi</p>
+                    <p><strong>Rating:</strong> 4.8⭐</p>
+                </div>
+                <a href="#contact" class="details-btn">Contact Driver</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Previous Driver Bookings -->
+    <section class="previous-drivers">
+        <h2>Previous Driver Bookings</h2>
+        <div class="card-container">
+            <!-- Driver 1 -->
+            <div class="car-card">
+                <span class="status-tag completed">Completed</span>
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" alt="Driver Mike">
+                <h3>Mike Chen</h3>
+                <p class="booking-period">Period: <strong>05/01/2025 - 07/01/2025</strong></p>
+                <div class="car-details">
+                    <p><strong>Total Cost:</strong> ₹4,500</p>
+                    <p><strong>Service Type:</strong> Local</p>
+                    <p><strong>Rating Given:</strong> ⭐⭐⭐⭐½</p>
+                    <p><strong>Status:</strong> Completed</p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Include Footer -->

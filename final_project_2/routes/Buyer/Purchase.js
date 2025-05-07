@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const RentalCost = require('../../models/RentalCost');
 const RentalRequest = require('../../models/RentalRequest');
+const AuctionRequest = require('../../models/AuctionRequest');
+const AuctionBid = require('../../models/AuctionBid');
 const User = require('../../models/User');
 const mongoose = require('mongoose');
 
@@ -13,7 +15,7 @@ const ensureAuthenticated = (req, res, next) => {
   res.redirect('/login');
 };
 
-// Purchase page route - display user's rentals
+// Purchase page route - display user's rentals and auction purchases
 router.get('/purchase', ensureAuthenticated, async (req, res) => {
   try {
     // Get the current user's ID from session
@@ -28,11 +30,6 @@ router.get('/purchase', ensureAuthenticated, async (req, res) => {
     // Find all rental costs where the user is the buyer
     const rentalCosts = await RentalCost.find({ buyerId });
     
-    // If no rentals found, render page with empty rentals array
-    if (!rentalCosts || rentalCosts.length === 0) {
-      return res.render('buyer_dashboard/purchase', { rentals: [], user });
-    }
-
     // Get the rental details for each rental cost
     const rentals = await Promise.all(rentalCosts.map(async (rentalCost) => {
       // Get the rental request details
@@ -66,10 +63,38 @@ router.get('/purchase', ensureAuthenticated, async (req, res) => {
     // Filter out null values (from rentals not found)
     const validRentals = rentals.filter(rental => rental !== null);
 
-    // Render the purchase page with the rentals data
-    res.render('buyer_dashboard/purchase', { rentals: validRentals, user });
+    // Find all completed auctions where the user is the winning bidder
+    const auctionBids = await AuctionBid.find({ 
+      buyerId,
+      isCurrentBid: true 
+    }).populate({
+      path: 'auctionId',
+      match: { status: 'completed' }, // Assuming completed auctions have status 'completed'
+      populate: { path: 'sellerId', select: 'firstName lastName' }
+    });
+
+    // Filter out bids where auctionId is null (due to match) and map to desired format
+    const auctionPurchases = auctionBids
+      .filter(bid => bid.auctionId) // Only include bids with valid auctions
+      .map(bid => ({
+        _id: bid.auctionId._id,
+        vehicleName: bid.auctionId.vehicleName,
+        vehicleImage: bid.auctionId.vehicleImage,
+        year: bid.auctionId.year,
+        mileage: bid.auctionId.mileage,
+        purchasePrice: bid.bidAmount,
+        purchaseDate: bid.bidTime, // Use bid time as purchase date
+        sellerName: `${bid.auctionId.sellerId.firstName} ${bid.auctionId.sellerId.lastName}`
+      }));
+
+    // Render the purchase page with rentals and auction purchases
+    res.render('buyer_dashboard/purchase', { 
+      rentals: validRentals, 
+      auctionPurchases, 
+      user 
+    });
   } catch (err) {
-    console.error('Error fetching rental data:', err);
+    console.error('Error fetching purchase data:', err);
     res.status(500).render('buyer_dashboard/error', { 
       message: 'Failed to load purchase data',
       user: {}
@@ -77,7 +102,7 @@ router.get('/purchase', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Purchase details route for auction purchases (static for now)
+// Purchase details route for auction purchases
 router.get('/purchase_details', ensureAuthenticated, (req, res) => {
   res.redirect('/buyer_dashboard?page=purchase_details');
 });

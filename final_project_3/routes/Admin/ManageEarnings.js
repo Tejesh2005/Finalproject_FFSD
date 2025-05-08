@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../../models/User');
 const RentalCost = require('../../models/RentalCost');
 const RentalRequest = require('../../models/RentalRequest');
-const AuctionRequest = require('../../models/AuctionRequest');
+const AuctionCost = require('../../models/AuctionCost');
 
 // Middleware to check admin login
 const isAdminLoggedIn = (req, res, next) => {
@@ -22,14 +22,15 @@ router.get('/manage-earnings', isAdminLoggedIn, async (req, res) => {
       .populate('rentalCarId', 'vehicleName')
       .lean();
 
-    const totalRentalRevenue = rentalCosts.reduce((sum, cost) => sum + (cost.totalCost || 0), 0);
+    const totalRentalCost = rentalCosts.reduce((sum, cost) => sum + (cost.totalCost || 0), 0);
+    const totalRentalRevenue = totalRentalCost * 0.04; // Revenue from rentals = (sum of totalCost) * 0.04
 
-    // Fetch auction revenue (using startingBid as placeholder)
-    const auctions = await AuctionRequest.find({ status: 'approved' })
+    // Fetch auction revenue from AuctionCost (sum of convenienceFee)
+    const auctionCosts = await AuctionCost.find()
       .populate('sellerId', 'firstName lastName')
       .lean();
 
-    const totalAuctionRevenue = auctions.reduce((sum, auction) => sum + (auction.startingBid || 0), 0);
+    const totalAuctionRevenue = auctionCosts.reduce((sum, auction) => sum + (auction.convenienceFee || 0), 0);
 
     // Calculate total revenue
     const totalRevenue = totalRentalRevenue + totalAuctionRevenue;
@@ -43,12 +44,12 @@ router.get('/manage-earnings', isAdminLoggedIn, async (req, res) => {
       createdAt: cost.createdAt
     }));
 
-    const auctionTransactions = auctions.slice(0, 5).map(auction => ({
+    const auctionTransactions = auctionCosts.slice(0, 5).map(auction => ({
       utrNumber: null,
       userName: auction.sellerId ? `${auction.sellerId.firstName} ${auction.sellerId.lastName}` : 'Unknown',
       type: 'Auction',
-      amount: auction.startingBid, // Placeholder until actual sale price is available
-      createdAt: auction.createdAt
+      amount: auction.convenienceFee,
+      createdAt: auction.paymentDate
     }));
 
     // Combine and sort transactions by date (most recent first)

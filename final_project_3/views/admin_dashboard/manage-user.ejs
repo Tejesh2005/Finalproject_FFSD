@@ -34,6 +34,18 @@
       text-align: center;
     }
     
+    .search-bar {
+      margin-bottom: 1rem;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
     .mechanic-list, .buyer-list, .seller-list {
       list-style: none;
       padding: 0;
@@ -56,6 +68,10 @@
       margin: 0;
       border: none;
       overflow: hidden;
+    }
+    
+    .mechanic-item.hidden, .buyer-item.hidden, .seller-item.hidden {
+      display: none;
     }
     
     .mechanic-info, .buyer-info, .seller-info {
@@ -86,6 +102,28 @@
     
     .btn-red {
       background-color: #ff3333;
+    }
+    
+    .show-more {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    
+    .show-more-btn {
+      background-color: #ff6b00;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .show-more-btn:hover {
+      background-color: #e65c00;
     }
     
     .modal {
@@ -173,10 +211,17 @@
     <div class="card">
       <h2>Mechanics Waiting for Approval</h2>
       
+      <div class="search-bar">
+        <input type="text" id="pendingMechanicSearch" placeholder="Search by name or email..." onkeyup="searchUsers('pendingMechanic')">
+      </div>
+      
       <ul class="mechanic-list" id="mechanic-list">
         <% if (users && users.length > 0) { %>
-          <% users.forEach(user => { %>
-            <li class="mechanic-item" id="mechanic-<%= user._id %>">
+          <% users.forEach((user, index) => { %>
+            <li class="mechanic-item <%= index >= 5 ? 'hidden' : '' %>" id="mechanic-<%= user._id %>" 
+                data-firstname="<%= user.firstName.toLowerCase() %>" 
+                data-lastname="<%= user.lastName.toLowerCase() %>" 
+                data-email="<%= user.email.toLowerCase() %>">
               <div class="mechanic-info">
                 <strong><%= user.firstName %> <%= user.lastName %></strong> - <%= user.email %> (Mechanic)
                 <span style="margin-left: 10px; font-style: italic;">
@@ -196,16 +241,30 @@
           <li class="no-mechanics">No pending mechanics found</li>
         <% } %>
       </ul>
+      <% if (users && users.length > 5) { %>
+        <div class="show-more">
+          <button class="show-more-btn" onclick="toggleShowMore('mechanic-list')">
+            Show More <span class="arrow">▼</span>
+          </button>
+        </div>
+      <% } %>
     </div>
 
     <!-- Approved Mechanics Section -->
     <div class="card">
       <h2>Manage Mechanics</h2>
       
+      <div class="search-bar">
+        <input type="text" id="approvedMechanicSearch" placeholder="Search by name or email..." onkeyup="searchUsers('approvedMechanic')">
+      </div>
+      
       <ul class="mechanic-list" id="approved-mechanic-list">
         <% if (mechanics && mechanics.length > 0) { %>
-          <% mechanics.forEach(mechanic => { %>
-            <li class="mechanic-item" id="mechanic-<%= mechanic._id %>">
+          <% mechanics.forEach((mechanic, index) => { %>
+            <li class="mechanic-item <%= index >= 5 ? 'hidden' : '' %>" id="mechanic-<%= mechanic._id %>" 
+                data-firstname="<%= mechanic.firstName.toLowerCase() %>" 
+                data-lastname="<%= mechanic.lastName.toLowerCase() %>" 
+                data-email="<%= mechanic.email.toLowerCase() %>">
               <div class="mechanic-info">
                 <strong><%= mechanic.firstName %> <%= mechanic.lastName %></strong> - <%= mechanic.email %> (Mechanic)
               </div>
@@ -221,16 +280,30 @@
           <li class="no-mechanics">No approved mechanics found</li>
         <% } %>
       </ul>
+      <% if (mechanics && mechanics.length > 5) { %>
+        <div class="show-more">
+          <button class="show-more-btn" onclick="toggleShowMore('approved-mechanic-list')">
+            Show More <span class="arrow">▼</span>
+          </button>
+        </div>
+      <% } %>
     </div>
 
     <!-- Buyers Section -->
     <div class="card">
       <h2>Manage Buyers</h2>
       
+      <div class="search-bar">
+        <input type="text" id="buyerSearch" placeholder="Search by name or email..." onkeyup="searchUsers('buyer')">
+      </div>
+      
       <ul class="buyer-list" id="buyer-list">
         <% if (buyers && buyers.length > 0) { %>
-          <% buyers.forEach(buyer => { %>
-            <li class="buyer-item" id="buyer-<%= buyer._id %>">
+          <% buyers.forEach((buyer, index) => { %>
+            <li class="buyer-item <%= index >= 5 ? 'hidden' : '' %>" id="buyer-<%= buyer._id %>" 
+                data-firstname="<%= buyer.firstName.toLowerCase() %>" 
+                data-lastname="<%= buyer.lastName.toLowerCase() %>" 
+                data-email="<%= buyer.email.toLowerCase() %>">
               <div class="buyer-info">
                 <strong><%= buyer.firstName %> <%= buyer.lastName %></strong> - <%= buyer.email %> (Buyer)
               </div>
@@ -246,16 +319,30 @@
           <li class="no-buyers">No buyers found</li>
         <% } %>
       </ul>
+      <% if (buyers && buyers.length > 5) { %>
+        <div class="show-more">
+          <button class="show-more-btn" onclick="toggleShowMore('buyer-list')">
+            Show More <span class="arrow">▼</span>
+          </button>
+        </div>
+      <% } %>
     </div>
 
     <!-- Sellers Section -->
     <div class="card">
       <h2>Manage Sellers</h2>
       
+      <div class="search-bar">
+        <input type="text" id="sellerSearch" placeholder="Search by name or email..." onkeyup="searchUsers('seller')">
+      </div>
+      
       <ul class="seller-list" id="seller-list">
         <% if (sellers && sellers.length > 0) { %>
-          <% sellers.forEach(seller => { %>
-            <li class="seller-item" id="seller-<%= seller._id %>">
+          <% sellers.forEach((seller, index) => { %>
+            <li class="seller-item <%= index >= 5 ? 'hidden' : '' %>" id="seller-<%= seller._id %>" 
+                data-firstname="<%= seller.firstName.toLowerCase() %>" 
+                data-lastname="<%= seller.lastName.toLowerCase() %>" 
+                data-email="<%= seller.email.toLowerCase() %>">
               <div class="seller-info">
                 <strong><%= seller.firstName %> <%= seller.lastName %></strong> - <%= seller.email %> (Seller)
               </div>
@@ -271,6 +358,13 @@
           <li class="no-sellers">No sellers found</li>
         <% } %>
       </ul>
+      <% if (sellers && sellers.length > 5) { %>
+        <div class="show-more">
+          <button class="show-more-btn" onclick="toggleShowMore('seller-list')">
+            Show More <span class="arrow">▼</span>
+          </button>
+        </div>
+      <% } %>
     </div>
   </div>
 
@@ -485,6 +579,68 @@
           alertDiv.remove();
         }, 500);
       }, 5000);
+    }
+
+    // Search functionality
+    function searchUsers(type) {
+      const searchInput = document.getElementById(`${type}Search`).value.toLowerCase();
+      const listId = type === 'pendingMechanic' ? 'mechanic-list' : type === 'approvedMechanic' ? 'approved-mechanic-list' : `${type}-list`;
+      const list = document.getElementById(listId);
+      const items = list.querySelectorAll(`.${type === 'pendingMechanic' || type === 'approvedMechanic' ? 'mechanic' : type}-item`);
+
+      items.forEach(item => {
+        const firstName = item.dataset.firstname;
+        const lastName = item.dataset.lastname;
+        const email = item.dataset.email;
+        const fullName = `${firstName} ${lastName}`;
+
+        if (fullName.includes(searchInput) || email.includes(searchInput)) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      // Update Show More button visibility
+      const visibleItems = Array.from(items).filter(item => !item.classList.contains('hidden'));
+      const showMoreBtn = list.nextElementSibling?.querySelector('.show-more-btn');
+      if (showMoreBtn) {
+        showMoreBtn.style.display = visibleItems.length > 5 ? 'flex' : 'none';
+      }
+    }
+
+    // Toggle Show More/Show Less
+    function toggleShowMore(listId) {
+      const list = document.getElementById(listId);
+      const items = list.querySelectorAll(`.${listId.includes('mechanic') ? 'mechanic' : listId.includes('buyer') ? 'buyer' : 'seller'}-item`);
+      const showMoreBtn = list.nextElementSibling.querySelector('.show-more-btn');
+      const arrow = showMoreBtn.querySelector('.arrow');
+      const isShowingAll = showMoreBtn.textContent.includes('Show Less');
+
+      if (isShowingAll) {
+        // Hide items beyond the first 5
+        items.forEach((item, index) => {
+          if (index >= 5 && !item.classList.contains('removing')) {
+            item.classList.add('hidden');
+          }
+        });
+        showMoreBtn.innerHTML = 'Show More <span class="arrow">▼</span>';
+      } else {
+        // Show all items
+        items.forEach(item => {
+          if (!item.classList.contains('removing')) {
+            item.classList.remove('hidden');
+          }
+        });
+        showMoreBtn.innerHTML = 'Show Less <span class="arrow">▲</span>';
+      }
+
+      // Reapply search filter after toggling
+      const searchInput = document.querySelector(`#${listId === 'mechanic-list' ? 'pendingMechanicSearch' : listId === 'approved-mechanic-list' ? 'approvedMechanicSearch' : listId === 'buyer-list' ? 'buyerSearch' : 'sellerSearch'}`).value;
+      if (searchInput) {
+        const type = listId === 'mechanic-list' ? 'pendingMechanic' : listId === 'approved-mechanic-list' ? 'approvedMechanic' : listId === 'buyer-list' ? 'buyer' : 'seller';
+        searchUsers(type);
+      }
     }
   </script>
 </body>

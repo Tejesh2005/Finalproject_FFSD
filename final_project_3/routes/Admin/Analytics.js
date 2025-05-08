@@ -1,118 +1,85 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const User = require('../../models/User');
-const RentalRequest = require('../../models/RentalRequest');
-const AuctionRequest = require('../../models/AuctionRequest');
-const RentalCost = require('../../models/RentalCost');
+const User = require("../../models/User");
+const RentalRequest = require("../../models/RentalRequest");
+const AuctionRequest = require("../../models/AuctionRequest");
+const RentalCost = require("../../models/RentalCost");
+const AuctionCost = require("../../models/AuctionCost");
 
 // Middleware to check admin login
 const isAdminLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'admin') {
-    return res.redirect('/login');
+  if (!req.session.userId || req.session.userType !== "admin") {
+    return res.redirect("/login");
   }
   next();
 };
 
 // GET: Show analytics page
-router.get('/analytics', isAdminLoggedIn, async (req, res) => {
+router.get("/analytics", isAdminLoggedIn, async (req, res) => {
   try {
     // Fetch total users
     const totalUsers = await User.countDocuments();
 
-    // Fetch total cars rented (unavailable rentals)
-    const totalCarsRented = await RentalRequest.countDocuments({ status: 'unavailable' });
+    // Fetch total cars rented (completed rentals from RentalCost)
+    const totalCarsRented = await RentalCost.countDocuments();
 
     // Fetch total auction listings
     const totalAuctionListings = await AuctionRequest.countDocuments();
 
-    // Aggregate vehicle sales performance for rentals
-    const rentalPerformance = await RentalCost.aggregate([
-      {
-        $lookup: {
-          from: 'rentalrequests',
-          localField: 'rentalCarId',
-          foreignField: '_id',
-          as: 'rental'
-        }
-      },
-      { $unwind: '$rental' },
-      {
-        $group: {
-          _id: '$rental.vehicleName',
-          unitsSold: { $sum: 1 },
-          totalRevenue: { $sum: '$totalCost' }
-        }
-      },
-      {
-        $project: {
-          vehicleName: '$_id',
-          unitsSold: 1,
-          totalRevenue: 1,
-          avgSalePrice: { $divide: ['$totalRevenue', '$unitsSold'] },
-          _id: 0
-        }
-      },
-      { $sort: { totalRevenue: -1 } },
-      { $limit: 5 }
-    ]);
-
-    // Aggregate vehicle sales performance for auctions
-    // Note: AuctionRequest does not have a final sale price field, so we'll use startingBid as a placeholder
+    // Aggregate vehicle sales performance for auctions (all purchased cars)
     const auctionPerformance = await AuctionRequest.aggregate([
       {
-        $match: { status: 'approved' } // Assuming 'approved' means the auction was completed
-      },
-      {
-        $group: {
-          _id: '$vehicleName',
-          unitsSold: { $sum: 1 },
-          totalRevenue: { $sum: '$startingBid' } // Placeholder: Replace with actual sale price when available
-        }
+        $match: {
+          status: "approved",
+          started_auction: "ended",
+          winnerId: { $exists: true, $ne: null }, // Ensure a buyer has won
+          vehicleName: { $exists: true, $ne: null },
+          // Remove type checking to troubleshoot
+          startingBid: { $exists: true },
+          finalPurchasePrice: { $exists: true },
+        },
       },
       {
         $project: {
-          vehicleName: '$_id',
-          unitsSold: 1,
-          totalRevenue: 1,
-          avgSalePrice: { $divide: ['$totalRevenue', '$unitsSold'] },
-          _id: 0
-        }
+          vehicleName: 1,
+          startingPrice: "$startingBid",
+          finalSalePrice: "$finalPurchasePrice",
+        },
       },
-      { $sort: { totalRevenue: -1 } },
-      { $limit: 5 }
+      { $sort: { finalSalePrice: -1 } },
     ]);
 
-    // Combine rental and auction performance
-    const vehiclePerformance = [...rentalPerformance, ...auctionPerformance]
-      .reduce((acc, curr) => {
-        const existing = acc.find(item => item.vehicleName === curr.vehicleName);
-        if (existing) {
-          existing.unitsSold += curr.unitsSold;
-          existing.totalRevenue += curr.totalRevenue;
-          existing.avgSalePrice = existing.totalRevenue / existing.unitsSold;
-        } else {
-          acc.push(curr);
-        }
-        return acc;
-      }, [])
-      .sort((a, b) => b.totalRevenue - a.totalRevenue)
-      .slice(0, 5);
+    // Use auctionPerformance directly for vehiclePerformance
+    const vehiclePerformance = auctionPerformance;
 
-    res.render('admin_dashboard/analytics.ejs', {
+    // Debug: Log fetched data
+    console.log("Total Users:", totalUsers);
+    console.log("Total Cars Rented:", totalCarsRented);
+    console.log("Total Auction Listings:", totalAuctionListings);
+    console.log(
+      "Auction Performance:",
+      JSON.stringify(auctionPerformance, null, 2)
+    );
+    console.log(
+      "Vehicle Performance:",
+      JSON.stringify(vehiclePerformance, null, 2)
+    );
+
+    res.render("admin_dashboard/analytics.ejs", {
       totalUsers,
       totalCarsRented,
       totalAuctionListings,
       vehiclePerformance,
-      error: null
+      error: null,
     });
   } catch (err) {
-    console.error('Error fetching analytics data:', err);
-    res.status(500).render('admin_dashboard/analytics.ejs', {
+    console.error("Error fetching analytics data:", err);
+    res.status(500).render("admin_dashboard/analytics.ejs", {
       totalUsers: 0,
       totalCarsRented: 0,
       totalAuctionListings: 0,
       vehiclePerformance: [],
-      error: 'Failed to load analytics data'
+      error: "Failed to load analytics data: " + err.message,
     });
   }
 });

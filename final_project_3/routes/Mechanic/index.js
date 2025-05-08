@@ -17,27 +17,31 @@ router.get("/index", async (req, res) => {
                 user,
                 showApprovalPopup: true,
                 assignedVehicles: [],
-                displayedVehicles: []
+                displayedVehicles: [],
+                completedTasks: [],
+                allCompletedTasks: []
             });
         }
 
-        // Get current assigned vehicles (status: 'assignedMechanic')
+        // Get current assigned vehicles (status: 'assignedMechanic', reviewStatus: 'pending')
         const assignedVehicles = await AuctionRequest.find({
             assignedMechanic: req.session.userId,
-            status: 'assignedMechanic'
+            status: 'assignedMechanic',
+            reviewStatus: 'pending'
         }).sort({ createdAt: -1 });
 
-        // Get recently completed tasks (optional - if you want to show past tasks)
-        const completedTasks = await AuctionRequest.find({
+        // Get completed tasks (reviewStatus: 'completed')
+        const allCompletedTasks = await AuctionRequest.find({
             assignedMechanic: req.session.userId,
-            status: 'completed' // You'll need to add this status to your schema
-        }).sort({ createdAt: -1 }).limit(2);
+            reviewStatus: 'completed'
+        }).sort({ createdAt: -1 });
 
         res.render("mechanic_dashboard/index.ejs", { 
             user,
             assignedVehicles,
             displayedVehicles: assignedVehicles.slice(0, 3),
-            completedTasks, // Pass to template if you want real past tasks
+            completedTasks: allCompletedTasks.slice(0, 2),
+            allCompletedTasks,
             showApprovalPopup: false
         });
     } catch (err) {
@@ -47,6 +51,7 @@ router.get("/index", async (req, res) => {
             assignedVehicles: [],
             displayedVehicles: [],
             completedTasks: [],
+            allCompletedTasks: [],
             showApprovalPopup: false
         });
     }

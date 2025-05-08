@@ -37,6 +37,7 @@ router.post('/submit-review/:id', async (req, res) => {
         recommendations,
         conditionRating
       },
+      reviewStatus: 'completed' // Update reviewStatus to completed
     });
 
     res.redirect('/mechanic_dashboard/index');

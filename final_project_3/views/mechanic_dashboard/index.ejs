@@ -174,29 +174,52 @@
     <!-- Main content -->
     <main id="mainContent">
       <!-- Current Tasks Section -->
-<section class="task-box">
-  <h2 class="task-heading">Current Tasks</h2>
-  <div class="vehicle-list">
-      <% if (displayedVehicles.length > 0) { %>
-          <% displayedVehicles.forEach(vehicle => { %>
-              <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
-                  <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
-                  <h3><%= vehicle.vehicleName %></h3>
-                  <p><strong>Year:</strong> <%= vehicle.year %></p>
-                  <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
-                  <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
-                  <p><strong>Auction Date:</strong> <%= vehicle.auctionDate.toLocaleDateString() %></p>
-              </div>
-          <% }); %>
-      <% } else { %>
-          <p class="no-tasks">No vehicles currently assigned to you.</p>
-      <% } %>
-  </div>
-  <% if (assignedVehicles.length > 3) { %>
-      <a href="/mechanic_dashboard/current-tasks" class="see-more">See More (<%= assignedVehicles.length - 3 %> more)</a>
-  <% } %>
-</section>
+      <section class="task-box">
+        <h2 class="task-heading">Current Tasks</h2>
+        <div class="vehicle-list">
+            <% if (displayedVehicles.length > 0) { %>
+                <% displayedVehicles.forEach(vehicle => { %>
+                    <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+                        <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
+                        <h3><%= vehicle.vehicleName %></h3>
+                        <p><strong>Year:</strong> <%= vehicle.year %></p>
+                        <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
+                        <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
+                        <p><strong>Auction Date:</strong> <%= vehicle.auctionDate.toLocaleDateString() %></p>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="no-tasks">No vehicles currently assigned to you.</p>
+            <% } %>
+        </div>
+        <% if (assignedVehicles.length > 3) { %>
+            <a href="/mechanic_dashboard/current-tasks" class="see-more">See More (<%= assignedVehicles.length - 3 %> more)</a>
+        <% } %>
+      </section>
 
+      <!-- Past Tasks Section -->
+      <section class="task-box">
+        <h2 class="task-heading">Past Tasks</h2>
+        <div class="vehicle-list">
+            <% if (completedTasks.length > 0) { %>
+                <% completedTasks.forEach(vehicle => { %>
+                    <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+                        <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
+                        <h3><%= vehicle.vehicleName %></h3>
+                        <p><strong>Year:</strong> <%= vehicle.year %></p>
+                        <p><strong>Mileage:</strong> <%= vehicle.mileage.toLocaleString() %> km</p>
+                        <p><strong>Condition:</strong> <%= vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1) %></p>
+                        <p><strong>Rating:</strong> <%= vehicle.mechanicReview?.conditionRating || 'N/A' %> Stars</p>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="no-tasks">No past tasks available.</p>
+            <% } %>
+        </div>
+        <% if (allCompletedTasks.length > 2) { %>
+            <a href="/mechanic_dashboard/past-tasks" class="see-more">See More (<%= allCompletedTasks.length - 2 %> more)</a>
+        <% } %>
+      </section>
     </main>
 
     <%- include('partials/footer') %>

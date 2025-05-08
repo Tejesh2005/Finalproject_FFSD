@@ -199,6 +199,12 @@
         color: white;
         margin-top: 20px;
       }
+
+      .status-completed {
+  background-color: #4caf50;
+  color: white;
+}
+
     </style>
   </head>
   <body>
@@ -221,7 +227,11 @@
               Seller: <%= car.sellerId.firstName %> <%= car.sellerId.lastName %>
             </div>
             <div class="car-info">Location: <%= car.sellerId.city %></div>
-            <div class="status-badge status-pending">Pending Inspection</div>
+            <% if (car.reviewStatus === 'completed') { %>
+  <div class="status-badge status-completed">Inspection Done</div>
+<% } else { %>
+  <div class="status-badge status-pending">Pending Inspection</div>
+<% } %>
           </div>
           <button class="view-button" onclick="showReview('<%= car._id %>')">
             View Details

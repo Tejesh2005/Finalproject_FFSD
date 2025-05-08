@@ -23,11 +23,12 @@ router.get('/get-review/:id', async (req, res) => {
       .populate('assignedMechanic', 'firstName lastName');
     
     if (!car.mechanicReview) {
-      return res.json({});
+      return res.json({ reviewStatus: car.reviewStatus || 'pending' });
     }
 
     res.json({
       ...car.mechanicReview,
+      reviewStatus: car.reviewStatus,
       mechanicName: car.assignedMechanic ? 
         `${car.assignedMechanic.firstName} ${car.assignedMechanic.lastName}` : 
         'Unknown Mechanic'

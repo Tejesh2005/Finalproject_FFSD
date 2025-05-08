@@ -5,20 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRIVBIDRENT - Car Details</title>
     <style>
+<<<<<<< Updated upstream
       @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+=======
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+>>>>>>> Stashed changes
 
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+<<<<<<< Updated upstream
         font-family: "Montserrat", sans-serif;
+=======
+        font-family: 'Montserrat', sans-serif;
+>>>>>>> Stashed changes
       }
 
       body {
         background-color: #ffffff;
       }
 
-      /* Header Styles */
       .header {
         background-color: #ff6b00;
         color: white;
@@ -55,7 +62,6 @@
         opacity: 0.8;
       }
 
-      /* Car Details Container */
       .car-details-container {
         max-width: 1000px;
         margin: 120px auto 20px;
@@ -143,12 +149,18 @@
         color: white;
       }
 
+      .approve-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
       .decline-btn {
         background-color: #f44336;
         color: white;
       }
 
-      .approve-btn:hover,
+      .approve-btn:hover:not(:disabled),
       .decline-btn:hover {
         opacity: 0.8;
       }
@@ -169,10 +181,26 @@
 
       .declined {
         background-color: #f44336;
+<<<<<<< Updated upstream
+=======
+      }
+
+      .error-message {
+        color: #f44336;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .no-review-message {
+        color: #f44336;
+        font-size: 16px;
+        margin-top: 10px;
+>>>>>>> Stashed changes
       }
     </style>
   </head>
   <body>
+<<<<<<< Updated upstream
     <%- include('partials/navbar') %>
 
     <!-- Car Details Container -->
@@ -187,45 +215,82 @@
       <div class="car-name">Tata Toofan</div>
       <div class="car-info"><strong>Mileage:</strong> 35,000 km</div>
       <div class="car-info"><strong>Condition:</strong> Pending</div>
-
-      <!-- Mechanic's Ratings and Comments -->
-      <div class="rating-section">
-        <h3>Mechanic's Ratings & Comments</h3>
-        <div class="rating-item">
-          <p><strong>Engine Condition:</strong> ★★★★☆</p>
-          <textarea readonly>Well-maintained engine, no issues found.</textarea>
-        </div>
-        <div class="rating-item">
-          <p><strong>Transmission Condition:</strong> ★★★☆☆</p>
-          <textarea readonly>Minor wear, but functions properly.</textarea>
-        </div>
-        <div class="rating-item">
-          <p><strong>Brake System:</strong> ★★★★★</p>
-          <textarea readonly>Brakes are in excellent condition.</textarea>
-        </div>
-        <div class="rating-item">
-          <p><strong>Suspension:</strong> ★★★★☆</p>
-          <textarea readonly>Good condition, no major issues.</textarea>
-        </div>
-        <div class="rating-item">
-          <p><strong>Exterior Condition:</strong> ★★★☆☆</p>
-          <textarea readonly>Minor scratches, but overall good.</textarea>
-        </div>
+=======
+    <!-- Header -->
+    <div class="header">
+      <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
+      <div class="nav-links">
+        <a href="/auctionmanager/requests">REQUESTS</a>
+        <a href="/auctionmanager/pending">PENDINGCARS</a>
+        <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
       </div>
+    </div>
 
-      <!-- Action Buttons -->
-      <div class="action-buttons" id="action-buttons">
-        <button class="approve-btn" onclick="approveCar()">Approve</button>
-        <button class="decline-btn" onclick="declineCar()">Decline</button>
-      </div>
+    <!-- Car Details Container -->
+    <div class="car-details-container">
+      <% if (error) { %>
+        <div class="error-message"><%= error %></div>
+      <% } else if (!car) { %>
+        <div class="error-message">Car not found</div>
+      <% } else { %>
+        <div class="car-image-container">
+          <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
+        </div>
+        <div class="car-name"><%= car.vehicleName %></div>
+        <div class="car-info"><strong>Year:</strong> <%= car.year %></div>
+        <div class="car-info"><strong>Mileage:</strong> <%= car.mileage %> km</div>
+        <div class="car-info"><strong>Condition:</strong> <%= car.condition %></div>
+        <div class="car-info"><strong>Fuel Type:</strong> <%= car.fuelType %></div>
+        <div class="car-info"><strong>Transmission:</strong> <%= car.transmission %></div>
+        <div class="car-info"><strong>Starting Bid:</strong> $<%= car.startingBid %></div>
+        <div class="car-info"><strong>Auction Date:</strong> <%= new Date(car.auctionDate).toLocaleDateString() %></div>
+        <div class="car-info"><strong>Status:</strong> <%= car.status %></div>
+>>>>>>> Stashed changes
 
-      <!-- Status (Approved/Declined) -->
-      <div id="status" class="status" style="display: none"></div>
+        <!-- Mechanic's Ratings and Comments -->
+        <div class="rating-section">
+          <h3>Mechanic's Ratings & Comments</h3>
+          <% if (car.mechanicReview && car.mechanicReview.mechanicalCondition && car.mechanicReview.bodyCondition && car.mechanicReview.submittedAt) { %>
+            <div class="rating-item">
+              <p><strong>Mechanical Condition:</strong> <%= '★'.repeat(car.mechanicReview.conditionRating || 0) %>☆<%= '☆'.repeat(5 - (car.mechanicReview.conditionRating || 0)) %></p>
+              <textarea readonly><%= car.mechanicReview.mechanicalCondition %></textarea>
+            </div>
+            <div class="rating-item">
+              <p><strong>Body Condition:</strong> <%= '★'.repeat(car.mechanicReview.conditionRating || 0) %>☆<%= '☆'.repeat(5 - (car.mechanicReview.conditionRating || 0)) %></p>
+              <textarea readonly><%= car.mechanicReview.bodyCondition %></textarea>
+            </div>
+            <div class="rating-item">
+              <p><strong>Recommendations:</strong></p>
+              <textarea readonly><%= car.mechanicReview.recommendations || 'No recommendations provided.' %></textarea>
+            </div>
+            <div class="rating-item">
+              <p><strong>Submitted At:</strong> <%= new Date(car.mechanicReview.submittedAt).toLocaleString() %></p>
+            </div>
+            <div class="rating-item">
+              <p><strong>Mechanic:</strong> <%= car.assignedMechanic ? car.assignedMechanic.firstName + ' ' + car.assignedMechanic.lastName : 'Unknown' %></p>
+            </div>
+          <% } else { %>
+            <p class="no-review-message">No mechanic review available yet. Approval is disabled until a review is submitted.</p>
+          <% } %>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" id="action-buttons">
+          <button class="approve-btn" id="approve-btn" 
+            <%= (!car.mechanicReview || !car.mechanicReview.mechanicalCondition || !car.mechanicReview.bodyCondition || !car.mechanicReview.submittedAt) ? 'disabled' : '' %> 
+            onclick="updateStatus('approved')">Approve</button>
+          <button class="decline-btn" onclick="updateStatus('rejected')">Decline</button>
+        </div>
+
+        <!-- Status (Approved/Declined) -->
+        <div id="status" class="status" style="display: none"></div>
+      <% } %>
     </div>
 
     <%- include('partials/footer') %>
 
     <script>
+<<<<<<< Updated upstream
       function approveCar() {
         const buttons = document.getElementById("action-buttons");
         const status = document.getElementById("status");
@@ -244,6 +309,45 @@
         status.textContent = "Declined";
         status.className = "declined";
         status.style.display = "block";
+=======
+      async function updateStatus(status) {
+        const carId = '<%= car ? car._id : "" %>';
+        const buttons = document.getElementById('action-buttons');
+        const statusDiv = document.getElementById('status');
+
+        // Prevent approval client-side if mechanic review is incomplete
+        if (status === 'approved') {
+          const hasReview = <%= car && car.mechanicReview && car.mechanicReview.mechanicalCondition && car.mechanicReview.bodyCondition && car.mechanicReview.submittedAt ? 'true' : 'false' %>;
+          if (!hasReview) {
+            alert('Cannot approve car without a complete mechanic review');
+            return;
+          }
+        }
+
+        try {
+          const response = await fetch(`/auctionmanager/update-status/${carId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            buttons.style.display = 'none';
+            statusDiv.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusDiv.className = `status ${status === 'approved' ? 'approved' : 'declined'}`;
+            statusDiv.style.display = 'block';
+          } else {
+            alert(result.error || 'Mechanic has not yet gave his review');
+          }
+        } catch (err) {
+          console.error('Error updating status:', err);
+          alert('Failed to update status');
+        }
+>>>>>>> Stashed changes
       }
     </script>
   </body>

@@ -13,6 +13,13 @@ const auctionRequestSchema = new mongoose.Schema({
   status: { type: String, default: 'pending', enum: ['pending', 'approved', 'rejected'] },
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   assignedMechanic: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  mechanicReview: {
+    mechanicalCondition: String,
+    bodyCondition: String,
+    recommendations: String,
+    conditionRating: Number,
+    submittedAt: Date
+  },
   started_auction: { type: String, default: 'no', enum: ['no', 'yes', 'ended'] },
   auction_stopped: { type: Boolean, default: false }, // New field
   winnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

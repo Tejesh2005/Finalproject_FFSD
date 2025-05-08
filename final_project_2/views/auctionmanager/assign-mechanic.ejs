@@ -191,139 +191,119 @@
 
     <!-- Car Details Container -->
     <div class="car-details-container">
-      <!-- Left Column - Car Image -->
-      <div class="car-left-column">
-        <div class="car-image-container">
-          <img
-            src="<%= request.vehicleImage %>"
-            alt="<%= request.vehicleName %>"
-            class="car-image"
-          />
-        </div>
-        <div class="car-name"><%= request.vehicleName %></div>
-      </div>
-
-      <!-- Right Column - Car Info -->
-      <div class="car-right-column">
-        <div class="car-info-section">
-          <div class="section-title">Vehicle Information</div>
-          <div class="car-info">
-            <strong>Fuel Type:</strong> <%= request.fuelType || 'Not specified'
-            %>
-          </div>
-          <div class="car-info">
-            <strong>Mileage:</strong> <%= request.mileage || 'Not specified' %>
-            km
-          </div>
-          <div class="car-info">
-            <strong>Condition:</strong> <%= request.condition || 'Pending' %>
-          </div>
-          <div class="car-info">
-            <strong>Year:</strong> <%= request.year || 'Not specified' %>
-          </div>
-          <div class="car-info">
-            <strong>Transmission:</strong> <%= request.transmission || 'Not
-            specified' %>
-          </div>
-          <div class="car-info">
-            <strong>Starting Bid:</strong> <%= request.startingBid? '$' +
-            request.startingBid: 'Not specified' %>
-          </div>
+        <!-- Left Column - Car Image -->
+        <div class="car-left-column">
+            <div class="car-image-container">
+                <img src="<%= request.vehicleImage ? request.vehicleImage : '/images/default-car.jpg' %>" alt="<%= request.vehicleName ? request.vehicleName : 'Vehicle' %>" class="car-image" />
+            </div>
+            <div class="car-name"><%= request.vehicleName ? request.vehicleName : 'Vehicle' %></div>
         </div>
 
-        <!-- Seller Details -->
-        <div class="car-info-section">
-          <div class="section-title">Seller Details</div>
-          <div class="car-info">
-            <strong>Name:</strong> <%= request.sellerId.firstName %> <%=
-            request.sellerId.lastName %>
-          </div>
-          <div class="car-info">
-            <strong>Contact:</strong> <%= request.sellerId.phoneNumber || 'Not
-            provided' %>
-          </div>
-          <div class="car-info">
-            <strong>Location:</strong> <%= request.sellerId.doorNo || '' %>,<%=
-            request.sellerId.street || '' %>, <%= request.sellerId.city || ''
-            %>, <%= request.sellerId.state || '' %>
-          </div>
-        </div>
+        <!-- Right Column - Car Info -->
+        <div class="car-right-column">
+            <div class="car-info-section">
+                <div class="section-title">Vehicle Information</div>
+                <div class="car-info">
+                    <strong>Fuel Type:</strong> <%= request.fuelType ? request.fuelType : 'Not specified' %>
+                </div>
+                <div class="car-info">
+                    <strong>Mileage:</strong> <%= request.mileage ? request.mileage : 'Not specified' %> km
+                </div>
+                <div class="car-info">
+                    <strong>Condition:</strong> <%= request.condition ? request.condition : 'Pending' %>
+                </div>
+                <div class="car-info">
+                    <strong>Year:</strong> <%= request.year ? request.year : 'Not specified' %>
+                </div>
+                <div class="car-info">
+                    <strong>Transmission:</strong> <%= request.transmission ? request.transmission : 'Not specified' %>
+                </div>
+                <div class="car-info">
+                    <strong>Starting Bid:</strong> <%= request.startingBid ? '$' + request.startingBid : 'Not specified' %>
+                </div>
+            </div>
 
-        <!-- Mechanic Assignment -->
-        <div class="assign-mechanic">
-          <button id="assign-button" onclick="showMechanicDropdown()">
-            Assign Mechanic
-          </button>
-          <div class="mechanic-dropdown" id="mechanic-dropdown">
-            <select id="mechanic-select">
-              <option value="">Select a Mechanic</option>
-              <% mechanics.forEach(mechanic => { %>
-              <option
-                value="<%= ${mechanic.firstName} ${mechanic.lastName} %>"
-                data-id="<%= mechanic._id %>"
-              >
-                <%= ${mechanic.firstName} ${mechanic.lastName} %> <% if
-                (mechanic.shopName) { %>- <%= mechanic.shopName %><% } %> <% if
-                (mechanic.experienceYears) { %>(<%= mechanic.experienceYears %>
-                yrs exp)<% } %>
-              </option>
-              <% }); %>
-            </select>
-          </div>
-          <div id="mechanic-assigned" class="mechanic-assigned">
-            Mechanic Assigned
-          </div>
+            <!-- Seller Details -->
+            <div class="car-info-section">
+                <div class="section-title">Seller Details</div>
+                <% if (request.sellerId) { %>
+                    <div class="car-info">
+                        <strong>Name:</strong> <%= request.sellerId.firstName || '' %> <%= request.sellerId.lastName || '' %>
+                    </div>
+                    <div class="car-info">
+                        <strong>Contact:</strong> <%= request.sellerId.phoneNumber || 'Not provided' %>
+                    </div>
+                    <div class="car-info">
+                        <strong>Location:</strong> <%= request.sellerId.doorNo || '' %>, <%= request.sellerId.street || '' %>, <%= request.sellerId.city || '' %>, <%= request.sellerId.state || '' %>
+                    </div>
+                <% } else { %>
+                    <div class="car-info">
+                        <strong>Seller:</strong> Information not available
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Mechanic Assignment -->
+            <div class="assign-mechanic">
+                <button id="assign-button" onclick="showMechanicDropdown()">
+                    Assign Mechanic
+                </button>
+                <div class="mechanic-dropdown" id="mechanic-dropdown">
+                    <select id="mechanic-select">
+                        <option value="">Select a Mechanic</option>
+                        <% if (mechanics && mechanics.length > 0) { %>
+                            <% mechanics.forEach(function(mechanic) { %>
+                                <option value="<%= mechanic.firstName %> <%= mechanic.lastName %>" data-id="<%= mechanic._id %>">
+                                    <%= mechanic.firstName %> <%= mechanic.lastName %>
+                                    <% if (mechanic.shopName) { %> - <%= mechanic.shopName %><% } %>
+                                    <% if (mechanic.experienceYears) { %> (<%= mechanic.experienceYears %> yrs exp)<% } %>
+                                </option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+                </div>
+                <div id="mechanic-assigned" class="mechanic-assigned">
+                    Mechanic Assigned
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <%- include('partials/footer') %>
+
     <script>
-      function showMechanicDropdown() {
-        const dropdown = document.getElementById("mechanic-dropdown");
-        dropdown.style.display = "block";
-      }
-
-      const mechanicSelect = document.getElementById("mechanic-select");
-      mechanicSelect.addEventListener("change", function () {
-        if (this.value) {
-          const selectedOption = this.options[this.selectedIndex];
-          const mechanicId = selectedOption.getAttribute("data-id");
-          const mechanicName = this.value;
-
-          fetch("/auctionmanager/assign-mechanic-update/<%= request._id %>", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              mechanicName: mechanicName,
-              mechanicId: mechanicId,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.success) {
-                const assignButton = document.getElementById("assign-button");
-                const assignedMessage =
-                  document.getElementById("mechanic-assigned");
-                const dropdown = document.getElementById("mechanic-dropdown");
-
-                assignButton.style.display = "none";
-                dropdown.style.display = "none";
-                assignedMessage.style.display = "block";
-              } else {
-                alert("Failed to assign mechanic. Please try again.");
-                this.value = "";
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              alert("An error occurred while assigning the mechanic.");
-              this.value = "";
-            });
+        function showMechanicDropdown() {
+            document.getElementById("mechanic-dropdown").style.display = "block";
         }
-      });
+
+        document.getElementById("mechanic-select").addEventListener("change", function() {
+            if (this.value) {
+                const mechanicId = this.options[this.selectedIndex].getAttribute("data-id");
+                const mechanicName = this.value;
+
+                fetch("/auctionmanager/assign-mechanic-update/<%= request._id %>", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ mechanicName, mechanicId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("assign-button").style.display = "none";
+                        document.getElementById("mechanic-dropdown").style.display = "none";
+                        document.getElementById("mechanic-assigned").style.display = "block";
+                    } else {
+                        alert("Failed to assign mechanic. Please try again.");
+                        this.value = "";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while assigning the mechanic.");
+                    this.value = "";
+                });
+            }
+        });
     </script>
-  </body>
+</body>
 </html>

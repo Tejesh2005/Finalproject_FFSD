@@ -3,6 +3,7 @@ const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
 const Purchase = require('../../models/Purchase');
+const AuctionCost = require('../../models/AuctionCost');
 const User = require('../../models/User');
 
 // Middleware to check if user is logged in
@@ -142,34 +143,84 @@ router.get('/auction/winner-status/:id', isLoggedIn, async (req, res) => {
   }
 });
 
-// Confirm payment
-router.post('/auction/confirm-payment/:id', isLoggedIn, async (req, res) => {
+// Route to fetch payment details for the popup
+router.get('/auction/confirm-payment/:id', isLoggedIn, async (req, res) => {
   try {
-    const auction = await AuctionRequest.findById(req.params.id);
-    if (!auction) {
-      return res.status(404).json({ success: false, message: 'Auction not found' });
-    }
+    const auctionId = req.params.id;
+    const userId = req.session.userId;
 
-    if (auction.winnerId.toString() !== req.session.userId.toString()) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
-    }
-
-    const purchase = await Purchase.findOne({ auctionId: auction._id, buyerId: req.session.userId });
+    // Fetch the purchase details
+    const purchase = await Purchase.findOne({ auctionId, buyerId: userId });
     if (!purchase) {
       return res.status(404).json({ success: false, message: 'Purchase not found' });
     }
 
+    if (purchase.paymentStatus === 'completed') {
+      return res.status(400).json({ success: false, message: 'Payment already completed' });
+    }
+
+    // Calculate convenience fee (1% of purchase price)
+    const convenienceFee = purchase.purchasePrice * 0.01;
+    const totalAmount = purchase.purchasePrice + convenienceFee;
+
+    // Return the data for the popup
+    res.json({
+      success: true,
+      purchaseId: purchase._id,
+      auctionId: purchase.auctionId,
+      amount: purchase.purchasePrice,
+      convenienceFee: convenienceFee,
+      totalAmount: totalAmount
+    });
+  } catch (error) {
+    console.error('Error fetching payment details:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Route to handle final payment submission
+router.post('/auction/complete-payment/:id', isLoggedIn, async (req, res) => {
+  try {
+    const purchaseId = req.params.id;
+    const userId = req.session.userId;
+
+    // Fetch the purchase
+    const purchase = await Purchase.findById(purchaseId);
+    if (!purchase) {
+      return res.status(404).json({ success: false, message: 'Purchase not found' });
+    }
+
+    if (purchase.buyerId.toString() !== userId) {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    }
+
+    if (purchase.paymentStatus === 'completed') {
+      return res.status(400).json({ success: false, message: 'Payment already completed' });
+    }
+
+    // Calculate convenience fee and total amount
+    const convenienceFee = purchase.purchasePrice * 0.01;
+    const totalAmount = purchase.purchasePrice + convenienceFee;
+
+    // Save to AuctionCost, including the sellerId from the Purchase document
+    const auctionCost = new AuctionCost({
+      auctionId: purchase.auctionId,
+      buyerId: userId,
+      sellerId: purchase.sellerId, // Add sellerId from Purchase
+      amountPaid: purchase.purchasePrice,
+      convenienceFee: convenienceFee,
+      totalAmount: totalAmount,
+      paymentDate: new Date()
+    });
+    await auctionCost.save();
+
+    // Update Purchase to mark payment as completed
     purchase.paymentStatus = 'completed';
     await purchase.save();
 
-    // Mark auction as ended to remove it from auctions auctions page
-    auction.started_auction = 'ended';
-    await auction.save();
-
-    // Redirect to purchase details page
-    res.redirect(`/purchase_details?id=${purchase._id}`);
+    res.json({ success: true, message: 'Payment completed successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Error completing payment:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

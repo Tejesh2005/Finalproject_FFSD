@@ -122,7 +122,7 @@
         .car-card img {
             width: 100%;
             height: 200px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
         }
@@ -190,6 +190,70 @@
             background-color: #45a049;
         }
 
+        /* Popup Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 400px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .popup h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #333;
+        }
+
+        .popup p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .popup .pay-now-final {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .popup .pay-now-final:hover {
+            background-color: #e65c00;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .card-container {
@@ -212,6 +276,10 @@
                 width: 100%;
                 text-align: center;
                 margin-bottom: 0.5rem;
+            }
+
+            .popup {
+                width: 90%;
             }
         }
     </style>
@@ -248,7 +316,7 @@
                 <div style="display: flex; gap: 0.5rem;">
                     <a href="/purchase_details?id=<%= purchase._id %>" class="details-btn">More Details</a>
                     <% if (purchase.paymentStatus === 'pending') { %>
-                        <a href="/auction/confirm-payment/<%= purchase.auctionId %>" class="pay-now-btn">Pay Now</a>
+                        <a href="#" class="pay-now-btn" data-auction-id="<%= purchase.auctionId %>" data-purchase-id="<%= purchase._id %>">Pay Now</a>
                     <% } %>
                 </div>
             </div>
@@ -285,7 +353,87 @@
         <% } %>
     </section>
 
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="paymentPopup">
+        <div class="popup">
+            <span class="popup-close" id="popupClose">×</span>
+            <h2>Congratulations on Buying the Car!</h2>
+            <p><strong>Amount for Car:</strong> ₹<span id="carAmount"></span></p>
+            <p><strong>Convenience Fee (1%):</strong> ₹<span id="convenienceFee"></span></p>
+            <p><strong>Total Amount:</strong> ₹<span id="totalAmount"></span></p>
+            <button class="pay-now-final" id="finalPayNow">Pay Now</button>
+        </div>
+    </div>
+
     <!-- Include Footer -->
     <%- include('partials/footer') %>
+
+    <!-- JavaScript for Popup -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const payNowButtons = document.querySelectorAll('.pay-now-btn');
+            const popupOverlay = document.getElementById('paymentPopup');
+            const popupClose = document.getElementById('popupClose');
+            const finalPayNowButton = document.getElementById('finalPayNow');
+            let currentPurchaseId = null;
+
+            payNowButtons.forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const auctionId = button.getAttribute('data-auction-id');
+                    currentPurchaseId = button.getAttribute('data-purchase-id');
+
+                    try {
+                        const response = await fetch(`/auction/confirm-payment/${auctionId}`);
+                        const data = await response.json();
+
+                        if (data.success) {
+                            document.getElementById('carAmount').textContent = data.amount.toLocaleString();
+                            document.getElementById('convenienceFee').textContent = data.convenienceFee.toLocaleString();
+                            document.getElementById('totalAmount').textContent = data.totalAmount.toLocaleString();
+                            popupOverlay.style.display = 'flex';
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching payment details:', error);
+                        alert('Failed to load payment details');
+                    }
+                });
+            });
+
+            popupClose.addEventListener('click', () => {
+                popupOverlay.style.display = 'none';
+            });
+
+            finalPayNowButton.addEventListener('click', async () => {
+                if (!currentPurchaseId) {
+                    alert('Purchase ID not found');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/auction/complete-payment/${currentPurchaseId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('Payment completed successfully!, Contact the seller for further details.');
+                        popupOverlay.style.display = 'none';
+                        location.reload(); // Refresh the page to update payment status
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error completing payment:', error);
+                    alert('Failed to complete payment');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

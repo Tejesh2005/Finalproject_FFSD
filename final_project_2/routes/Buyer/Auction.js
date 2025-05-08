@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
+const Purchase = require('../../models/Purchase');
 const User = require('../../models/User');
 
 // Middleware to check if user is logged in
@@ -20,10 +21,13 @@ router.get('/auction', isLoggedIn, async (req, res) => {
       return res.status(400).render('error', { message: 'Auction ID is required' });
     }
 
-    // Fetch auction details
-    const auction = await AuctionRequest.findById(auctionId);
+    // Fetch auction details, include stopped but not ended auctions
+    const auction = await AuctionRequest.findOne({ 
+      _id: auctionId,
+      started_auction: 'yes'
+    });
     if (!auction) {
-      return res.status(404).render('error', { message: 'Auction not found' });
+      return res.status(404).render('error', { message: 'Auction not found or has ended' });
     }
 
     // Fetch current bid (most recent bid marked as current)
@@ -67,9 +71,9 @@ router.post('/auction/place-bid', isLoggedIn, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Auction not found' });
     }
 
-    // Check if auction has started
-    if (auction.started_auction !== 'yes') {
-      return res.status(400).json({ success: false, message: 'Auction has not started yet' });
+    // Check if auction is active and not stopped
+    if (auction.started_auction !== 'yes' || auction.auction_stopped) {
+      return res.status(400).json({ success: false, message: 'Auction is not active or has been stopped' });
     }
 
     // Fetch current bid
@@ -108,5 +112,35 @@ router.post('/auction/place-bid', isLoggedIn, async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 });
+
+// Check if user is the auction winner and get payment status
+router.get('/auction/winner-status/:id', isLoggedIn, async (req, res) => {
+  try {
+    const auction = await AuctionRequest.findById(req.params.id);
+    if (!auction) {
+      return res.status(404).json({ success: false, message: 'Auction not found' });
+    }
+
+    if (!auction.auction_stopped) {
+      return res.json({ isWinner: false });
+    }
+
+    const isWinner = auction.winnerId && auction.winnerId.toString() === req.session.userId.toString();
+    if (!isWinner) {
+      return res.json({ isWinner: false });
+    }
+
+    const purchase = await Purchase.findOne({ auctionId: auction._id, buyerId: req.session.userId });
+    res.json({
+      isWinner: true,
+      bidAmount: auction.finalPurchasePrice,
+      paymentStatus: purchase ? purchase.paymentStatus : 'pending'
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 
 module.exports = router;

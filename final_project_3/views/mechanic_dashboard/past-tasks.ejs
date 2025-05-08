@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Past Tasks</title>
+    <%- include('partials/styles') %>
+    <style>
+      /* Main Page Styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        color: #333;
+      }
+
+      main {
+        padding: 20px;
+      }
+
+      h1,
+      h2 {
+        color: #ff6600;
+      }
+
+      /* Vehicle Cards */
+      .vehicle-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .vehicle-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .vehicle-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .car-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .car-image:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+      }
+
+      .vehicle-card h3 {
+        margin: 15px 0 10px;
+        font-size: 20px;
+        color: #333;
+      }
+
+      .vehicle-card p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      /* Buttons */
+      button {
+        padding: 5px 10px;
+        margin: 5px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #ff8533;
+        transform: scale(1.05);
+      }
+
+      button.accept {
+        background-color: #28a745;
+        color: white;
+      }
+
+      button.decline {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      button.submit {
+        background-color: #ff6600;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <main>
+      <h1>Past Tasks</h1>
+      <div class="vehicle-list">
+        <!-- Vehicle Card 1 -->
+        <div class="vehicle-card">
+          <img
+          src="https://imgd.aeplcdn.com/664x374/cw/ec/26588/Toyota-Corolla-Altis-Exterior-92974.jpg?wm=0&q=80
+          alt="Vehicle Image" class="car-image" />
+          <h3>Toyota Corlla</h3>
+          <p><strong>Owner:</strong> David</p>
+          <p><strong>Rating:</strong> ★★★★☆</p>
+          <p><strong>Comment:</strong> Well-maintained, minor scratches.</p>
+        </div>
+        <!-- Vehicle Card 2 -->
+        <div class="vehicle-card">
+          <img
+          src="https://hips.hearstapps.com/hmg-prod/images/2019-nissan-altima-12-source-1200x699-1562955653.jpg?crop=0.760xw:0.798xh;0.218xw,0&resize=980:*
+          alt="Vehicle Image" class="car-image" />
+          <h3>Nissan Altima</h3>
+          <p><strong>Owner:</strong> Ellisa</p>
+          <p><strong>Rating:</strong> ★★★★★</p>
+          <p><strong>Comment:</strong> Excellent condition, like new.</p>
+        </div>
+        <!-- Vehicle Card 3 -->
+        <div class="vehicle-card">
+          <img
+          src="https://imgd.aeplcdn.com/664x374/cw/ec/23766/Ford-Mustang-Exterior-126883.jpg?wm=0&q=80
+          alt="Vehicle Image" class="car-image" />
+          <h3>Ford Mustang</h3>
+          <p><strong>Owner:</strong> Mike</p>
+          <p><strong>Rating:</strong> ★★★☆☆</p>
+          <p><strong>Comment:</strong> Engine issues, needs repair.</p>
+        </div>
+      </div>
+    </main>
+    <%- include('partials/footer') %>
+  </body>
+</html>

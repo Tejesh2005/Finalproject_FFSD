@@ -164,7 +164,7 @@ form textarea {
         <input type="url" id="vehicle-image" name="vehicle-image" required />
 
         <label for="vehicle-year">Year:</label>
-        <input type="number" id="vehicle-year" name="vehicle-year" required />
+        <input type="number" id="vehicle-year" name="vehicle-year" required min="1900" max="2025" />
 
         <label for="vehicle-mileage">Mileage (km):</label>
         <input
@@ -208,14 +208,42 @@ form textarea {
     <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
 
-    <!-- <script>
-      // Form Submission for Auction
+    <script>
+      // Form Submission for Auction with Validation
       document.getElementById('auction-form').addEventListener('submit', (e) => {
-          e.preventDefault();
-          alert('Auction listing submitted successfully!');
-          // Redirect to the auction listings page
-          window.location.href = '/seller_dashboard/view-auctions';
+        e.preventDefault();
+        
+        // Get form inputs
+        const vehicleYear = parseInt(document.getElementById('vehicle-year').value);
+        const auctionDate = new Date(document.getElementById('auction-date').value);
+        const currentYear = new Date().getFullYear(); // 2025
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
+
+        // Validation for year
+        if (vehicleYear > currentYear) {
+          alert(`Vehicle year cannot be later than ${currentYear}.`);
+          return;
+        }
+
+        // Validation for auction date
+        if (auctionDate < currentDate) {
+          alert('Auction date cannot be in the past.');
+          return;
+        }
+
+        // If all validations pass, submit the form
+        alert('Auction listing submitted successfully!');
+        window.location.href = '/seller_dashboard/view-auctions';
+        // Uncomment the next line to actually submit the form to the server
+        // e.target.submit();
       });
-    </script> -->
+
+      // Set min attribute for auction date to today
+      document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('auction-date').setAttribute('min', today);
+      });
+    </script>
   </body>
 </html>

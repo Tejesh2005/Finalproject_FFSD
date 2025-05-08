@@ -215,6 +215,8 @@ form textarea {
           name="vehicle-year" 
           value="<%= formData['vehicle-year'] || '' %>"
           required 
+          min="1900"
+          max="2025"
         />
 
         <label for="vehicle-ac">AC:</label>
@@ -230,6 +232,7 @@ form textarea {
           name="vehicle-capacity" 
           value="<%= formData['vehicle-capacity'] || '' %>"
           required 
+          min="1"
         />
         
         <label for="vehicle-condition">Condition:</label>
@@ -323,9 +326,26 @@ form textarea {
           }
         }
         
+        // Validate vehicle year
+        const vehicleYear = parseInt(document.getElementById('vehicle-year').value);
+        const currentYear = new Date().getFullYear(); // 2025
+        if (vehicleYear > currentYear) {
+          hasErrors = true;
+          document.getElementById('vehicle-year').style.borderColor = 'red';
+          alert(`Vehicle year cannot be later than ${currentYear}.`);
+        }
+
+        // Validate vehicle capacity
+        const vehicleCapacity = parseInt(document.getElementById('vehicle-capacity').value);
+        if (vehicleCapacity <= 0) {
+          hasErrors = true;
+          document.getElementById('vehicle-capacity').style.borderColor = 'red';
+          alert('Vehicle capacity must be greater than 0.');
+        }
+
         if (hasErrors) {
           e.preventDefault();
-          alert('Please fill in all required fields');
+          alert('Please correct the errors in the form');
         }
       });
       

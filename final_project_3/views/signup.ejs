@@ -100,7 +100,6 @@
             <option value="">Select user type</option>
             <option value="buyer" <%= (typeof formData !== 'undefined' && formData.userType === 'buyer') ? 'selected' : '' %>>Buyer</option>
             <option value="seller" <%= (typeof formData !== 'undefined' && formData.userType === 'seller') ? 'selected' : '' %>>Seller/Renter</option>
-            <option value="driver" <%= (typeof formData !== 'undefined' && formData.userType === 'driver') ? 'selected' : '' %>>Driver</option>
             <option value="mechanic" <%= (typeof formData !== 'undefined' && formData.userType === 'mechanic') ? 'selected' : '' %>>Mechanic</option>
           </select>
         </div>

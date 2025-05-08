@@ -22,12 +22,11 @@ router.get('/view-rentals', isSellerLoggedIn, async (req, res) => {
     // Fetch rentals for this seller from the database
     const rentals = await RentalRequest.find({ sellerId: req.session.userId });
     
-    // Process rentals to include location if it exists in the database
+    // Process rentals to include the seller's city as location
     const processedRentals = rentals.map(rental => {
       return {
         ...rental._doc,
-        // You can modify this to match your database structure for location
-        location: user.location || 'Location not specified'
+        location: user.city || 'City not specified'
       };
     });
     

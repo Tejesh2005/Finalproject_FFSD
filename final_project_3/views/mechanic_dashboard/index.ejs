@@ -52,13 +52,17 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         padding: 20px;
         text-align: center;
-        transition: all 0.3s ease;
         border: 1px solid #eee;
+        height: 360px; /* Fixed height for consistency */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
-      .vehicle-card:hover {
+      .vehicle-card.current:hover {
         transform: translateY(-5px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
       }
 
       .car-image {
@@ -71,15 +75,19 @@
       }
 
       .vehicle-card h3 {
-        margin: 10px 0 5px;
+        margin: 0 0 5px;
         font-size: 20px;
         color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .vehicle-card p {
-        margin: 8px 0;
+        margin: 5px 0;
         color: #555;
         font-size: 14px;
+        line-height: 1.4;
       }
 
       /* See More Link */
@@ -179,7 +187,7 @@
         <div class="vehicle-list">
             <% if (displayedVehicles.length > 0) { %>
                 <% displayedVehicles.forEach(vehicle => { %>
-                    <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+                    <div class="vehicle-card current" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
                         <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
                         <h3><%= vehicle.vehicleName %></h3>
                         <p><strong>Year:</strong> <%= vehicle.year %></p>
@@ -192,9 +200,7 @@
                 <p class="no-tasks">No vehicles currently assigned to you.</p>
             <% } %>
         </div>
-        <% if (assignedVehicles.length > 3) { %>
-            <a href="/mechanic_dashboard/current-tasks" class="see-more">See More (<%= assignedVehicles.length - 3 %> more)</a>
-        <% } %>
+        <a href="/mechanic_dashboard/current-tasks" class="see-more">See More</a>
       </section>
 
       <!-- Past Tasks Section -->
@@ -203,7 +209,7 @@
         <div class="vehicle-list">
             <% if (completedTasks.length > 0) { %>
                 <% completedTasks.forEach(vehicle => { %>
-                    <div class="vehicle-card" onclick="window.location='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+                    <div class="vehicle-card">
                         <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
                         <h3><%= vehicle.vehicleName %></h3>
                         <p><strong>Year:</strong> <%= vehicle.year %></p>
@@ -216,9 +222,7 @@
                 <p class="no-tasks">No past tasks available.</p>
             <% } %>
         </div>
-        <% if (allCompletedTasks.length > 2) { %>
-            <a href="/mechanic_dashboard/past-tasks" class="see-more">See More (<%= allCompletedTasks.length - 2 %> more)</a>
-        <% } %>
+        <a href="/mechanic_dashboard/past-tasks" class="see-more">See More</a>
       </section>
     </main>
 

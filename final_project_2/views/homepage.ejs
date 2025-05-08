@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AutoMarket - Buy, Sell, Rent & Auction</title>
     <style>
-      /* Reset default margin & padding */
       * {
         margin: 0;
         padding: 0;
@@ -13,36 +12,32 @@
         font-family: "Montserrat", sans-serif;
       }
 
-      /* Body */
       body {
-        background-color: #ffffff; /* White background */
-        color: #333333; /* Dark gray text for better contrast */
+        background-color: #ffffff;
+        color: #333333;
       }
 
-      /* Navbar */
       .navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background: white;
         padding: 15px 50px;
-        box-shadow: 0px 2px 20px rgba(255, 107, 0, 0.2); /* Orange shadow */
+        box-shadow: 0px 2px 20px rgba(255, 107, 0, 0.2);
         position: fixed;
         top: 0;
         width: 100%;
         z-index: 1000;
       }
 
-      /* Logo - Bigger & Bolder */
       .logo {
         font-size: 2rem;
         font-weight: bold;
         text-transform: uppercase;
         letter-spacing: 1px;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
-      /* Navigation Links */
       .navbar ul {
         list-style: none;
         display: flex;
@@ -55,29 +50,26 @@
 
       .navbar ul li a {
         text-decoration: none;
-        color: #333333; /* Dark gray */
+        color: #333333;
         font-size: 1.3rem;
         font-weight: 500;
         transition: color 0.3s ease, transform 0.3s ease;
       }
 
-      /* Hover Animation (Exclude Settings) */
       .navbar ul li a:not(.settings-btn):hover {
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
         transform: scale(1.1);
       }
 
-      /* Authentication Buttons */
       .auth-buttons {
         display: flex;
         gap: 10px;
         position: relative;
       }
 
-      /* Buttons */
       .auth-buttons button {
         padding: 8px 15px;
-        border: 1px solid #ff6b00; /* Orange */
+        border: 1px solid #ff6b00;
         cursor: pointer;
         font-size: 16px;
         font-weight: bold;
@@ -85,29 +77,26 @@
         border-radius: 5px;
       }
 
-      /* Default Styles */
       .login {
         background: white;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .signup {
-        background: #ff6b00; /* Orange */
+        background: #ff6b00;
         color: white;
       }
 
-      /* Hover Effect - No Toggle */
       .login:hover {
-        background: #ff6b00; /* Orange */
+        background: #ff6b00;
         color: white;
       }
 
       .signup:hover {
         background: white;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
-      /* Hero Section */
       .hero {
         position: relative;
         height: 500px;
@@ -130,29 +119,27 @@
       }
 
       .hero-content {
-        color: #333333; /* Dark gray */
+        color: #333333;
         max-width: 600px;
       }
 
-      /* Increased Text Size */
       .hero-content h1 {
         font-size: 3rem;
         font-weight: bold;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .hero-content p {
         font-size: 1.5rem;
         margin-top: 10px;
-        color: #333333; /* Dark gray */
+        color: #333333;
       }
 
-      /* CTA Button Styling */
       .cta-btn {
         padding: 12px 24px;
         font-size: 1.2rem;
         font-weight: bold;
-        background: #ff6b00; /* Orange */
+        background: #ff6b00;
         color: white;
         border: none;
         border-radius: 5px;
@@ -162,11 +149,10 @@
       }
 
       .cta-btn:hover {
-        background: #e65c00; /* Darker Orange */
+        background: #e65c00;
         transform: scale(1.05);
       }
 
-      /* About Section */
       .about {
         text-align: center;
         padding: 50px;
@@ -175,35 +161,34 @@
       .about h2 {
         font-size: 28px;
         margin-bottom: 15px;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .about p {
         font-size: 18px;
-        color: #666666; /* Gray */
+        color: #666666;
         max-width: 800px;
         margin: auto;
       }
 
-      /* Join Us Section */
       .join-us {
         text-align: center;
         padding: 50px;
-        background: #f8f8f8; /* Light gray background */
+        background: #f8f8f8;
       }
 
       .join-us h2 {
         font-size: 2rem;
         margin-bottom: 20px;
         font-weight: bold;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .join-container {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr); /* Changed to 3 columns */
         gap: 20px;
-        max-width: 600px; /* Reduced width for two items */
+        max-width: 900px; /* Adjusted width for three items */
         margin: auto;
         justify-items: center;
       }
@@ -216,23 +201,23 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         text-align: center;
         width: 100%;
-        max-width: 300px; /* Ensure consistent card width */
+        max-width: 300px;
       }
 
       .join-box:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2); /* Orange shadow */
+        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2);
       }
 
       .join-box h3 {
         font-size: 1.4rem;
         margin: 10px 0;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .join-box p {
         font-size: 1rem;
-        color: #666666; /* Gray */
+        color: #666666;
         margin: 10px 0;
       }
 
@@ -241,7 +226,7 @@
         font-size: 1rem;
         font-weight: bold;
         color: white;
-        background: #ff6b00; /* Orange */
+        background: #ff6b00;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -250,21 +235,20 @@
       }
 
       .join-btn:hover {
-        background: #e65c00; /* Darker orange */
+        background: #e65c00;
       }
 
-      /* Top Rentals Section */
       .top-rentals {
         text-align: center;
         padding: 50px;
-        background: #f8f8f8; /* Light gray background */
+        background: #f8f8f8;
       }
 
       .top-rentals h2 {
         font-size: 2rem;
         margin-bottom: 20px;
         font-weight: bold;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .rental-container {
@@ -286,7 +270,7 @@
 
       .rental-box:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2); /* Orange shadow */
+        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2);
       }
 
       .rental-box img {
@@ -299,12 +283,12 @@
       .rental-box h3 {
         font-size: 1.4rem;
         margin: 10px 0;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .rental-box p {
         font-size: 1.2rem;
-        color: #333333; /* Dark gray */
+        color: #333333;
         font-weight: bold;
       }
 
@@ -315,7 +299,7 @@
         font-size: 1rem;
         font-weight: bold;
         color: white;
-        background: #ff6b00; /* Orange */
+        background: #ff6b00;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -323,43 +307,20 @@
       }
 
       .rent-btn:hover {
-        background: #e65c00; /* Darker orange */
+        background: #e65c00;
       }
 
-      .see-more-container {
-        text-align: center;
-        margin-top: 20px;
-      }
-
-      .see-more-btn {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 1rem;
-        font-weight: bold;
-        color: white;
-        background: #ff6b00; /* Orange */
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: background 0.3s ease;
-      }
-
-      .see-more-btn:hover {
-        background: #e65c00; /* Darker orange */
-      }
-
-      /* Top Auctions Section */
       .top-auctions {
         text-align: center;
         padding: 50px;
-        background: #f8f8f8; /* Light gray background */
+        background: #f8f8f8;
       }
 
       .top-auctions h2 {
         font-size: 2rem;
         margin-bottom: 20px;
         font-weight: bold;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .auction-container {
@@ -381,7 +342,7 @@
 
       .auction-box:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2); /* Orange shadow */
+        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2);
       }
 
       .auction-box img {
@@ -394,12 +355,12 @@
       .auction-box h3 {
         font-size: 1.4rem;
         margin: 10px 0;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .auction-box p {
         font-size: 1.2rem;
-        color: #333333; /* Dark gray */
+        color: #333333;
         font-weight: bold;
       }
 
@@ -410,7 +371,7 @@
         font-size: 1rem;
         font-weight: bold;
         color: white;
-        background: #ff6b00; /* Orange */
+        background: #ff6b00;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -418,21 +379,42 @@
       }
 
       .bid-btn:hover {
-        background: #e65c00; /* Darker orange */
+        background: #e65c00;
       }
 
-      /* Vehicle Types Section */
+      .see-more-container {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .see-more-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: white;
+        background: #ff6b00;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+      }
+
+      .see-more-btn:hover {
+        background: #e65c00;
+      }
+
       .vehicle-types {
         text-align: center;
         padding: 50px;
-        background: #f8f8f8; /* Light gray background */
+        background: #f8f8f8;
       }
 
       .vehicle-types h2 {
         font-size: 2rem;
         margin-bottom: 20px;
         font-weight: bold;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .vehicle-container {
@@ -456,7 +438,7 @@
 
       .vehicle-box:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2); /* Orange shadow */
+        box-shadow: 0 6px 15px rgba(255, 107, 0, 0.2);
       }
 
       .vehicle-box img {
@@ -471,17 +453,16 @@
       .vehicle-box h3 {
         font-size: 1.4rem;
         margin: 10px 0;
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
-      /* Footer */
       footer {
         margin-top: 80px;
         color: white;
         padding: 30px 10px;
         text-align: center;
-        border-top: 3px solid #ff6b00; /* Orange */
-        background-color: #333333; /* Dark gray */
+        border-top: 3px solid #ff6b00;
+        background-color: #333333;
       }
 
       .footerbox {
@@ -499,7 +480,7 @@
       }
 
       .footercontainer h3 {
-        border-bottom: 3px solid #ff6b00; /* Orange */
+        border-bottom: 3px solid #ff6b00;
         display: inline-block;
         padding-bottom: 5px;
         margin-bottom: 15px;
@@ -521,7 +502,7 @@
       }
 
       .footercontainer ul li a:hover {
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
         text-decoration: underline;
       }
 
@@ -535,7 +516,7 @@
       }
 
       .footercontainer a:hover {
-        color: #ff6b00; /* Orange */
+        color: #ff6b00;
       }
 
       .soc-med-img {
@@ -560,6 +541,14 @@
         margin-top: 20px;
         font-size: 14px;
         opacity: 0.8;
+      }
+
+      /* Placeholder style for when no data is available */
+      .no-data {
+        font-size: 1.2rem;
+        color: #666666;
+        text-align: center;
+        margin: 20px 0;
       }
     </style>
   </head>
@@ -635,52 +624,22 @@
     <!-- Top Auctions Section -->
     <section class="top-auctions" id="auctions">
       <h2>Top Auctions</h2>
-      <div class="auction-container">
-        <div class="auction-box">
-          <img
-            src="css/photos/model-3-exterior-right-front-three-quarter.webp"
-            alt="Tesla Model 3"
-          />
-          <h3>Tesla Model 3</h3>
-          <p>Current Bid: ₹8,50,000</p>
-          <button class="bid-btn" onclick="location.href='/login'">
-            Place Bid
-          </button>
+      <% if (topAuctions && topAuctions.length > 0) { %>
+        <div class="auction-container">
+          <% topAuctions.forEach(auction => { %>
+            <div class="auction-box">
+              <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>" />
+              <h3><%= auction.vehicleName %></h3>
+              <p>Current Bid: ₹<%= auction.startingBid.toLocaleString('en-IN') %></p>
+              <button class="bid-btn" onclick="location.href='/login'">
+                Place Bid
+              </button>
+            </div>
+          <% }); %>
         </div>
-        <div class="auction-box">
-          <img
-            src="css/photos/new-5-series-exterior-right-front-three-quarter.webp"
-            alt="BMW 5 Series"
-          />
-          <h3>BMW 5 Series</h3>
-          <p>Current Bid: ₹10,45,000</p>
-          <button class="bid-btn" onclick="location.href='/login'">
-            Place Bid
-          </button>
-        </div>
-        <div class="auction-box">
-          <img
-            src="css/photos/2024-11-07_104833.790786_4qubpdb_1746087.jpg"
-            alt="Mercedes-Benz C-Class"
-          />
-          <h3>Mercedes-Benz C-Class</h3>
-          <p>Current Bid: ₹9,50,000</p>
-          <button class="bid-btn" onclick="location.href='/login'">
-            Place Bid
-          </button>
-        </div>
-        <div class="auction-box">
-          <img
-            src="css/photos/a6-exterior-right-front-three-quarter-2.webp"
-            alt="Audi A6"
-          />
-          <h3>Audi A6</h3>
-          <p>Current Bid: ₹10,00,000</p>
-          <button class="bid-btn" onclick="location.href='/login'">
-            Place Bid
-          </button>
-        </div>
-      </div>
+      <% } else { %>
+        <p class="no-data">No auctions available at the moment.</p>
+      <% } %>
       <div class="see-more-container">
         <a href="#" class="see-more-btn" onclick="location.href='/login'"
           >See More Auctions</a
@@ -691,52 +650,22 @@
     <!-- Top Rentals Section -->
     <section class="top-rentals" id="rentals">
       <h2>Top Rentals</h2>
-      <div class="rental-container">
-        <div class="rental-box">
-          <img
-            src="css/photos/model-3-exterior-right-front-three-quarter.webp"
-            alt="Tesla Model 3"
-          />
-          <h3>Tesla Model 3</h3>
-          <p>₹8,620/day</p>
-          <button class="rent-btn" onclick="location.href='/login'">
-            Rent Now
-          </button>
+      <% if (topRentals && topRentals.length > 0) { %>
+        <div class="rental-container">
+          <% topRentals.forEach(rental => { %>
+            <div class="rental-box">
+              <img src="<%= rental.vehicleImage %>" alt="<%= rental.vehicleName %>" />
+              <h3><%= rental.vehicleName %></h3>
+              <p>₹<%= rental.costPerDay.toLocaleString('en-IN') %>/day</p>
+              <button class="rent-btn" onclick="location.href='/login'">
+                Rent Now
+              </button>
+            </div>
+          <% }); %>
         </div>
-        <div class="rental-box">
-          <img
-            src="css/photos/new-5-series-exterior-right-front-three-quarter.webp"
-            alt="BMW 5 Series"
-          />
-          <h3>BMW 5 Series</h3>
-          <p>₹10,451/day</p>
-          <button class="rent-btn" onclick="location.href='/login'">
-            Rent Now
-          </button>
-        </div>
-        <div class="rental-box">
-          <img
-            src="css/photos/2024-11-07_104833.790786_4qubpdb_1746087.jpg"
-            alt="Mercedes-Benz C-Class"
-          />
-          <h3>Mercedes-Benz C-Class</h3>
-          <p>₹9,579/day</p>
-          <button class="rent-btn" onclick="location.href='/login'">
-            Rent Now
-          </button>
-        </div>
-        <div class="rental-box">
-          <img
-            src="css/photos/a6-exterior-right-front-three-quarter-2.webp"
-            alt="Audi A6"
-          />
-          <h3>Audi A6</h3>
-          <p>₹10,014/day</p>
-          <button class="rent-btn" onclick="location.href='/login'">
-            Rent Now
-          </button>
-        </div>
-      </div>
+      <% } else { %>
+        <p class="no-data">No rentals available at the moment.</p>
+      <% } %>
       <div class="see-more-container">
         <a href="#" class="see-more-btn" onclick="location.href='/login'"
           >See More Rentals</a
@@ -760,6 +689,13 @@
           <p>Sell your vehicles to a wide audience effortlessly.</p>
           <button class="join-btn" onclick="location.href='/signup'">
             Join as Seller
+          </button>
+        </div>
+        <div class="join-box">
+          <h3>Mechanics</h3>
+          <p>Join our platform to offer your mechanic services.</p>
+          <button class="join-btn" onclick="location.href='/signup'">
+            Join as Mechanic
           </button>
         </div>
       </div>

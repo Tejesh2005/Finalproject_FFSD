@@ -17,6 +17,8 @@
 
       main {
         padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
       }
 
       h1,
@@ -27,7 +29,7 @@
       /* Vehicle Cards */
       .vehicle-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(3, 1fr); /* Changed to show exactly 3 cards per row */
         gap: 20px;
         padding: 20px;
       }
@@ -38,12 +40,11 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         padding: 20px;
         text-align: center;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .vehicle-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border: 1px solid #eee;
+        height: 360px; /* Fixed height for consistency */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
       .car-image {
@@ -51,53 +52,24 @@
         height: 180px;
         object-fit: cover;
         border-radius: 8px;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-      }
-
-      .car-image:hover {
-        opacity: 0.8;
-        transform: scale(1.05);
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
       }
 
       .vehicle-card h3 {
-        margin: 15px 0 10px;
+        margin: 0 0 5px;
         font-size: 20px;
         color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .vehicle-card p {
         margin: 5px 0;
         font-size: 14px;
-        color: #666;
-      }
-
-      /* Buttons */
-      button {
-        padding: 5px 10px;
-        margin: 5px;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.3s ease;
-      }
-
-      button:hover {
-        background-color: #ff8533;
-        transform: scale(1.05);
-      }
-
-      button.accept {
-        background-color: #28a745;
-        color: white;
-      }
-
-      button.decline {
-        background-color: #dc3545;
-        color: white;
-      }
-
-      button.submit {
-        background-color: #ff6600;
-        color: white;
+        color: #555;
+        line-height: 1.4;
       }
 
       /* No Tasks Message */
@@ -117,7 +89,7 @@
       <div class="vehicle-list">
         <% if (completedTasks && completedTasks.length > 0) { %>
           <% completedTasks.forEach(vehicle => { %>
-            <div class="vehicle-card" onclick="window.location.href='/mechanic_dashboard/vehicle-details/<%= vehicle._id %>'">
+            <div class="vehicle-card">
               <img src="<%= vehicle.vehicleImage %>" alt="<%= vehicle.vehicleName %>" class="car-image" />
               <h3><%= vehicle.vehicleName %></h3>
               <p><strong>Year:</strong> <%= vehicle.year %></p>

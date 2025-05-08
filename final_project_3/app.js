@@ -94,7 +94,7 @@ app.get("/", async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(4);
 
-    const topAuctions = await AuctionRequest.find({ started_auction: 'yes', auction_stopped: false })
+    const topAuctions = await AuctionRequest.find({ started_auction: 'yes'})
       .sort({ auctionDate: -1 })
       .limit(4);
 

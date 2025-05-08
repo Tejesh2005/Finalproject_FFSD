@@ -82,6 +82,17 @@
       .submit-btn:hover {
         background: #e65c00;
       }
+
+      .submit-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .review-submitted {
+        color: #28a745;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
     </style>
   </head>
   <body>
@@ -148,57 +159,70 @@
               <%= seller.city %>, <%= seller.state %>
             </span>
           </div>
-
-
         </div>
       </div>
 
       <div class="detail-card" style="margin-top: 30px; grid-column: 1 / -1;">
         <h2>Mechanic's Review</h2>
         
-        <form action="/mechanic_dashboard/submit-review/<%= vehicle._id %>" method="POST">
-  <h3>Submit Vehicle Review</h3>
-  
-  <div>
-    <label>Condition Rating:</label>
-    <select name="conditionRating" required>
-      <option value="">Select rating</option>
-      <option value="1">1 Star</option>
-      <option value="2">2 Stars</option>
-      <option value="3">3 Stars</option>
-      <option value="4">4 Stars</option>
-      <option value="5">5 Stars</option>
-    </select>
-  </div>
+        <% if (vehicle.reviewStatus === 'completed') { %>
+          <p class="review-submitted">Review already submitted for this vehicle.</p>
+          <div>
+            <h3>Submitted Review</h3>
+            <div class="detail-item">
+              <span class="detail-label">Condition Rating:</span>
+              <span><%= vehicle.mechanicReview.conditionRating %> Stars</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Mechanical Condition:</span>
+              <span><%= vehicle.mechanicReview.mechanicalCondition %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Body & Interior Condition:</span>
+              <span><%= vehicle.mechanicReview.bodyCondition %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Recommendations:</span>
+              <span><%= vehicle.mechanicReview.recommendations %></span>
+            </div>
+          </div>
+        <% } else { %>
+          <form action="/mechanic_dashboard/submit-review/<%= vehicle._id %>" method="POST">
+            <h3>Submit Vehicle Review</h3>
+            
+            <div>
+              <label>Condition Rating:</label>
+              <select name="conditionRating" required>
+                <option value="">Select rating</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+              </select>
+            </div>
 
-  <div>
-    <label>Mechanical Condition:</label>
-    <textarea name="mechanicalCondition" required></textarea>
-  </div>
+            <div>
+              <label>Mechanical Condition:</label>
+              <textarea name="mechanicalCondition" required></textarea>
+            </div>
 
-  <div>
-    <label>Body & Interior Condition:</label>
-    <textarea name="bodyCondition" required></textarea>
-  </div>
+            <div>
+              <label>Body & Interior Condition:</label>
+              <textarea name="bodyCondition" required></textarea>
+            </div>
 
-  <div>
-    <label>Recommendations:</label>
-    <textarea name="recommendations" required></textarea>
-  </div>
+            <div>
+              <label>Recommendations:</label>
+              <textarea name="recommendations" required></textarea>
+            </div>
 
-  <button type="submit">Submit Review</button>
-</form>
+            <button type="submit" class="submit-btn">Submit Review</button>
+          </form>
+        <% } %>
       </div>
     </main>
 
     <%- include('partials/footer') %>
-
-    <script>
-      document.getElementById('reviewForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Review form would be submitted in a real implementation');
-        // No actual submission happens as per requirements
-      });
-    </script>
   </body>
 </html>

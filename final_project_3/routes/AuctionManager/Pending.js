@@ -48,12 +48,18 @@ router.post('/update-status/:id', async (req, res) => {
       return res.status(404).json({ error: 'Car not found' });
     }
 
-    // Prevent approval if mechanicReview is empty or missing
+    // Prevent approval or rejection if reviewStatus is 'pending'
+    if (status === 'approved' || status === 'rejected') {
+      if (car.reviewStatus === 'pending') {
+        return res.status(400).json({ error: 'Cannot approve or reject car until mechanic review is completed' });
+      }
+    }
+
+    // Prevent approval if mechanicReview is empty or missing required fields
     if (status === 'approved') {
       if (!car.mechanicReview || 
           !car.mechanicReview.mechanicalCondition || 
-          !car.mechanicReview.bodyCondition || 
-          !car.mechanicReview.submittedAt) {
+          !car.mechanicReview.bodyCondition) {
         return res.status(400).json({ error: 'Cannot approve car without a complete mechanic review' });
       }
     }

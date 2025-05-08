@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRIVBIDRENT - Approved Cars</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
 
       body {
-        background-color: #ffffff; /* White background */
+        background-color: #ffffff;
       }
 
       /* Header Styles */
       .header {
-        background-color: #ff6b00; /* Orange header */
+        background-color: #ff6b00;
         color: white;
         padding: 15px 20px;
         display: flex;
@@ -56,19 +56,19 @@
       }
 
       .nav-links a:hover {
-        opacity: 0.8; /* Hover effect */
+        opacity: 0.8;
       }
 
       /* Cards Container */
       .cards-container {
         max-width: 1000px;
-        margin: 120px auto 20px; /* Adjusted for fixed header */
+        margin: 120px auto 20px;
         padding: 30px 20px;
       }
 
       /* Car Card Styles */
       .car-card {
-        background-color: #ffffff; /* White card background */
+        background-color: #ffffff;
         border-radius: 15px;
         margin-bottom: 20px;
         padding: 20px;
@@ -107,13 +107,13 @@
       .car-name {
         font-size: 24px;
         font-weight: bold;
-        color: #333; /* Dark text for car name */
+        color: #333;
         margin-bottom: 10px;
       }
 
       .car-condition {
         font-size: 18px;
-        color: #ff6b00; /* Orange text for condition */
+        color: #ff6b00;
         font-weight: bold;
       }
 
@@ -163,87 +163,93 @@
     </style>
   </head>
   <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
-        <div class="nav-links">
-          <a href="/auctionmanager/requests">REQUESTS</a>
-          <a href="/auctionmanager/pending">PENDINGCARS</a>
-          <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
-        </div>
-      </div>
+    <%- include('partials/navbar') %>
 
- <!-- Cards Container -->
- <div class="cards-container">
-  <% if (approvedCars && approvedCars.length > 0) { %>
-    <% approvedCars.forEach(function(car) { %>
+    <!-- Cards Container -->
+    <div class="cards-container">
+      <% if (approvedCars && approvedCars.length > 0) { %> <%
+      approvedCars.forEach(function(car) { %>
       <div class="car-card">
         <div class="car-image-container">
-          <img src="<%= car.vehicleImage %>" alt="<%= car.vehicleName %>" class="car-image" />
+          <img
+            src="<%= car.vehicleImage %>"
+            alt="<%= car.vehicleName %>"
+            class="car-image"
+          />
         </div>
         <div class="car-details">
           <div class="car-name"><%= car.vehicleName %></div>
-          <div class="car-condition">Condition: <%= car.condition.charAt(0).toUpperCase() + car.condition.slice(1) %></div>
-          <div style="margin-top: 10px; color: #555;">
+          <div class="car-condition">
+            Condition: <%= car.condition.charAt(0).toUpperCase() +
+            car.condition.slice(1) %>
+          </div>
+          <div style="margin-top: 10px; color: #555">
             Seller: <%= car.sellerId.firstName %> <%= car.sellerId.lastName %>
           </div>
-          <div style="color: #555;">
-            Location: <%= car.sellerId.city %>
-          </div>
+          <div style="color: #555">Location: <%= car.sellerId.city %></div>
         </div>
         <div class="button-container">
           <% if (car.started_auction === 'no') { %>
-            <form action="/auctionmanager/start-auction/<%= car._id %>" method="POST">
-              <button type="submit" class="auction-button">Start Auction</button>
-            </form>
+          <form
+            action="/auctionmanager/start-auction/<%= car._id %>"
+            method="POST"
+          >
+            <button type="submit" class="auction-button">Start Auction</button>
+          </form>
           <% } else { %>
-            <a href="/auctionmanager/view-bids/<%= car._id %>" class="view-bids-button">View Bids</a>
+          <a
+            href="/auctionmanager/view-bids/<%= car._id %>"
+            class="view-bids-button"
+            >View Bids</a
+          >
           <% } %>
         </div>
       </div>
-    <% }); %>
-  <% } else { %>
-    <div style="text-align: center; padding: 40px; color: #666; font-size: 18px;">
-      No approved cars available
+      <% }); %> <% } else { %>
+      <div
+        style="text-align: center; padding: 40px; color: #666; font-size: 18px"
+      >
+        No approved cars available
+      </div>
+      <% } %>
     </div>
-  <% } %>
-</div>
 
-<script>
-  // JavaScript to handle form submission and prevent page reloads (optional enhancement)
-  document.addEventListener('DOMContentLoaded', function() {
-    const auctionForms = document.querySelectorAll('form[action^="/auctionmanager/start-auction/"]');
-    
-    auctionForms.forEach(form => {
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        try {
-          const response = await fetch(this.action, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
+    <%- include('partials/footer') %>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const auctionForms = document.querySelectorAll(
+          'form[action^="/auctionmanager/start-auction/"]'
+        );
+
+        auctionForms.forEach((form) => {
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            try {
+              const response = await fetch(this.action, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+
+              if (response.ok) {
+                const buttonContainer = this.parentElement;
+                const carId = this.action.split("/").pop();
+
+                buttonContainer.innerHTML = `
+                  <a href="/auctionmanager/view-bids/${carId}" class="view-bids-button">View Bids</a>
+                `;
+              } else {
+                console.error("Failed to start auction");
+              }
+            } catch (error) {
+              console.error("Error:", error);
             }
           });
-          
-          if (response.ok) {
-            // Replace the button with the View Bids button
-            const buttonContainer = this.parentElement;
-            const carId = this.action.split('/').pop();
-            
-            buttonContainer.innerHTML = `
-              <a href="/auctionmanager/view-bids/${carId}" class="view-bids-button">View Bids</a>
-            `;
-          } else {
-            console.error('Failed to start auction');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
+        });
       });
-    });
-  });
-</script>
-
-</body>
+    </script>
+  </body>
 </html>

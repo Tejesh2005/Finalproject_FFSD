@@ -5,60 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRIVBIDRENT - Requests</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
 
       body {
-        background-color: #ffffff; /* White background */
-      }
-
-      /* Header Styles */
-      .header {
-        background-color: #ff6b00; /* Orange header */
-        color: white;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 80px;
-      }
-
-      .logo {
-        font-size: 24px;
-        font-weight: bold;
-      }
-
-      .logo a {
-        color: white;
-        text-decoration: none;
-      }
-
-      .nav-links {
-        display: flex;
-      }
-
-      .nav-links a {
-        color: white;
-        text-decoration: none;
-        margin-left: 20px;
-        font-weight: bold;
-        transition: opacity 0.3s ease;
-      }
-
-      .nav-links a:hover {
-        opacity: 0.8; /* Hover effect */
+        background-color: #ffffff;
       }
 
       /* Cards Container */
       .cards-container {
         max-width: 1000px;
-        margin: 120px auto 20px; /* Adjusted for fixed header */
+        margin: 20px auto;
         padding: 30px 20px;
       }
 
@@ -69,7 +32,7 @@
       }
 
       .car-card {
-        background-color: #ffffff; /* White card background */
+        background-color: #ffffff;
         border-radius: 15px;
         padding: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -97,20 +60,20 @@
       .car-title {
         font-size: 20px;
         font-weight: bold;
-        color: #333; /* Dark text for car name */
+        color: #333;
         margin-bottom: 10px;
       }
 
       .car-info {
         font-size: 16px;
-        color: #666; /* Gray text for car info */
+        color: #666;
         margin-bottom: 5px;
       }
 
       .mechanic-button {
         width: 100%;
         padding: 10px;
-        background-color: #ff6b00; /* Orange button */
+        background-color: #ff6b00;
         color: white;
         border: none;
         border-radius: 5px;
@@ -126,35 +89,40 @@
     </style>
   </head>
   <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
-        <div class="nav-links">
-          <a href="/auctionmanager/requests">REQUESTS</a>
-          <a href="/auctionmanager/pending">PENDINGCARS</a>
-          <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
-        </div>
-      </div>
+    <%- include('partials/navbar') %>
 
     <!-- Cards Container -->
-    <!-- Cards Container -->
-<div class="cards-container">
-  <div class="car-grid">
-    <% auctionReqPend.forEach(function(request) { %>
-      <div class="car-card" onclick="window.location.href='/auctionmanager/assign-mechanic/<%= request._id %>'">
-        <img src="<%= request.vehicleImage %>" alt="<%= request.vehicleName %>" class="car-image" />
-        <div class="car-details">
-          <div class="car-title"><%= request.vehicleName %></div>
-          <div class="car-info">Seller: <%= request.sellerId.firstName %> <%= request.sellerId.lastName %></div>
-          <div class="car-info">Location: <%= request.sellerId.city %></div>
+    <div class="cards-container">
+      <div class="car-grid">
+        <% auctionReqPend.forEach(function(request) { %>
+        <div
+          class="car-card"
+          onclick="window.location.href='/auctionmanager/assign-mechanic/<%= request._id %>'"
+        >
+          <img
+            src="<%= request.vehicleImage %>"
+            alt="<%= request.vehicleName %>"
+            class="car-image"
+          />
+          <div class="car-details">
+            <div class="car-title"><%= request.vehicleName %></div>
+            <div class="car-info">
+              Seller: <%= request.sellerId.firstName %> <%=
+              request.sellerId.lastName %>
+            </div>
+            <div class="car-info">Location: <%= request.sellerId.city %></div>
+          </div>
+          <button
+            class="mechanic-button"
+            onclick="window.location.href='/auctionmanager/assign-mechanic/<%= request._id %>'"
+          >
+            More Details
+          </button>
         </div>
-        <button class="mechanic-button" onclick="window.location.href='/auctionmanager/assign-mechanic/<%= request._id %>'">
-          More Details
-        </button>
+        <% }); %>
       </div>
-    <% }); %>
-  </div>
-</div>
+    </div>
 
+    <%- include('partials/footer') %>
   </body>
 </html>

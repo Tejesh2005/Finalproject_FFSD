@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRIVBIDRENT - Car Details</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+      }
 
       body {
-        background-color: #ffffff; /* White background */
+        background-color: #ffffff;
       }
 
       /* Header Styles */
       .header {
-        background-color: #ff6b00; /* Orange header */
+        background-color: #ff6b00;
         color: white;
         padding: 15px 20px;
         display: flex;
@@ -52,13 +52,13 @@
       }
 
       .nav-links a:hover {
-        opacity: 0.8; /* Hover effect */
+        opacity: 0.8;
       }
 
       /* Car Details Container */
       .car-details-container {
         max-width: 1000px;
-        margin: 120px auto 20px; /* Adjusted for fixed header */
+        margin: 120px auto 20px;
         padding: 30px 20px;
       }
 
@@ -79,18 +79,18 @@
       .car-name {
         font-size: 28px;
         font-weight: bold;
-        color: #333; /* Dark text for car name */
+        color: #333;
         margin-bottom: 10px;
       }
 
       .car-info {
         font-size: 18px;
-        color: #666; /* Gray text for car info */
+        color: #666;
         margin-bottom: 10px;
       }
 
       .car-info strong {
-        color: #333; /* Dark text for labels */
+        color: #333;
       }
 
       .rating-section {
@@ -99,7 +99,7 @@
 
       .rating-section h3 {
         font-size: 22px;
-        color: #333; /* Dark text for heading */
+        color: #333;
         margin-bottom: 10px;
       }
 
@@ -109,7 +109,7 @@
 
       .rating-item p {
         font-size: 16px;
-        color: #666; /* Gray text for rating details */
+        color: #666;
         margin-bottom: 5px;
       }
 
@@ -139,12 +139,12 @@
       }
 
       .approve-btn {
-        background-color: #4caf50; /* Green for approve */
+        background-color: #4caf50;
         color: white;
       }
 
       .decline-btn {
-        background-color: #f44336; /* Red for decline */
+        background-color: #f44336;
         color: white;
       }
 
@@ -164,29 +164,25 @@
       }
 
       .approved {
-        background-color: #4caf50; /* Green for approved */
+        background-color: #4caf50;
       }
 
       .declined {
-        background-color: #f44336; /* Red for declined */
+        background-color: #f44336;
       }
     </style>
   </head>
   <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="logo"><a href="/auctionmanager/home1">DRIVBIDRENT</a></div>
-        <div class="nav-links">
-          <a href="/auctionmanager/requests">REQUESTS</a>
-          <a href="/auctionmanager/pending">PENDINGCARS</a>
-          <a href="/auctionmanager/approvedcars">APPROVEDCARS</a>
-        </div>
-      </div>
+    <%- include('partials/navbar') %>
 
     <!-- Car Details Container -->
     <div class="car-details-container">
       <div class="car-image-container">
-        <img src="/images/tata_toofan.png" alt="Tata Toofan" class="car-image" />
+        <img
+          src="/images/tata_toofan.png"
+          alt="Tata Toofan"
+          class="car-image"
+        />
       </div>
       <div class="car-name">Tata Toofan</div>
       <div class="car-info"><strong>Mileage:</strong> 35,000 km</div>
@@ -227,27 +223,27 @@
       <div id="status" class="status" style="display: none"></div>
     </div>
 
+    <%- include('partials/footer') %>
+
     <script>
-      // Function to approve the car
       function approveCar() {
         const buttons = document.getElementById("action-buttons");
         const status = document.getElementById("status");
 
-        buttons.style.display = "none"; // Hide buttons
-        status.textContent = "Approved"; // Set status
-        status.className = "approved"; // Apply approved styling
-        status.style.display = "block"; // Show status
+        buttons.style.display = "none";
+        status.textContent = "Approved";
+        status.className = "approved";
+        status.style.display = "block";
       }
 
-      // Function to decline the car
       function declineCar() {
         const buttons = document.getElementById("action-buttons");
         const status = document.getElementById("status");
 
-        buttons.style.display = "none"; // Hide buttons
-        status.textContent = "Declined"; // Set status
-        status.className = "declined"; // Apply declined styling
-        status.style.display = "block"; // Show status
+        buttons.style.display = "none";
+        status.textContent = "Declined";
+        status.className = "declined";
+        status.style.display = "block";
       }
     </script>
   </body>

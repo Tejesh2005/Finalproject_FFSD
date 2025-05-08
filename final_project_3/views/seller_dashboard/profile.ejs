@@ -267,16 +267,23 @@ form input, form select, form textarea {
           <h2>Earnings Summary</h2>
           <div class="earnings-card">
             <p><strong>Total Earnings:</strong> ₹<%= typeof totalEarnings !== 'undefined' ? totalEarnings.toLocaleString('en-IN') : '0' %></p>
-            <p><strong>Recent Transactions:</strong></p>
+            <p><strong>Recent Transactions (Completed):</strong></p>
             <% if (typeof recentTransactions !== 'undefined' && recentTransactions.length > 0) { %>
               <ul>
                 <% recentTransactions.forEach(transaction => { %>
-                  <li>₹<%= transaction.amount.toLocaleString('en-IN') %> - <%= transaction.description %></li>
+                  <li>
+                    ₹<%= transaction.amount.toLocaleString('en-IN') %> - <%= transaction.description %> 
+                    ( <%= new Date(transaction.createdAt).toLocaleDateString('en-US', { 
+                      day: '2-digit', 
+                      month: '2-digit', 
+                      year: 'numeric' 
+                    }) %> )
+                  </li>
                 <% }); %>
               </ul>
             <% } else { %>
               <ul>
-                <li>No recent transactions</li>
+                <li>No recent completed transactions</li>
               </ul>
             <% } %>
             <a href="/seller_dashboard/view-earnings" class="details-btn"

@@ -172,7 +172,14 @@
         <% if (recentEarnings.length > 0) { %>
           <ul>
             <% recentEarnings.forEach(earning => { %>
-              <li>₹<%= earning.amount.toFixed(2) %> - <%= earning.description %></li>
+              <li>
+                ₹<%= earning.amount.toFixed(2) %> - <%= earning.description %> 
+                ( <%= new Date(earning.createdAt).toLocaleDateString('en-US', { 
+                  day: '2-digit', 
+                  month: '2-digit', 
+                  year: 'numeric' 
+                }) %> )
+              </li>
             <% }) %>
           </ul>
         <% } else { %>

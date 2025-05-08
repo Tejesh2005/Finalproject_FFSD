@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User'); // Make sure you have a User model
+const User = require('../../models/User');
+const RentalCost = require('../../models/RentalCost');
+const RentalRequest = require('../../models/RentalRequest');
+const AuctionRequest = require('../../models/AuctionRequest');
+const AuctionBid = require('../../models/AuctionBid');
 
+// GET: Show seller profile page
 router.get('/profile', async (req, res) => {
   if (!req.session.userId || req.session.userType !== 'seller') {
     return res.redirect('/login');
@@ -13,19 +18,66 @@ router.get('/profile', async (req, res) => {
       return res.redirect('/login');
     }
     
-    // In a real app, you would fetch these from your database
-    // For now, we'll use placeholder data
-    const auctionsCount = 5; // Replace with actual query
-    const rentalsCount = 4;  // Replace with actual query
-    const totalEarnings = 150000; // Replace with actual query
-    
-    // Recent transactions placeholder
-    const recentTransactions = [
-      { amount: 50000, description: 'Honda Civic (Auction)' },
-      { amount: 30000, description: 'Toyota Innova (Rental)' },
-      { amount: 20000, description: 'Kia Sonet (Auction)' }
-    ];
-    
+    // Fetch active auctions count (status 'approved' or 'assignedMechanic' and not ended)
+    const auctionsCount = await AuctionRequest.countDocuments({
+      sellerId: req.session.userId,
+      status: { $in: ['approved', 'assignedMechanic'] },
+      started_auction: { $ne: 'ended' }
+    });
+
+    // Fetch active rentals count (status 'available' or 'booked')
+    const rentalsCount = await RentalRequest.countDocuments({
+      sellerId: req.session.userId,
+      status: { $in: ['available', 'booked'] }
+    });
+
+    // Fetch rental earnings (only completed rentals)
+    const rentalCosts = await RentalCost.find({ sellerId: req.session.userId })
+      .populate({
+        path: 'rentalCarId',
+        select: 'vehicleName createdAt'
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Calculate total earnings from rentals
+    const totalRentalEarnings = rentalCosts.reduce((sum, cost) => sum + (cost.totalCost || 0), 0);
+
+    // Fetch only ended auctions for earnings
+    const auctions = await AuctionRequest.find({
+      sellerId: req.session.userId,
+      started_auction: 'ended'
+    }).lean();
+
+    // Calculate total earnings from auctions (only ended auctions with final purchase price)
+    let totalAuctionEarnings = 0;
+    const auctionEarnings = [];
+
+    for (const auction of auctions) {
+      if (auction.finalPurchasePrice) {
+        totalAuctionEarnings += auction.finalPurchasePrice;
+        auctionEarnings.push({
+          amount: auction.finalPurchasePrice,
+          description: `${auction.vehicleName} (Auction Final Sale)`,
+          createdAt: auction.updatedAt
+        });
+      }
+    }
+
+    // Combine total earnings
+    const totalEarnings = totalRentalEarnings + totalAuctionEarnings;
+
+    // Format recent transactions (rentals + ended auctions)
+    const recentRentalEarnings = rentalCosts.map(cost => ({
+      amount: cost.totalCost,
+      description: `${cost.rentalCarId ? cost.rentalCarId.vehicleName : 'Unknown Vehicle'} (Rental)`,
+      createdAt: cost.createdAt
+    }));
+
+    const recentTransactions = [...recentRentalEarnings, ...auctionEarnings]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 3);
+
     res.render('seller_dashboard/profile.ejs', { 
       user,
       auctionsCount,

@@ -5,22 +5,24 @@ const path = require("path");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const User = require("./models/User");
+const RentalRequest = require("./models/RentalRequest");
+const AuctionRequest = require("./models/AuctionRequest");
 
-const addAuctionRoute = require("./routes/Seller/AddAuction"); // Import the addAuction route
+const addAuctionRoute = require("./routes/Seller/AddAuction");
 const auctionDetailsRoutes = require("./routes/Seller/AuctionDetail");
-const addRentalRoute = require("./routes/Seller/AddRental"); // Import the addRental route
+const addRentalRoute = require("./routes/Seller/AddRental");
 const seller_profileRoute = require("./routes/Seller/profile");
-const viewAuctionsRoute = require("./routes/Seller/ViewAuctions.js"); // Import the viewAuctions route
-const viewRentalsRoute = require("./routes/Seller/ViewRentals.js"); // Import the viewRentals route
-const viewearningsRoute = require("./routes/Seller/ViewEarnings.js"); // Import the viewearnings route
+const viewAuctionsRoute = require("./routes/Seller/ViewAuctions.js");
+const viewRentalsRoute = require("./routes/Seller/ViewRentals.js");
+const viewearningsRoute = require("./routes/Seller/ViewEarnings.js");
 const rentalDetailsRoute = require("./routes/Seller/RentalDetails");
 const updateRentalRoute = require('./routes/Seller/UpdateRental');
 
-const AuctionManagerHomeRoute = require("./routes/AuctionManager/Home.js"); // Import the AuctionManagerHome route
-const Auctionrequests = require("./routes/AuctionManager/Requests.js"); // Import the AuctionManagerHome route
-const AssignMechanic = require("./routes/AuctionManager/AssignMechanic.js"); // Import the AuctionManagerHome route
-const Pendingcars = require("./routes/AuctionManager/Pending.js"); // Import the AuctionManagerHome route
-const approvedCars = require("./routes/AuctionManager/ApprovedCars.js"); // Import the AuctionManagerHome route
+const AuctionManagerHomeRoute = require("./routes/AuctionManager/Home.js");
+const Auctionrequests = require("./routes/AuctionManager/Requests.js");
+const AssignMechanic = require("./routes/AuctionManager/AssignMechanic.js");
+const Pendingcars = require("./routes/AuctionManager/Pending.js");
+const approvedCars = require("./routes/AuctionManager/ApprovedCars.js");
 const PendingCarDetails = require("./routes/AuctionManager/PendingCarDetails.js");
 
 const AdminHomepage = require("./routes/Admin/AdminHome.js");
@@ -29,11 +31,8 @@ const adminProfile = require("./routes/Admin/AdminProfile.js");
 const Analytics = require("./routes/Admin/Analytics.js");
 const ManageEarnings = require("./routes/Admin/ManageEarnings.js");
 
-// const BuyerDashboard = require('./routes/Buyer/BuyerDashboard.js'); // Old import
-const Aboutus = require("./routes/Buyer/Aboutus.js"); // Import the Aboutus route
-// const AuctionRoute = require('./routes/Buyer/Auction.js'); // Old import
+const Aboutus = require("./routes/Buyer/Aboutus.js");
 
-// New Buyer Route Imports
 const BuyerDashboardRoute = require("./routes/Buyer/BuyerDashboard.js");
 const BuyerAuctionRoute = require("./routes/Buyer/Auction.js");
 const BuyerDriverRoute = require("./routes/Buyer/Driver.js");
@@ -43,16 +42,15 @@ const BuyerWishlistRoute = require("./routes/Buyer/Wishlist.js");
 
 const app = express();
 
-const DriverDashboard = require("./routes/Driver/Dashboard.js"); // Import the DriverDashboard route
+const DriverDashboard = require("./routes/Driver/Dashboard.js");
 
 const index = require("./routes/Mechanic/index.js");
 const currentTasks = require("./routes/Mechanic/current-tasks.js"); 
 const pendingTasks = require("./routes/Mechanic/pending-tasks.js");
-const pastTasks = require("./routes/Mechanic/past-tasks.js"); // Import the pastTasks route   
-const profile = require("./routes/Mechanic/profile.js"); // Import the profile route
+const pastTasks = require("./routes/Mechanic/past-tasks.js");   
+const profile = require("./routes/Mechanic/profile.js");
 const mcardetails = require("./routes/Mechanic/mcardetails.js")
 
-// Authentication middleware
 const isAuthenticated = (req, res, next) => {
   if (req.session.userId) {
     return next();
@@ -60,7 +58,6 @@ const isAuthenticated = (req, res, next) => {
   res.redirect('/login');
 };
 
-// Role-specific middleware for auction manager
 const isAuctionManager = (req, res, next) => {
   if (req.session.userId && req.session.userType === 'auction_manager') {
     return next();
@@ -68,17 +65,14 @@ const isAuctionManager = (req, res, next) => {
   if (!req.session.userId) {
     return res.redirect('/login');
   }
-  // If user is logged in but not an auction manager
   return res.status(403).send('Access denied. This area is only for auction managers.');
 };
 
-// Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb+srv://Jeevan:Bunny123@cluster0.2jrrwqn.mongodb.net/DriveBidRent")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
 
-// Set up middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -91,20 +85,26 @@ app.use(
   })
 );
 
-// Set view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ======================
-// ROUTES
-// ======================
+app.get("/", async (req, res) => {
+  try {
+    const topRentals = await RentalRequest.find({ status: 'available' })
+      .sort({ createdAt: -1 })
+      .limit(4);
 
-// Root route
-app.get("/", (req, res) => {
-  res.render("homepage.ejs");
+    const topAuctions = await AuctionRequest.find({ started_auction: 'yes', auction_stopped: false })
+      .sort({ auctionDate: -1 })
+      .limit(4);
+
+    res.render("homepage.ejs", { topRentals, topAuctions });
+  } catch (err) {
+    console.error("Error fetching top rentals and auctions:", err);
+    res.render("homepage.ejs", { topRentals: [], topAuctions: [], error: "Failed to load top rentals and auctions" });
+  }
 });
 
-// Auth routes
 app.get("/signup", (req, res) => {
   res.render("signup", { title: "Sign Up" });
 });
@@ -127,16 +127,13 @@ app.post("/signup", async (req, res) => {
       approved_status
     } = req.body;
     
-    // Only get googleAddressLink if user is a mechanic
     const googleAddressLink = userType === 'mechanic' ? req.body.googleAddressLink : undefined;
 
-    // Process address fields - log them to see what's coming in
     console.log("doorNo received:", req.body.doorNo);
     console.log("street received:", req.body.street);
     console.log("city received:", req.body.city);
     console.log("state received:", req.body.state);
 
-    // Get address fields, handling both string and array cases explicitly
     let doorNo, street, city, state;
     
     if (req.body.doorNo) {
@@ -163,11 +160,9 @@ app.post("/signup", async (req, res) => {
         : req.body.state;
     }
     
-    // Handle vehicle types - simplified for only bikes and cars
     const repairBikes = req.body.repairBikes === "on";
     const repairCars = req.body.repairCars === "on";
 
-    // Validate phone number (10 digits)
     if (!phone || !phone.match(/^\d{10}$/)) {
       return res.render("signup", {
         error: "Phone number must be 10 digits",
@@ -192,7 +187,6 @@ app.post("/signup", async (req, res) => {
       });
     }
 
-    // Age validation
     const dob = new Date(dateOfBirth);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
@@ -225,7 +219,6 @@ app.post("/signup", async (req, res) => {
       });
     }
 
-    // Validate input
     if (password !== confirmPassword) {
       return res.render("signup", {
         error: "Passwords do not match",
@@ -298,7 +291,6 @@ app.post("/signup", async (req, res) => {
       });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.render("signup", {
@@ -323,7 +315,6 @@ app.post("/signup", async (req, res) => {
       });
     }
 
-    // Parse experienceYears as a number if it exists
     const parsedExperienceYears = experienceYears ? parseInt(experienceYears) : undefined;
 
     const userData = {
@@ -335,12 +326,11 @@ app.post("/signup", async (req, res) => {
       dateOfBirth,
       phone,
       experienceYears: parsedExperienceYears,
-      approved_status: approved_status || 'No', // Default to 'No' if not provided
+      approved_status: approved_status || 'No',
       repairBikes,
       repairCars
     };
     
-    // Only add these fields if they have values
     if (doorNo) userData.doorNo = doorNo;
     if (street) userData.street = street;
     if (city) userData.city = city;
@@ -411,7 +401,6 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-// Dashboard routes
 app.get("/dashboard", async (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
@@ -429,7 +418,6 @@ app.get("/dashboard", async (req, res) => {
   }
 });
 
-// Mount the new buyer routes
 app.use("/", BuyerDashboardRoute);
 app.use("/", BuyerAuctionRoute);
 app.use("/", BuyerDriverRoute);
@@ -438,7 +426,6 @@ app.use("/", BuyerPurchaseRoute);
 app.use("/", BuyerWishlistRoute);
 app.use("/", Aboutus);
 
-// New Seller Dashboard Routes
 app.get("/seller_dashboard/seller", async (req, res) => {
   if (!req.session.userId || req.session.userType !== "seller") {
     return res.redirect("/login");
@@ -456,7 +443,6 @@ app.get("/seller_dashboard/seller", async (req, res) => {
   }
 });
 
-// app.use('/seller_dashboard', SellerDashboard);
 app.use("/seller_dashboard", addAuctionRoute);
 app.use("/seller_dashboard", auctionDetailsRoutes);
 app.use("/seller_dashboard", addRentalRoute);
@@ -478,14 +464,10 @@ app.get("/seller_dashboard/update-rental", async (req, res) => {
       return res.redirect("/login");
     }
 
-    // Get rental ID from query parameters
     const rentalId = req.query.id;
     if (!rentalId) {
       return res.redirect("/seller_dashboard/view-rentals");
     }
-
-    // In a real app, you would fetch the rental details from a database
-    // For now, we'll just pass the ID
 
     res.render("seller_dashboard/update-rental.ejs", { user, rentalId });
   } catch (err) {
@@ -508,14 +490,10 @@ app.get("/seller_dashboard/view-bids", async (req, res) => {
       return res.redirect("/login");
     }
 
-    // Get auction ID from query parameters
     const auctionId = req.query.id;
     if (!auctionId) {
       return res.redirect("/seller_dashboard/view-auctions");
     }
-
-    // In a real app, you would fetch the bids for this auction from a database
-    // For now, we'll just pass the ID
 
     res.render("seller_dashboard/view-bids.ejs", { user, auctionId });
   } catch (err) {
@@ -538,9 +516,6 @@ app.get("/seller_dashboard/view-rentals", async (req, res) => {
       return res.redirect("/login");
     }
 
-    // In a real app, you would fetch rentals from a database
-    // For now, we'll just render the template
-
     res.render("seller_dashboard/view-rentals.ejs", { user });
   } catch (err) {
     console.error(err);
@@ -553,7 +528,6 @@ app.get("/seller_dashboard/view-rentals", async (req, res) => {
 
 app.use("/driver_dashboard", DriverDashboard);
 
-// Apply auction manager authentication to all auction manager routes
 app.use("/auctionmanager", isAuctionManager, AuctionManagerHomeRoute);
 app.use("/auctionmanager", isAuctionManager, Auctionrequests);
 app.use("/auctionmanager", isAuctionManager, AssignMechanic);
@@ -567,7 +541,6 @@ app.use("/", adminProfile);
 app.use("/", Analytics);
 app.use("/", ManageEarnings);
 
-// Mount mechanic dashboard routes
 app.use("/mechanic_dashboard", currentTasks);
 app.use("/mechanic_dashboard", pendingTasks);
 app.use("/mechanic_dashboard", pastTasks);
@@ -575,12 +548,9 @@ app.use("/mechanic_dashboard", profile);
 app.use("/mechanic_dashboard", index);
 app.use("/mechanic_dashboard", mcardetails);
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
 
 module.exports = app;

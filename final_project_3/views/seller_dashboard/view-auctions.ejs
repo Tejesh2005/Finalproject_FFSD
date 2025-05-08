@@ -303,6 +303,8 @@
                 </p>
                 <% if (auction.started_auction === 'yes') { %>
                   <p><strong>Auction:</strong> Started</p>
+                <% } else if (auction.started_auction === 'ended') { %>
+                  <p><strong>Auction:</strong> Ended</p>
                 <% } else { %>
                   <p><strong>Auction:</strong> Not Started</p>
                 <% } %>
@@ -316,7 +318,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h2 class="modal-title">Vehicle Details</h2>
-              <span class="close" onclick="closeModal()">&times;</span>
+              <span class="close" onclick="closeModal()">×</span>
             </div>
             <div class="modal-body">
               <div class="vehicle-image-container">
@@ -406,15 +408,15 @@
           }<%= index < auctions.length - 1 ? ',' : '' %>
         <% }); %>
       ];
-      
+
       const modal = document.getElementById("vehicleModal");
       const alertModal = document.getElementById("alertModal");
-      
+
       // Function to open the modal and populate with vehicle data
       function openModal(auctionId) {
         const auction = auctionData.find(a => a.id === auctionId);
         if (!auction) return;
-        
+
         // Populate modal with auction data
         document.getElementById("modalVehicleName").textContent = auction.name;
         document.getElementById("modalVehicleImage").src = auction.image;
@@ -425,23 +427,29 @@
         document.getElementById("modalVehicleCondition").textContent = auction.condition;
         document.getElementById("modalVehicleAuctionDate").textContent = auction.auctionDate;
         document.getElementById("modalVehicleStartingBid").textContent = auction.startingBid;
-        
+
         // Set status with appropriate styling
         const statusElement = document.getElementById("modalVehicleStatus");
         statusElement.textContent = auction.status.charAt(0).toUpperCase() + auction.status.slice(1);
         statusElement.className = `status-${auction.status}`;
-        
+
         // Set auction started status
         const auctionStartedElement = document.getElementById("modalAuctionStarted");
-        auctionStartedElement.textContent = auction.started_auction === 'yes' ? 'Started' : 'Not Started';
-        
+        if (auction.started_auction === 'yes') {
+          auctionStartedElement.textContent = 'Started';
+        } else if (auction.started_auction === 'ended') {
+          auctionStartedElement.textContent = 'Ended';
+        } else {
+          auctionStartedElement.textContent = 'Not Started';
+        }
+
         // Add View Bids button if applicable
         const viewBidsContainer = document.getElementById("viewBidsContainer");
         viewBidsContainer.innerHTML = '';
-        
+
         if (auction.status === 'approved' || auction.status === 'assignedMechanic') {
-          if (auction.started_auction === 'yes') {
-            // If auction is approved and started, allow viewing bids
+          if (auction.started_auction === 'yes' || auction.started_auction === 'ended') {
+            // If auction is approved and either started or ended, allow viewing bids
             const viewBidsBtn = document.createElement('a');
             viewBidsBtn.href = `/seller_dashboard/view-bids/${auction.id}`;
             viewBidsBtn.className = 'card-btn';
@@ -459,27 +467,27 @@
             viewBidsContainer.appendChild(notStartedBtn);
           }
         }
-        
+
         // Show modal
         modal.style.display = "block";
       }
-      
+
       // Function to show alert modal
       function showAlert(message) {
         document.getElementById("alertMessage").textContent = message;
         alertModal.style.display = "block";
       }
-      
+
       // Function to close the alert modal
       function closeAlertModal() {
         alertModal.style.display = "none";
       }
-      
+
       // Function to close the modal
       function closeModal() {
         modal.style.display = "none";
       }
-      
+
       // Close modal when clicking outside of it
       window.onclick = function(event) {
         if (event.target === modal) {
@@ -489,7 +497,7 @@
           closeAlertModal();
         }
       }
-      
+
       // Logout button functionality
       document.querySelector('.logout-btn')?.addEventListener('click', () => {
         window.location.href = '/logout';

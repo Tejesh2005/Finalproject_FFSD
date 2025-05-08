@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const AuctionRequest = require('../../models/AuctionRequest');
-const AuctionBid = require('../../models/AuctionBid'); // Add this import
+const AuctionBid = require('../../models/AuctionBid');
 
-// Middleware to check if user is logged in as seller
+// Middleware to rendering seller login
 const isSellerLoggedIn = (req, res, next) => {
   if (!req.session.userId || req.session.userType !== 'seller') {
     return res.redirect('/login');
@@ -83,19 +83,23 @@ router.get('/view-bids/:id', isSellerLoggedIn, async (req, res) => {
       return res.redirect('/seller_dashboard/view-auctions');
     }
     
-    // Check if auction is approved and started
+    // Check if auction is approved
     if (auction.status !== 'approved' && auction.status !== 'assignedMechanic') {
       req.flash('error', 'This auction has not been approved yet.');
       return res.redirect('/seller_dashboard/view-auctions');
     }
     
-    if (auction.started_auction !== 'yes') {
+    // Check if auction has started or ended
+    if (auction.started_auction !== 'yes' && auction.started_auction !== 'ended') {
       req.flash('error', 'Auction has not yet started.');
       return res.redirect('/seller_dashboard/view-auctions');
     }
     
-    // Fetch bids for this auction
-    const bids = await AuctionBid.getBidsForAuction(auctionId);
+    // Fetch bids for this auction and populate buyerId with additional fields
+    const bids = await AuctionBid.find({ auctionId })
+      .populate('buyerId', 'firstName lastName email phone') // Include phone number
+      .sort({ bidTime: -1 })
+      .lean();
     
     // Separate current bid and bid history
     const currentBid = bids.find(bid => bid.isCurrentBid) || null;

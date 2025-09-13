@@ -6,22 +6,14 @@ const AuctionCost = require("../../models/AuctionCost");
 const RentalRequest = require("../../models/RentalRequest");
 const AuctionRequest = require("../../models/AuctionRequest");
 const AuctionBid = require("../../models/AuctionBid");
-
-// Middleware to check admin login
-const isAdminLoggedIn = (req, res, next) => {
-  if (!req.session || !req.session.userId || req.session.userType !== "admin") {
-    return res.redirect("/login");
-  }
-  next();
-};
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
 
 // Admin homepage route
 router.get("/admin", isAdminLoggedIn, async (req, res) => {
   try {
     // Fetch user data
-    const user = await User.findById(req.session.userId).lean();
+    const user = await User.findById(req.user._id).lean();
     if (!user) {
-      req.session.destroy();
       return res.redirect("/login");
     }
 

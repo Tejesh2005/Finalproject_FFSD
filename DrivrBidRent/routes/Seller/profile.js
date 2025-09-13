@@ -5,34 +5,27 @@ const RentalCost = require('../../models/RentalCost');
 const RentalRequest = require('../../models/RentalRequest');
 const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
-
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 // GET: Show seller profile page
-router.get('/profile', async (req, res) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  
+router.get('/profile', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.redirect('/login');
-    }
+    const user = req.user;
     
     // Fetch active auctions count (status 'approved' or 'assignedMechanic' and not ended)
     const auctionsCount = await AuctionRequest.countDocuments({
-      sellerId: req.session.userId,
+      sellerId: user._id,
       status: { $in: ['approved', 'assignedMechanic'] },
       started_auction: { $ne: 'ended' }
     });
 
     // Fetch active rentals count (status 'available' or 'booked')
     const rentalsCount = await RentalRequest.countDocuments({
-      sellerId: req.session.userId,
+      sellerId: user._id,
       status: { $in: ['available', 'booked'] }
     });
 
     // Fetch rental earnings (only completed rentals)
-    const rentalCosts = await RentalCost.find({ sellerId: req.session.userId })
+    const rentalCosts = await RentalCost.find({ sellerId: user._id })
       .populate({
         path: 'rentalCarId',
         select: 'vehicleName createdAt'
@@ -45,7 +38,7 @@ router.get('/profile', async (req, res) => {
 
     // Fetch only ended auctions for earnings
     const auctions = await AuctionRequest.find({
-      sellerId: req.session.userId,
+      sellerId: user._id,
       started_auction: 'ended'
     }).lean();
 
@@ -99,11 +92,7 @@ router.get('/profile', async (req, res) => {
 });
 
 // Route to update seller profile information
-router.post('/update-profile', async (req, res) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
-
+router.post('/update-profile', isSellerLoggedin, async (req, res) => {
   try {
     const { firstName, lastName, email, phone, doorNo, street, city, state } = req.body;
 
@@ -124,7 +113,7 @@ router.post('/update-profile', async (req, res) => {
     }
 
     // Check if email is already in use by another user
-    const existingUser = await User.findOne({ email, _id: { $ne: req.session.userId } });
+    const existingUser = await User.findOne({ email, _id: { $ne: req.user._id } });
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'Email already in use' });
     }
@@ -142,7 +131,7 @@ router.post('/update-profile', async (req, res) => {
     };
 
     const user = await User.findByIdAndUpdate(
-      req.session.userId,
+      req.user._id,
       { $set: updatedData },
       { new: true }
     );
@@ -159,11 +148,7 @@ router.post('/update-profile', async (req, res) => {
 });
 
 // Route to update preferences
-router.post('/update-preferences', async (req, res) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
-
+router.post('/update-preferences', isSellerLoggedin, async (req, res) => {
   try {
     const { notificationPreference } = req.body;
 
@@ -174,7 +159,7 @@ router.post('/update-preferences', async (req, res) => {
     }
 
     const user = await User.findByIdAndUpdate(
-      req.session.userId,
+      req.user._id,
       { $set: { notificationPreference } },
       { new: true }
     );
@@ -191,11 +176,7 @@ router.post('/update-preferences', async (req, res) => {
 });
 
 // Route to change password
-router.post('/change-password', async (req, res) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
-
+router.post('/change-password', isSellerLoggedin, async (req, res) => {
   try {
     const { oldPassword, newPassword, confirmPassword } = req.body;
 
@@ -214,7 +195,7 @@ router.post('/change-password', async (req, res) => {
       return res.status(400).json({ success: false, message: 'New password must be at least 8 characters long' });
     }
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }

@@ -1,28 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const AuctionRequest = require('../../models/AuctionRequest'); // Adjust path as needed
-const User = require('../../models/User'); // Make sure you have a User model
-
-// Define the isSellerLoggedIn middleware
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
-
+const AuctionRequest = require('../../models/AuctionRequest');
+const User = require('../../models/User');
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 // Route to display auction details
-router.get('/auction-details/:id', isSellerLoggedIn, async (req, res) => {
+router.get('/auction-details/:id', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.redirect('/login');
-    }
+    const user = req.user;
     
     // Fetch specific auction by ID
     const auction = await AuctionRequest.findOne({
       _id: req.params.id,
-      sellerId: req.session.userId
+      sellerId: user._id
     }).lean();
     
     if (!auction) {

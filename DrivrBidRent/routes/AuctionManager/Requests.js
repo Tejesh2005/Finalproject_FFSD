@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
+const isAuctionManager = require('../../middlewares/isAuctionManager');
 
-router.get('/requests', async (req, res) => {
+router.get('/requests', isAuctionManager, async (req, res) => {
     try {
         const auctionReqPend = await AuctionRequest.find({ status: 'pending' }).populate('sellerId');
         res.render('auctionmanager/requests.ejs', { auctionReqPend: auctionReqPend });

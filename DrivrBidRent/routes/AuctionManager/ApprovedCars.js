@@ -4,6 +4,7 @@ const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
 const Purchase = require('../../models/Purchase');
 const User = require('../../models/User');
+const isAuctionManager = require('../../middlewares/isAuctionManager');
 
 // Helper function to safely capitalize strings
 const safeCapitalize = (str) => {
@@ -34,7 +35,7 @@ const formatCurrency = (amount) => {
   return `₹${Number(amount).toLocaleString('en-IN')}`;
 };
 
-router.get('/approvedcars', async (req, res) => {
+router.get('/approvedcars', isAuctionManager, async (req, res) => {
   try {
     const approvedCars = await AuctionRequest.find({ status: 'approved' })
       .populate('sellerId', 'firstName lastName city email');
@@ -47,7 +48,7 @@ router.get('/approvedcars', async (req, res) => {
 });
 
 // Route to start an auction
-router.post('/start-auction/:id', async (req, res) => {
+router.post('/start-auction/:id', isAuctionManager, async (req, res) => {
   try {
     const carId = req.params.id;
     const auction = await AuctionRequest.findByIdAndUpdate(carId, { started_auction: 'yes' }, { new: true });
@@ -60,7 +61,7 @@ router.post('/start-auction/:id', async (req, res) => {
 });
 
 // Route to stop an auction
-router.post('/stop-auction/:id', async (req, res) => {
+router.post('/stop-auction/:id', isAuctionManager, async (req, res) => {
   try {
     const auction = await AuctionRequest.findById(req.params.id);
     if (!auction) {
@@ -88,7 +89,7 @@ router.post('/stop-auction/:id', async (req, res) => {
 
     // Update auction status
     auction.auction_stopped = true;
-    auction.started_auction = 'ended'; // Mark as ended to remove from auctions list
+    auction.started_auction = 'ended';
     if (currentBid) {
       auction.winnerId = currentBid.buyerId._id;
       auction.finalPurchasePrice = currentBid.bidAmount;
@@ -131,7 +132,7 @@ router.post('/stop-auction/:id', async (req, res) => {
 });
 
 // Route to view bids
-router.get('/view-bids/:id', async (req, res) => {
+router.get('/view-bids/:id', isAuctionManager, async (req, res) => {
   try {
     const carId = req.params.id;
     const auction = await AuctionRequest.findById(carId)
@@ -146,7 +147,7 @@ router.get('/view-bids/:id', async (req, res) => {
     // Fetch bids for this auction
     const bids = await AuctionBid.getBidsForAuction(carId);
     const currentBid = bids.find(bid => bid.isCurrentBid) || null;
-    const pastBids = bids.filter(bid => !bid.isCurrentBid).slice(0, 3); // Get up to 3 past bids
+    const pastBids = bids.filter(bid => !bid.isCurrentBid).slice(0, 3);
 
     console.log(`Viewing bids for auction ${carId}:`, { currentBid, pastBids });
 

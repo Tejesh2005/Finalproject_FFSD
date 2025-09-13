@@ -166,7 +166,7 @@
         <div class="profile">
             <img src="<%= (typeof user !== 'undefined' && user.photoPath) ? user.photoPath : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' %>" alt="profile symbol">
             <a href="/profile" class="profile-text"><%= (typeof user !== 'undefined') ? (user.firstName + ' ' + user.lastName) : 'My Profile' %></a>
-            <button class="logout-btn" onclick="location.href='/'">Logout</button>
+            <a href="/logout" class="logout-btn">Logout</a>
         </div>
     </div>
 </nav>

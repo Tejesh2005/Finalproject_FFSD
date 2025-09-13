@@ -2,27 +2,19 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const RentalRequest = require('../../models/RentalRequest');
-
-// Middleware to check seller login
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 
 // GET: Show update rental form
-router.get('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
+router.get('/update-rental/:id', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user._id);
     if (!user) {
-      req.session.destroy();
       return res.redirect('/login');
     }
     
     const rental = await RentalRequest.findOne({
       _id: req.params.id,
-      sellerId: req.session.userId
+      sellerId: req.user._id
     });
     
     if (!rental) {
@@ -53,17 +45,16 @@ router.get('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
 });
 
 // POST: Handle rental update
-router.post('/update-rental/:id', isSellerLoggedIn, async (req, res) => {
+router.post('/update-rental/:id', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user._id);
     if (!user) {
-      req.session.destroy();
       return res.redirect('/login');
     }
     
     const rental = await RentalRequest.findOne({
       _id: req.params.id,
-      sellerId: req.session.userId
+      sellerId: req.user._id
     });
     
     if (!rental) {

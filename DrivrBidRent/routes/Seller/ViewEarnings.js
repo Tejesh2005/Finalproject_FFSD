@@ -5,26 +5,18 @@ const RentalCost = require('../../models/RentalCost');
 const RentalRequest = require('../../models/RentalRequest');
 const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
-
-// Middleware to check seller login
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 
 // GET: Show earnings page
-router.get('/view-earnings', isSellerLoggedIn, async (req, res) => {
+router.get('/view-earnings', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user._id);
     if (!user) {
-      req.session.destroy();
       return res.redirect('/login');
     }
 
     // Fetch all RentalCost entries for the seller
-    const rentalCosts = await RentalCost.find({ sellerId: req.session.userId })
+    const rentalCosts = await RentalCost.find({ sellerId: req.user._id })
       .populate({
         path: 'rentalCarId',
         select: 'vehicleName createdAt'
@@ -37,7 +29,7 @@ router.get('/view-earnings', isSellerLoggedIn, async (req, res) => {
 
     // Fetch all auctions for the seller that have started or ended
     const auctions = await AuctionRequest.find({
-      sellerId: req.session.userId,
+      sellerId: req.user._id,
       started_auction: { $in: ['yes', 'ended'] }
     }).lean();
 
@@ -67,7 +59,7 @@ router.get('/view-earnings', isSellerLoggedIn, async (req, res) => {
         auctionEarnings.push({
           amount: auction.finalPurchasePrice,
           description: `${auction.vehicleName} (Auction Final Sale)`,
-          createdAt: auction.updatedAt // Use updatedAt as the auction end date
+          createdAt: auction.updatedAt
         });
       }
     }

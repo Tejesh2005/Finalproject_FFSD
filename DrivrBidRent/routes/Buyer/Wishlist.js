@@ -3,25 +3,16 @@ const router = express.Router();
 const User = require('../../models/User');
 const Wishlist = require('../../models/Wishlist');
 const RentalRequest = require('../../models/RentalRequest');
-const AuctionRequest = require('../../models/AuctionRequest'); // Import AuctionRequest model
-
-// Middleware to check if user is logged in
-const isBuyerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'buyer') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const AuctionRequest = require('../../models/AuctionRequest');
+const isBuyerLoggedin=require('../../middlewares/isBuyerLoggedin');
 
 // Wishlist view route
-router.get('/wishlist', isBuyerLoggedIn, async (req, res) => {
+router.get('/wishlist', isBuyerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = req.user;
     
-    // Get user's wishlist items
-    const wishlist = await Wishlist.findOne({ userId: req.session.userId });
+    const wishlist = await Wishlist.findOne({ userId: req.user._id });
     
-    // If no wishlist exists yet, create an empty one
     if (!wishlist) {
       return res.render('buyer_dashboard/wishlist', { 
         user,
@@ -30,12 +21,10 @@ router.get('/wishlist', isBuyerLoggedIn, async (req, res) => {
       });
     }
     
-    // Get rental items details
     const rentalWishlist = await RentalRequest.find({
       _id: { $in: wishlist.rentals || [] }
     }).populate('sellerId', 'firstName lastName');
     
-    // Get auction items details - using the actual AuctionRequest model
     const auctionWishlist = await AuctionRequest.find({
       _id: { $in: wishlist.auctions || [] },
       status: 'approved',
@@ -50,16 +39,16 @@ router.get('/wishlist', isBuyerLoggedIn, async (req, res) => {
   } catch (err) {
     console.error('Error fetching wishlist:', err);
     res.status(500).render('buyer_dashboard/error', {
-      user: {},
+      user: req.user || {},
       message: 'Failed to load wishlist data'
     });
   }
 });
 
 // API to get wishlist items
-router.get('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
+router.get('/api/wishlist', isBuyerLoggedin, async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOne({ userId: req.session.userId });
+    const wishlist = await Wishlist.findOne({ userId: req.user._id });
     
     if (!wishlist) {
       return res.json({
@@ -85,32 +74,28 @@ router.get('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
 });
 
 // API to add to wishlist
-router.post('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
+router.post('/api/wishlist', isBuyerLoggedin, async (req, res) => {
   try {
     const { rentalId, auctionId, type } = req.body;
     
-    // Validate input
-    if (!rentalId && !auctionId) {
+    if (!type || (!rentalId && !auctionId)) {
       return res.status(400).json({
         success: false,
-        message: 'Missing item ID'
+        message: 'Missing required fields'
       });
     }
     
-    // Get user's wishlist or create if it doesn't exist
-    let wishlist = await Wishlist.findOne({ userId: req.session.userId });
+    let wishlist = await Wishlist.findOne({ userId: req.user._id });
     
     if (!wishlist) {
       wishlist = new Wishlist({
-        userId: req.session.userId,
+        userId: req.user._id,
         auctions: [],
         rentals: []
       });
     }
     
-    // Add item to appropriate wishlist
-    if (rentalId) {
-      // Check if rental exists
+    if (type === 'rental' && rentalId) {
       const rental = await RentalRequest.findById(rentalId);
       if (!rental) {
         return res.status(404).json({
@@ -119,14 +104,10 @@ router.post('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
         });
       }
       
-      // Add rental to wishlist if not already there
       if (!wishlist.rentals.includes(rentalId)) {
         wishlist.rentals.push(rentalId);
       }
-    }
-    
-    if (auctionId) {
-      // Check if auction exists
+    } else if (type === 'auction' && auctionId) {
       const auction = await AuctionRequest.findById(auctionId);
       if (!auction) {
         return res.status(404).json({
@@ -135,7 +116,6 @@ router.post('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
         });
       }
       
-      // Add auction to wishlist if not already there
       if (!wishlist.auctions.includes(auctionId)) {
         wishlist.auctions.push(auctionId);
       }
@@ -157,20 +137,18 @@ router.post('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
 });
 
 // API to remove from wishlist
-router.delete('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
+router.delete('/api/wishlist', isBuyerLoggedin, async (req, res) => {
   try {
     const { rentalId, auctionId, type } = req.body;
     
-    // Validate input
-    if (!rentalId && !auctionId) {
+    if (!type || (!rentalId && !auctionId)) {
       return res.status(400).json({
         success: false,
-        message: 'Missing item ID'
+        message: 'Missing required fields'
       });
     }
     
-    // Get user's wishlist
-    const wishlist = await Wishlist.findOne({ userId: req.session.userId });
+    const wishlist = await Wishlist.findOne({ userId: req.user._id });
     
     if (!wishlist) {
       return res.status(404).json({
@@ -179,12 +157,9 @@ router.delete('/api/wishlist', isBuyerLoggedIn, async (req, res) => {
       });
     }
     
-    // Remove item from appropriate wishlist
-    if (rentalId) {
+    if (type === 'rental' && rentalId) {
       wishlist.rentals = wishlist.rentals.filter(id => id.toString() !== rentalId);
-    }
-    
-    if (auctionId) {
+    } else if (type === 'auction' && auctionId) {
       wishlist.auctions = wishlist.auctions.filter(id => id.toString() !== auctionId);
     }
     

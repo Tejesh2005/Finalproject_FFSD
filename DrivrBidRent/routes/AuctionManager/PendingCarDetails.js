@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
+const isAuctionManager = require('../../middlewares/isAuctionManager');
 
 // Get car details for pending-car-details page
-router.get('/pending-car-details/:id', async (req, res) => {
+router.get('/pending-car-details/:id', isAuctionManager, async (req, res) => {
   try {
     const car = await AuctionRequest.findById(req.params.id)
       .populate('assignedMechanic', 'firstName lastName');

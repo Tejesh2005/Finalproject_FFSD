@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
+const isAuctionManager = require('../../middlewares/isAuctionManager');
 
 // Display pending cars
-router.get('/pending', async (req, res) => {
+router.get('/pending', isAuctionManager, async (req, res) => {
   try {
     const pendingCars = await AuctionRequest.find({ 
       status: 'assignedMechanic' 
@@ -17,7 +18,7 @@ router.get('/pending', async (req, res) => {
 });
 
 // Get review data for modal
-router.get('/get-review/:id', async (req, res) => {
+router.get('/get-review/:id', isAuctionManager, async (req, res) => {
   try {
     const car = await AuctionRequest.findById(req.params.id)
       .populate('assignedMechanic', 'firstName lastName');
@@ -40,7 +41,7 @@ router.get('/get-review/:id', async (req, res) => {
 });
 
 // Update car status
-router.post('/update-status/:id', async (req, res) => {
+router.post('/update-status/:id', isAuctionManager, async (req, res) => {
   try {
     const { status } = req.body;
     const car = await AuctionRequest.findById(req.params.id);
@@ -79,7 +80,7 @@ router.post('/update-status/:id', async (req, res) => {
 });
 
 // Get car details for pending-car-details page
-router.get('/pending-car-details/:id', async (req, res) => {
+router.get('/pending-car-details/:id', isAuctionManager, async (req, res) => {
   try {
     const car = await AuctionRequest.findById(req.params.id)
       .populate('assignedMechanic', 'firstName lastName');

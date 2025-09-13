@@ -3,27 +3,16 @@ const router = express.Router();
 const User = require('../../models/User');
 const RentalRequest = require('../../models/RentalRequest');
 const RentalCost = require('../../models/RentalCost');
-
-// Middleware to check seller login
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 
 // GET: Show rental details page
-router.get('/rental-details/:id', isSellerLoggedIn, async (req, res) => {
+router.get('/rental-details/:id', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      req.session.destroy();
-      return res.redirect('/login');
-    }
+    const user = req.user;
     
     const rental = await RentalRequest.findOne({
       _id: req.params.id,
-      sellerId: req.session.userId
+      sellerId: user._id
     })
     .populate('buyerId', 'firstName lastName email phone'); // Populate buyerId with specific fields
     

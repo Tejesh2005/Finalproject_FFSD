@@ -3,14 +3,7 @@ const router = express.Router();
 const User = require('../../models/User');
 const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
-
-// Middleware to rendering seller login
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 
 // Helper function to safely capitalize strings
 const safeCapitalize = (str) => {
@@ -35,15 +28,15 @@ const formatDate = (date) => {
   }
 };
 
-router.get('/view-auctions', isSellerLoggedIn, async (req, res) => {
+router.get('/view-auctions', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user._id);
     if (!user) {
       return res.redirect('/login');
     }
     
     // Fetch all auctions for this seller
-    const auctions = await AuctionRequest.find({ sellerId: req.session.userId })
+    const auctions = await AuctionRequest.find({ sellerId: req.user._id })
       .sort({ createdAt: -1 })
       .lean();
     
@@ -70,13 +63,13 @@ router.get('/view-auctions', isSellerLoggedIn, async (req, res) => {
   }
 });
 
-// Updated route to view bids for a specific auction
-router.get('/view-bids/:id', isSellerLoggedIn, async (req, res) => {
+// Route to view bids for a specific auction
+router.get('/view-bids/:id', isSellerLoggedin, async (req, res) => {
   try {
     const auctionId = req.params.id;
     const auction = await AuctionRequest.findOne({ 
       _id: auctionId,
-      sellerId: req.session.userId
+      sellerId: req.user._id
     }).lean();
     
     if (!auction) {
@@ -97,16 +90,16 @@ router.get('/view-bids/:id', isSellerLoggedIn, async (req, res) => {
     
     // Fetch bids for this auction and populate buyerId with additional fields
     const bids = await AuctionBid.find({ auctionId })
-      .populate('buyerId', 'firstName lastName email phone') // Include phone number
+      .populate('buyerId', 'firstName lastName email phone')
       .sort({ bidTime: -1 })
       .lean();
     
     // Separate current bid and bid history
     const currentBid = bids.find(bid => bid.isCurrentBid) || null;
-    const bidHistory = bids.filter(bid => !bid.isCurrentBid).slice(0, 3); // Get up to 3 past bids
+    const bidHistory = bids.filter(bid => !bid.isCurrentBid).slice(0, 3);
     
     res.render('seller_dashboard/view-bids.ejs', {
-      user: await User.findById(req.session.userId).lean(),
+      user: await User.findById(req.user._id).lean(),
       auction,
       currentBid,
       bidHistory,

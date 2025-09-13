@@ -2,25 +2,17 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const RentalRequest = require('../../models/RentalRequest');
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 
-// Middleware to check seller login
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
-
-router.get('/view-rentals', isSellerLoggedIn, async (req, res) => {
+router.get('/view-rentals', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user._id);
     if (!user) {
-      req.session.destroy();
       return res.redirect('/login');
     }
     
     // Fetch rentals for this seller from the database
-    const rentals = await RentalRequest.find({ sellerId: req.session.userId });
+    const rentals = await RentalRequest.find({ sellerId: req.user._id });
     
     // Process rentals to include the seller's city as location
     const processedRentals = rentals.map(rental => {
@@ -46,7 +38,7 @@ router.get('/view-rentals', isSellerLoggedIn, async (req, res) => {
 });
 
 // Toggle rental availability
-router.post('/toggle-rental-status/:id', isSellerLoggedIn, async (req, res) => {
+router.post('/toggle-rental-status/:id', isSellerLoggedin, async (req, res) => {
   try {
     const rentalId = req.params.id;
     const rental = await RentalRequest.findById(rentalId);
@@ -56,7 +48,7 @@ router.post('/toggle-rental-status/:id', isSellerLoggedIn, async (req, res) => {
     }
     
     // Check if the rental belongs to the logged-in seller
-    if (rental.sellerId.toString() !== req.session.userId) {
+    if (rental.sellerId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
     

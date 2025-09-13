@@ -5,57 +5,103 @@ const AuctionBid = require('../../models/AuctionBid');
 const Purchase = require('../../models/Purchase');
 const AuctionCost = require('../../models/AuctionCost');
 const User = require('../../models/User');
+const isBuyerLoggedin=require('../../middlewares/isBuyerLoggedin');
 
-// Middleware to check if user is logged in
-const isLoggedIn = (req, res, next) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
+// Route to render auctions page
+router.get('/auctions', isBuyerLoggedin, async (req, res) => {
+  try {
+    const user = req.user;
+    const { search, condition, fuelType, transmission, minPrice, maxPrice } = req.query;
+    const query = { 
+      status: 'approved', 
+      started_auction: 'yes'
+    };
+
+    if (search) {
+      query.vehicleName = { $regex: search, $options: 'i' };
+    }
+
+    if (condition) {
+      query.condition = condition;
+    }
+
+    if (fuelType) {
+      query.fuelType = fuelType;
+    }
+
+    if (transmission) {
+      query.transmission = transmission;
+    }
+
+    if (minPrice || maxPrice) {
+      query.startingBid = {};
+      if (minPrice) query.startingBid.$gte = parseFloat(minPrice);
+      if (maxPrice) query.startingBid.$lte = parseFloat(maxPrice);
+    }
+
+    const auctions = await AuctionRequest.find(query)
+      .sort({ auctionDate: 1 })
+      .populate('sellerId', 'firstName lastName email phone city state')
+      .exec();
+
+    return res.render('buyer_dashboard/auctions.ejs', {
+      auctions,
+      user,
+      search,
+      condition,
+      fuelType,
+      transmission,
+      minPrice,
+      maxPrice
+    });
+  } catch (err) {
+    console.error('Error in auctions route:', err);
+    return res.status(500).render('buyer_dashboard/error.ejs', {
+      user: req.user || {},
+      message: 'An error occurred while loading the auctions'
+    });
   }
-  next();
-};
+});
 
 // Route to render auction page
-router.get('/auction', isLoggedIn, async (req, res) => {
+router.get('/auction', isBuyerLoggedin, async (req, res) => {
   try {
     const auctionId = req.query.id;
     if (!auctionId) {
-      return res.status(400).render('error', { message: 'Auction ID is required' });
+      return res.status(400).render('error', { message: 'Auction ID is required', user: req.user });
     }
 
-    // Fetch auction details, include stopped but not ended auctions
     const auction = await AuctionRequest.findOne({ 
       _id: auctionId,
       started_auction: 'yes'
     });
     if (!auction) {
-      return res.status(404).render('error', { message: 'Auction not found or has ended' });
+      return res.status(404).render('error', { message: 'Auction not found or has ended', user: req.user });
     }
 
-    // Fetch current bid (most recent bid marked as current)
     const currentBid = await AuctionBid.findOne({ auctionId, isCurrentBid: true })
       .sort({ bidTime: -1 });
 
-    // Check if the logged-in user is the current bidder
-    const isCurrentBidder = currentBid && req.session.userId === currentBid.buyerId.toString();
+    const isCurrentBidder = currentBid && req.user._id.toString() === currentBid.buyerId.toString();
 
-    // Render auction page
     res.render('auction', {
       auction,
       currentBid,
-      isLoggedIn: !!req.session.userId,
-      isCurrentBidder
+      isLoggedIn: !!req.user,
+      isCurrentBidder,
+      user: req.user
     });
   } catch (error) {
     console.error('Error fetching auction:', error);
-    res.status(500).render('error', { message: 'Server error' });
+    res.status(500).render('error', { message: 'Server error', user: req.user || {} });
   }
 });
 
 // Route to handle bid placement
-router.post('/auction/place-bid', isLoggedIn, async (req, res) => {
+router.post('/auction/place-bid', isBuyerLoggedin, async (req, res) => {
   try {
     const { auctionId, bidAmount } = req.body;
-    const buyerId = req.session.userId;
+    const buyerId = req.user._id;
 
     if (!auctionId || !bidAmount) {
       return res.status(400).json({ success: false, message: 'Auction ID and bid amount are required' });
@@ -66,27 +112,22 @@ router.post('/auction/place-bid', isLoggedIn, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid bid amount' });
     }
 
-    // Fetch auction
     const auction = await AuctionRequest.findById(auctionId);
     if (!auction) {
       return res.status(404).json({ success: false, message: 'Auction not found' });
     }
 
-    // Check if auction is active and not stopped
     if (auction.started_auction !== 'yes' || auction.auction_stopped) {
       return res.status(400).json({ success: false, message: 'Auction is not active or has been stopped' });
     }
 
-    // Fetch current bid
     const currentBid = await AuctionBid.findOne({ auctionId, isCurrentBid: true })
       .sort({ bidTime: -1 });
 
-    // Check if the buyer is the current bidder
-    if (currentBid && currentBid.buyerId.toString() === buyerId) {
+    if (currentBid && currentBid.buyerId.toString() === buyerId.toString()) {
       return res.status(400).json({ success: false, message: 'You already have the current bid' });
     }
 
-    // Validate bid amount
     const minBid = currentBid ? currentBid.bidAmount + 2000 : auction.startingBid;
     if (bidValue < minBid) {
       return res.status(400).json({ 
@@ -95,16 +136,11 @@ router.post('/auction/place-bid', isLoggedIn, async (req, res) => {
       });
     }
 
-    // Create new bid
     const newBid = new AuctionBid({
-      auctionId,
-      sellerId: auction.sellerId,
-      buyerId,
-      bidAmount: bidValue,
+ vale: bidValue,
       isCurrentBid: true
     });
 
-    // Save the bid (pre-save middleware will handle making previous bids non-current)
     await newBid.save();
 
     return res.json({ success: true, message: 'Bid placed successfully' });
@@ -115,7 +151,7 @@ router.post('/auction/place-bid', isLoggedIn, async (req, res) => {
 });
 
 // Check if user is the auction winner and get payment status
-router.get('/auction/winner-status/:id', isLoggedIn, async (req, res) => {
+router.get('/auction/winner-status/:id', isBuyerLoggedin, async (req, res) => {
   try {
     const auction = await AuctionRequest.findById(req.params.id);
     if (!auction) {
@@ -126,12 +162,12 @@ router.get('/auction/winner-status/:id', isLoggedIn, async (req, res) => {
       return res.json({ isWinner: false });
     }
 
-    const isWinner = auction.winnerId && auction.winnerId.toString() === req.session.userId.toString();
+    const isWinner = auction.winnerId && auction.winnerId.toString() === req.user._id.toString();
     if (!isWinner) {
       return res.json({ isWinner: false });
     }
 
-    const purchase = await Purchase.findOne({ auctionId: auction._id, buyerId: req.session.userId });
+    const purchase = await Purchase.findOne({ auctionId: auction._id, buyerId: req.user._id });
     res.json({
       isWinner: true,
       bidAmount: auction.finalPurchasePrice,
@@ -144,12 +180,11 @@ router.get('/auction/winner-status/:id', isLoggedIn, async (req, res) => {
 });
 
 // Route to fetch payment details for the popup
-router.get('/auction/confirm-payment/:id', isLoggedIn, async (req, res) => {
+router.get('/auction/confirm-payment/:id', isBuyerLoggedin, async (req, res) => {
   try {
     const auctionId = req.params.id;
-    const userId = req.session.userId;
+    const userId = req.user._id;
 
-    // Fetch the purchase details
     const purchase = await Purchase.findOne({ auctionId, buyerId: userId });
     if (!purchase) {
       return res.status(404).json({ success: false, message: 'Purchase not found' });
@@ -159,11 +194,9 @@ router.get('/auction/confirm-payment/:id', isLoggedIn, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Payment already completed' });
     }
 
-    // Calculate convenience fee (1% of purchase price)
     const convenienceFee = purchase.purchasePrice * 0.01;
     const totalAmount = purchase.purchasePrice + convenienceFee;
 
-    // Return the data for the popup
     res.json({
       success: true,
       purchaseId: purchase._id,
@@ -179,18 +212,17 @@ router.get('/auction/confirm-payment/:id', isLoggedIn, async (req, res) => {
 });
 
 // Route to handle final payment submission
-router.post('/auction/complete-payment/:id', isLoggedIn, async (req, res) => {
+router.post('/auction/complete-payment/:id', isBuyerLoggedin, async (req, res) => {
   try {
     const purchaseId = req.params.id;
-    const userId = req.session.userId;
+    const userId = req.user._id;
 
-    // Fetch the purchase
     const purchase = await Purchase.findById(purchaseId);
     if (!purchase) {
       return res.status(404).json({ success: false, message: 'Purchase not found' });
     }
 
-    if (purchase.buyerId.toString() !== userId) {
+    if (purchase.buyerId.toString() !== userId.toString()) {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
 
@@ -198,15 +230,13 @@ router.post('/auction/complete-payment/:id', isLoggedIn, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Payment already completed' });
     }
 
-    // Calculate convenience fee and total amount
     const convenienceFee = purchase.purchasePrice * 0.01;
     const totalAmount = purchase.purchasePrice + convenienceFee;
 
-    // Save to AuctionCost, including the sellerId from the Purchase document
     const auctionCost = new AuctionCost({
       auctionId: purchase.auctionId,
       buyerId: userId,
-      sellerId: purchase.sellerId, // Add sellerId from Purchase
+      sellerId: purchase.sellerId,
       amountPaid: purchase.purchasePrice,
       convenienceFee: convenienceFee,
       totalAmount: totalAmount,
@@ -214,7 +244,6 @@ router.post('/auction/complete-payment/:id', isLoggedIn, async (req, res) => {
     });
     await auctionCost.save();
 
-    // Update Purchase to mark payment as completed
     purchase.paymentStatus = 'completed';
     await purchase.save();
 

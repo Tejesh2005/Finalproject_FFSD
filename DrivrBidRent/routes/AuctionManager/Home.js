@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
 const User = require('../../models/User');
+const isAuctionManager = require('../../middlewares/isAuctionManager');
 
 // GET route for the auction manager home page
-router.get('/home1', async (req, res) => {
+router.get('/home1', isAuctionManager, async (req, res) => {
     try {
         // Fetch all pending auction requests (status: pending)
         const auctionReqPend = await AuctionRequest.find({ status: 'pending' })
@@ -41,7 +42,7 @@ router.get('/home1', async (req, res) => {
 });
 
 // GET route for the requests page (showing all pending requests)
-router.get('/requests', async (req, res) => {
+router.get('/requests', isAuctionManager, async (req, res) => {
     try {
         // Fetch all pending auction requests
         const auctionReqPend = await AuctionRequest.find({ status: 'pending' })
@@ -59,7 +60,7 @@ router.get('/requests', async (req, res) => {
 });
 
 // GET route for pending cars (cars with assigned mechanics)
-router.get('/pending', async (req, res) => {
+router.get('/pending', isAuctionManager, async (req, res) => {
     try {
         // Fetch all cars with assigned mechanics
         const pendingCars = await AuctionRequest.find({ status: 'assignedMechanic' })
@@ -79,7 +80,7 @@ router.get('/pending', async (req, res) => {
 });
 
 // GET route for approved cars
-router.get('/approvedcars', async (req, res) => {
+router.get('/approvedcars', isAuctionManager, async (req, res) => {
     try {
         // Fetch all approved cars
         const approvedCars = await AuctionRequest.find({ status: 'approved' })
@@ -99,7 +100,7 @@ router.get('/approvedcars', async (req, res) => {
 });
 
 // GET route for assigning mechanic to a specific car
-router.get('/assign-mechanic/:id', async (req, res) => {
+router.get('/assign-mechanic/:id', isAuctionManager, async (req, res) => {
     try {
         const request = await AuctionRequest.findById(req.params.id).populate('sellerId');
         if (!request) {
@@ -110,7 +111,7 @@ router.get('/assign-mechanic/:id', async (req, res) => {
         const mechanics = await User.find({
             userType: 'mechanic',
             'city': request.sellerId.city,
-            approved_status: 'Yes' // Only show approved mechanics
+            approved_status: 'Yes'
         }).select('firstName lastName shopName experienceYears');
 
         res.render('auctionmanager/assign-mechanic.ejs', { 
@@ -124,7 +125,7 @@ router.get('/assign-mechanic/:id', async (req, res) => {
 });
 
 // POST route to update mechanic assignment
-router.post('/assign-mechanic-update/:id', async (req, res) => {
+router.post('/assign-mechanic-update/:id', isAuctionManager, async (req, res) => {
     try {
         const { mechanicName, mechanicId } = req.body;
         

@@ -1,23 +1,14 @@
-
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
-
-// Middleware to check admin login
-const isAdminLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'admin') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
 
 // Get pending mechanics, approved mechanics, buyers, and sellers
 router.get('/manage-user', isAdminLoggedIn, async (req, res) => {
   try {
     // Verify admin user exists
-    const adminUser = await User.findById(req.session.userId);
+    const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.redirect('/login');
     }
 
@@ -57,9 +48,8 @@ router.get('/manage-user', isAdminLoggedIn, async (req, res) => {
 router.post('/approve-user/:id', isAdminLoggedIn, async (req, res) => {
   try {
     // Verify admin user exists
-    const adminUser = await User.findById(req.session.userId);
+    const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.redirect('/login');
     }
 
@@ -96,9 +86,8 @@ router.post('/approve-user/:id', isAdminLoggedIn, async (req, res) => {
 router.post('/decline-user/:id', isAdminLoggedIn, async (req, res) => {
   try {
     // Verify admin user exists
-    const adminUser = await User.findById(req.session.userId);
+    const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.redirect('/login');
     }
 
@@ -133,9 +122,8 @@ router.post('/decline-user/:id', isAdminLoggedIn, async (req, res) => {
 router.post('/delete-buyer/:id', isAdminLoggedIn, async (req, res) => {
   try {
     // Verify admin user exists
-    const adminUser = await User.findById(req.session.userId);
+    const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.redirect('/login');
     }
 
@@ -170,9 +158,8 @@ router.post('/delete-buyer/:id', isAdminLoggedIn, async (req, res) => {
 router.post('/delete-seller/:id', isAdminLoggedIn, async (req, res) => {
   try {
     // Verify admin user exists
-    const adminUser = await User.findById(req.session.userId);
+    const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.redirect('/login');
     }
 

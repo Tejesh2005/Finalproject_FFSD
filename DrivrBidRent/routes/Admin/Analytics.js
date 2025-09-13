@@ -5,14 +5,7 @@ const RentalRequest = require("../../models/RentalRequest");
 const AuctionRequest = require("../../models/AuctionRequest");
 const RentalCost = require("../../models/RentalCost");
 const AuctionCost = require("../../models/AuctionCost");
-
-// Middleware to check admin login
-const isAdminLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== "admin") {
-    return res.redirect("/login");
-  }
-  next();
-};
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
 
 // GET: Show analytics page
 router.get("/analytics", isAdminLoggedIn, async (req, res) => {
@@ -32,9 +25,8 @@ router.get("/analytics", isAdminLoggedIn, async (req, res) => {
         $match: {
           status: "approved",
           started_auction: "ended",
-          winnerId: { $exists: true, $ne: null }, // Ensure a buyer has won
+          winnerId: { $exists: true, $ne: null },
           vehicleName: { $exists: true, $ne: null },
-          // Remove type checking to troubleshoot
           startingBid: { $exists: true },
           finalPurchasePrice: { $exists: true },
         },

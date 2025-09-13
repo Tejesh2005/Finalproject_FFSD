@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const AuctionRequest = require('../../models/AuctionRequest');
-const User = require('../../models/User'); // Import User model
+const User = require('../../models/User');
+const isAuctionManager = require('../../middlewares/isAuctionManager');
 
-router.get('/assign-mechanic/:id', async (req, res) => {
+router.get('/assign-mechanic/:id', isAuctionManager, async (req, res) => {
     try {
         const request = await AuctionRequest.findById(req.params.id).populate('sellerId');
         if (!request) {
@@ -14,7 +15,7 @@ router.get('/assign-mechanic/:id', async (req, res) => {
         const mechanics = await User.find({
             userType: 'mechanic',
             'city': request.sellerId.city,
-            approved_status: 'Yes' // Only show approved mechanics
+            approved_status: 'Yes'
         }).select('firstName lastName shopName experienceYears');
 
         res.render('auctionmanager/assign-mechanic.ejs', { 
@@ -27,7 +28,7 @@ router.get('/assign-mechanic/:id', async (req, res) => {
     }
 });
 
-router.post('/assign-mechanic-update/:id', async (req, res) => {
+router.post('/assign-mechanic-update/:id', isAuctionManager, async (req, res) => {
     try {
         const { mechanicName, mechanicId } = req.body;
         

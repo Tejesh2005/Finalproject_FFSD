@@ -167,7 +167,7 @@
           </form>
         </div>
 
-        <button class="logout-btn" onclick="logout()">Logout</button>
+        <a class="logout-btn" href="/logout">Logout</a>
       </div>
     </div>
 
@@ -223,14 +223,6 @@
         setTimeout(() => {
           alertDiv.style.display = 'none';
         }, 5000);
-      }
-
-      // Logout function
-      function logout() {
-        // Add your logout functionality here
-        alert("You have been logged out successfully!");
-        // Typically you would redirect to login page:
-         window.location.href = '/';
       }
     </script>
   </body>

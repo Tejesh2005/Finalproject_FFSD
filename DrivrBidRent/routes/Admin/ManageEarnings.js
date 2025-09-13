@@ -4,14 +4,7 @@ const User = require('../../models/User');
 const RentalCost = require('../../models/RentalCost');
 const RentalRequest = require('../../models/RentalRequest');
 const AuctionCost = require('../../models/AuctionCost');
-
-// Middleware to check admin login
-const isAdminLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'admin') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
 
 // GET: Show manage earnings page
 router.get('/manage-earnings', isAdminLoggedIn, async (req, res) => {
@@ -23,7 +16,7 @@ router.get('/manage-earnings', isAdminLoggedIn, async (req, res) => {
       .lean();
 
     const totalRentalCost = rentalCosts.reduce((sum, cost) => sum + (cost.totalCost || 0), 0);
-    const totalRentalRevenue = totalRentalCost * 0.04; // Revenue from rentals = (sum of totalCost) * 0.04
+    const totalRentalRevenue = totalRentalCost * 0.04;
 
     // Fetch auction revenue from AuctionCost (sum of convenienceFee)
     const auctionCosts = await AuctionCost.find()

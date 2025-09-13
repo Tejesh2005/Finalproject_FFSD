@@ -2,23 +2,11 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const RentalRequest = require('../../models/RentalRequest');
-
-// Middleware to check seller login
-const isSellerLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'seller') {
-    return res.redirect('/login');
-  }
-  next();
-};
-
+const isSellerLoggedin = require('../../middlewares/isSellerLoggedin');
 // GET: Show add rental page
-router.get('/add-rental', isSellerLoggedIn, async (req, res) => {
+router.get('/add-rental', isSellerLoggedin, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      req.session.destroy();
-      return res.redirect('/login');
-    }
+    const user = req.user;
     res.render('seller_dashboard/add-rental', {
       user,
       formData: {},
@@ -37,7 +25,7 @@ router.get('/add-rental', isSellerLoggedIn, async (req, res) => {
 });
 
 // POST: Handle rental submission
-router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
+router.post('/add-rental', isSellerLoggedin, async (req, res) => {
   console.log('Request Body:', req.body); // Debug log
   
   try {
@@ -59,7 +47,7 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
     
     if (missingFields.length > 0) {
       return res.render('seller_dashboard/add-rental', {
-        user: { _id: req.session.userId },
+        user: req.user,
         formData: req.body,
         error: `Missing required fields: ${missingFields.join(', ')}`,
         success: null
@@ -69,7 +57,7 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
     // Add additional validation for driver rate if driver is available
     if (req.body['driver-available'] === 'yes' && !req.body['driver-rate']) {
       return res.render('seller_dashboard/add-rental', {
-        user: { _id: req.session.userId },
+        user: req.user,
         formData: req.body,
         error: 'Driver rate is required when driver is available',
         success: null
@@ -89,7 +77,7 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
       costPerDay: parseFloat(req.body['rental-cost']),
       driverAvailable: req.body['driver-available'] === 'yes',
       driverRate: req.body['driver-available'] === 'yes' ? parseFloat(req.body['driver-rate']) : undefined,
-      sellerId: req.session.userId,
+      sellerId: req.user._id,
       status: 'available'
     });
 
@@ -99,7 +87,7 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
 
     // Return success message
     return res.render('seller_dashboard/add-rental', {
-      user: { _id: req.session.userId },
+      user: req.user,
       formData: {},
       success: 'Rental added successfully!',
       error: null
@@ -108,7 +96,7 @@ router.post('/add-rental', isSellerLoggedIn, async (req, res) => {
   } catch (err) {
     console.error('Save Error:', err);
     return res.status(500).render('seller_dashboard/add-rental', {
-      user: { _id: req.session.userId },
+      user: req.user,
       formData: req.body,
       error: 'Error saving rental: ' + err.message,
       success: null

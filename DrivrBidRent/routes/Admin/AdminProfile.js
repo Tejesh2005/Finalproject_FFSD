@@ -2,23 +2,15 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const bcrypt = require('bcrypt');
-
-// Middleware to check admin login
-const isAdminLoggedIn = (req, res, next) => {
-  if (!req.session.userId || req.session.userType !== 'admin') {
-    return res.redirect('/login');
-  }
-  next();
-};
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
 
 // Route to render admin profile page
 router.get('/admin-profile', isAdminLoggedIn, async (req, res) => {
   try {
-    // Fetch admin user from database using session userId
-    const adminUser = await User.findById(req.session.userId);
+    // Fetch admin user from database using JWT user ID
+    const adminUser = await User.findById(req.user._id);
     
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.redirect('/login');
     }
     
@@ -34,11 +26,10 @@ router.post('/update-admin-password', isAdminLoggedIn, async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     
-    // Get admin user using session userId
-    const adminUser = await User.findById(req.session.userId);
+    // Get admin user using JWT user ID
+    const adminUser = await User.findById(req.user._id);
     
     if (!adminUser || adminUser.userType !== 'admin') {
-      req.session.destroy();
       return res.status(404).json({ success: false, message: 'Admin user not found' });
     }
     

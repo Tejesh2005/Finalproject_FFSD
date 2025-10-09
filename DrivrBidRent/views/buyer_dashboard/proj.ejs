@@ -360,8 +360,8 @@
                             <p><strong>Estimated Price:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
                         </div>
                         <div class="button-container">
-                            <a href="/auction_detail?id=<%= auction._id %>" class="details-btn">Details</a>
-                            <a href="/auction?id=<%= auction._id %>" class="bid-btn">Place Bid</a>
+                            <a href="/buyer_dashboard?page=auction&id=<%= auction._id %>" class="details-btn">Details</a>
+                            <a href="/buyer_dashboard?page=auction&id=<%= auction._id %>" class="bid-btn">Place Bid</a>
                         </div>
                     </div>
                 <% }); %>

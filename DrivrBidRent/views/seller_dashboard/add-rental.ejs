@@ -170,10 +170,8 @@ form textarea {
     </style>
   </head>
   <body>
-    <!-- Include Navbar Partial -->
     <%- include('partials/navbar', { currentPage: 'add-rental' }) %>
 
-    <!-- Add Rental Form -->
     <section class="add-rental">
       <h1>Add Vehicle for Rent</h1>
       
@@ -189,7 +187,7 @@ form textarea {
         </div>
       <% } %>
       
-      <form id="rental-form" method="POST" action="/seller_dashboard/add-rental">
+      <form id="rental-form" method="POST" action="/seller_dashboard/add-rental" enctype="multipart/form-data">
         <label for="vehicle-name">Vehicle Name:</label>
         <input 
           type="text" 
@@ -199,13 +197,13 @@ form textarea {
           required 
         />
 
-        <label for="vehicle-image">Vehicle Image URL:</label>
+        <label for="vehicle-image">Vehicle Image:</label>
         <input 
-          type="url" 
+          type="file" 
           id="vehicle-image" 
-          name="vehicle-image" 
-          value="<%= formData['vehicle-image'] || '' %>"
+          name="vehicleImage" 
           required 
+          accept="image/*"
         />
 
         <label for="vehicle-year">Year:</label>
@@ -283,7 +281,6 @@ form textarea {
       </form>
     </section>
 
-    <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
 
     <script>
@@ -292,7 +289,7 @@ form textarea {
         // Basic validation
         const requiredFields = [
           'vehicle-name',
-          'vehicle-image',
+          // REMOVED 'vehicle-image' as client-side JS value check is unreliable for file inputs.
           'vehicle-year',
           'vehicle-ac',
           'vehicle-capacity',
@@ -347,6 +344,7 @@ form textarea {
           e.preventDefault();
           alert('Please correct the errors in the form');
         }
+        // If no client-side errors, the form is submitted to the server for file processing.
       });
       
       // Show/hide driver rate field based on driver availability

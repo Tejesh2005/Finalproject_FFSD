@@ -150,18 +150,22 @@ form textarea {
     </style>
   </head>
   <body>
-    <!-- Include Navbar Partial -->
     <%- include('partials/navbar', { currentPage: 'add-auction' }) %>
 
-    <!-- Add Auction Form -->
     <section class="add-auction">
       <h1>Add Vehicle for Auction</h1>
-      <form id="auction-form" method="POST" action="/seller_dashboard/add-auction">
+      <form id="auction-form" method="POST" action="/seller_dashboard/add-auction" enctype="multipart/form-data">
         <label for="vehicle-name">Vehicle Name:</label>
         <input type="text" id="vehicle-name" name="vehicle-name" required />
 
-        <label for="vehicle-image">Vehicle Image URL:</label>
-        <input type="url" id="vehicle-image" name="vehicle-image" required />
+        <label for="vehicle-image">Vehicle Image:</label>
+        <input 
+            type="file" 
+            id="vehicle-image" 
+            name="vehicleImage" 
+            required 
+            accept="image/*" 
+        />
 
         <label for="vehicle-year">Year:</label>
         <input type="number" id="vehicle-year" name="vehicle-year" required min="1900" max="2025" />
@@ -174,14 +178,12 @@ form textarea {
           required
         />
 
-        <!-- New Fuel Type Field -->
         <label for="fuel-type">Fuel Type:</label>
         <select id="fuel-type" name="fuel-type" required>
           <option value="petrol">Petrol</option>
           <option value="diesel">Diesel</option>
         </select>
 
-        <!-- New Transmission Field -->
         <label for="transmission">Transmission:</label>
         <select id="transmission" name="transmission" required>
           <option value="manual">Manual</option>
@@ -205,13 +207,11 @@ form textarea {
       </form>
     </section>
 
-    <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
 
     <script>
       // Form Submission for Auction with Validation
       document.getElementById('auction-form').addEventListener('submit', (e) => {
-        e.preventDefault();
         
         // Get form inputs
         const vehicleYear = parseInt(document.getElementById('vehicle-year').value);
@@ -222,21 +222,22 @@ form textarea {
 
         // Validation for year
         if (vehicleYear > currentYear) {
+          e.preventDefault(); // Stop submission on error
           alert(`Vehicle year cannot be later than ${currentYear}.`);
           return;
         }
 
         // Validation for auction date
         if (auctionDate < currentDate) {
+          e.preventDefault(); // Stop submission on error
           alert('Auction date cannot be in the past.');
           return;
         }
 
-        // If all validations pass, submit the form
-        alert('Auction listing submitted successfully!');
-        window.location.href = '/seller_dashboard/view-auctions';
-        // Uncomment the next line to actually submit the form to the server
-        e.target.submit();
+        // If all validations pass, allow the form to submit normally to the server
+        // e.target.submit() is automatically called by the browser now.
+        // We rely on the server to handle success/error response.
+
       });
 
       // Set min attribute for auction date to today

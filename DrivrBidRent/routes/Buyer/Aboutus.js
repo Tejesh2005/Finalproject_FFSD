@@ -5,7 +5,7 @@ const isBuyerLoggedin=require('../../middlewares/isBuyerLoggedin');
 
 
 router.get('/Aboutus', (req, res) => {
-  res.redirect('/buyer_dashboard?page=about');
+  res.render('./buyer_dashboard/Aboutus');
 });
 
 module.exports = router;

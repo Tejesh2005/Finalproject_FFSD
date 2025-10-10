@@ -283,10 +283,11 @@
                             <% } %>
                         </div>
                         <div class="button-container">
-                            <a href="/auction_detail?id=<%= auction._id %>" class="details-btn">View more</a>
-                            <a href="/auction?id=<%= auction._id %>" class="placebid-btn">Place a bid</a>
+                            <a href="/buyer_dashboard?page=auction&id=<%= auction._id %>" class="details-btn">View more</a>
+                            <a href="/buyer_dashboard?page=auction&id=<%= auction._id %>" class="placebid-btn">Place a bid</a>
                         </div>
                     </div>
+
                 <% }); %>
             <% } else { %>
                 <div class="no-items"><p>No auctions in your wishlist yet.</p></div>

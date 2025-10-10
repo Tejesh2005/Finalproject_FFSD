@@ -25,6 +25,7 @@ const AssignMechanic = require("./routes/AuctionManager/AssignMechanic.js");
 const Pendingcars = require("./routes/AuctionManager/Pending.js");
 const approvedCars = require("./routes/AuctionManager/ApprovedCars.js");
 const PendingCarDetails = require("./routes/AuctionManager/PendingCarDetails.js");
+const AuctionProfile=require("./routes/AuctionManager/Profile.js")
 
 const AdminHomepage = require("./routes/Admin/AdminHome.js");
 const ManageUsers = require("./routes/Admin/ManageUSers.js");
@@ -182,6 +183,7 @@ app.use("/auctionmanager", isAuctionManager, AssignMechanic);
 app.use("/auctionmanager", isAuctionManager, Pendingcars);
 app.use("/auctionmanager", isAuctionManager, approvedCars);
 app.use("/auctionmanager", isAuctionManager, PendingCarDetails);
+app.use("/auctionmanager", isAuctionManager, AuctionProfile);
 
 app.use("/admin", isAdminLoggedin, AdminHomepage);
 app.use("/admin", isAdminLoggedin, ManageUsers);

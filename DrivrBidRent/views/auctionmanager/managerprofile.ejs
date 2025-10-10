@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DriveBidRent - Auction Manager Profile</title>
+<!-- Include the same header and styling as other dashboards -->
+<!-- Assuming partials/navbar.ejs and partials/footer.ejs exist -->
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+        background-color: #f8f9fa; /* Light gray background */
+        color: #333333;
+    }
+
+    /* Profile Settings Specific Styles */
+    .profile-settings {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .profile-settings h2 {
+        color: #ff6b00;
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 700;
+    }
+
+    .profile-container {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .profile-details,
+    .change-password {
+        flex: 1;
+        min-width: 300px;
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid #ff6b00;
+        box-shadow: 0 5px 15px rgba(255, 107, 0, 0.1);
+    }
+
+    .profile-details h3,
+    .change-password h3 {
+        color: #ff6b00;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #ff6b00;
+        padding-bottom: 0.5rem;
+    }
+
+    .profile-details label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .profile-details-item {
+        margin-bottom: 1rem;
+        font-size: 1.05rem;
+    }
+
+    /* Read-only fields styling */
+    .profile-details-item strong {
+        display: inline-block;
+        width: 160px; /* Aligns the data values */
+        font-weight: 600;
+        color: #555;
+    }
+    .read-only {
+        padding: 0.75rem 0.5rem;
+        border: 1px solid #eee;
+        border-radius: 0.5rem;
+        background-color: #f4f4f4;
+        margin-bottom: 1rem;
+        color: #666;
+    }
+
+    /* Editable fields styling */
+    .profile-details input[type="tel"] {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+    }
+
+    /* Change Password Section styling */
+    .change-password label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .change-password input {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .change-password small {
+        display: block;
+        margin-top: -0.8rem;
+        margin-bottom: 1rem;
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    .change-btn {
+        display: block;
+        width: 100%;
+        background: linear-gradient(135deg, #ff6b00, #ff9a44);
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .change-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    
+    .update-btn-container {
+        margin-top: 1.5rem;
+    }
+
+    /* Alert messages */
+    .alert {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: 500;
+        display: none;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+        .profile-container {
+            flex-direction: column;
+        }
+    }
+</style>
+</head>
+<body>
+    <%- include('./partials/navbar') %>
+
+    <!-- Profile Settings Section -->
+    <section class="profile-settings">
+        <h2>Auction Manager Profile</h2>
+
+        <!-- Success and Error Alerts -->
+        <div id="success-alert" class="alert alert-success"></div>
+        <div id="error-alert" class="alert alert-danger"></div>
+
+        <div class="profile-container">
+            <!-- Personal Details (Editable: Phone; Read-only: Name, Email, Role) -->
+            <div class="profile-details">
+                <h3>Personal Details</h3>
+                
+                <form id="details-form">
+                    <!-- Read-only fields -->
+                    <div class="profile-details-item">
+                        <strong>Full Name:</strong>
+                        <span><%= user.firstName %> <%= user.lastName %></span>
+                    </div>
+
+                    <div class="profile-details-item">
+                        <strong>Email:</strong>
+                        <div class="read-only"><%= user.email %></div>
+                    </div>
+                    
+                    <div class="profile-details-item">
+                        <strong>Role:</strong>
+                        <div class="read-only"><%= user.userType.replace(/_/g, ' ').toUpperCase() %></div>
+                    </div>
+
+                    <!-- Editable Fields -->
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>" pattern="[0-9]{10}" maxlength="10" required>
+                    
+                    <div class="update-btn-container">
+                        <button type="submit" class="change-btn">Update Phone</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="change-password">
+                <h3>Change Password</h3>
+                <form id="password-form">
+                    <label for="old-password">Current Password:</label>
+                    <input type="password" id="old-password" name="oldPassword" required>
+
+                    <label for="new-password">New Password:</label>
+                    <input type="password" id="new-password" name="newPassword" required>
+                    <small>Password must be at least 8 characters long</small>
+
+                    <label for="confirm-password">Confirm New Password:</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" required>
+
+                    <button type="submit" class="change-btn">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <%- include('./partials/footer') %>
+
+    <!-- Profile JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const detailsForm = document.getElementById('details-form');
+            const passwordForm = document.getElementById('password-form');
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
+            
+            function showAlert(element, message) {
+                successAlert.style.display = 'none';
+                errorAlert.style.display = 'none';
+                element.textContent = message;
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+            
+            // 1. Details Update Logic (Only phone number is updated)
+            detailsForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const phone = document.getElementById('phone').value;
+
+                // Basic validation for phone number format
+                if (!/^\d{10}$/.test(phone)) {
+                    showAlert(errorAlert, 'Phone number must be exactly 10 digits.');
+                    return;
+                }
+                
+                try {
+                    // NOTE: Assumes the route /auctionmanager/update-details exists
+                    const response = await fetch('/auctionmanager/update-details', { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            phone
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok && result.success) {
+                        showAlert(successAlert, 'Phone number updated successfully!');
+                    } else {
+                        showAlert(errorAlert, result.message || 'Failed to update phone number.');
+                    }
+                } catch (error) {
+                    showAlert(errorAlert, 'An unexpected error occurred. Please try again later.');
+                    console.error('Details update error:', error);
+                }
+            });
+
+            // 2. Password Change Logic
+            passwordForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const oldPassword = document.getElementById('old-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                if (newPassword !== confirmPassword) {
+                    showAlert(errorAlert, 'New passwords do not match.');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    showAlert(errorAlert, 'Password must be at least 8 characters long.');
+                    return;
+                }
+                
+                try {
+                    // NOTE: Assumes the route /auctionmanager/change-password exists
+                    const response = await fetch('/auctionmanager/change-password', { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            oldPassword,
+                            newPassword
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok && result.success) {
+                        showAlert(successAlert, 'Password updated successfully!');
+                        passwordForm.reset();
+                    } else {
+                        showAlert(errorAlert, result.message || 'Failed to update password. Please check your current password.');
+                    }
+                } catch (error) {
+                    showAlert(errorAlert, 'An unexpected error occurred. Please try again later.');
+                    console.error('Password change error:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

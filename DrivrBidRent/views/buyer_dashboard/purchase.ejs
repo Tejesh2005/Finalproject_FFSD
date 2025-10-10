@@ -396,7 +396,7 @@
                     <p><strong>Seller:</strong> <%= rental.sellerName %></p>
                     <p><strong>Contact:</strong> <%= rental.sellerPhone %></p>
                 </div>
-                <a href="/rental_details/<%= rental._id %>" class="details-btn">More Details</a>
+                <a href="/rental_details/<%= rental.investor_id %>" class="details-btn">Details</a>
             </div>
             <% }); %>
         </div>

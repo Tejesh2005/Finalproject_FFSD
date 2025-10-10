@@ -7,7 +7,7 @@ const isAuctionManager = require('../../middlewares/isAuctionManager');
 // GET route for the auction manager home page
 router.get('/home1', isAuctionManager, async (req, res) => {
     try {
-        // Fetch all pending auction requests (status: pending)
+
         const auctionReqPend = await AuctionRequest.find({ status: 'pending' })
             .populate('sellerId')
             .sort({ createdAt: -1 })

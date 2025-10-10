@@ -1,4 +1,3 @@
-<!-- Navigation Bar Partial -->
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
@@ -167,7 +166,7 @@
         <div class="profile">
             <img src="<%= (typeof user !== 'undefined' && user.photoPath) ? user.photoPath : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' %>" alt="profile symbol">
             <a href="/profile" class="profile-text"><%= (typeof user !== 'undefined') ? (user.firstName + ' ' + user.lastName) : 'My Profile' %></a>
-            <a href="/logout" class="logout-btn">Logout</a>
+            <button onclick="window.location.href='/logout'" class="logout-btn">Logout</button>
         </div>
     </div>
 </nav>

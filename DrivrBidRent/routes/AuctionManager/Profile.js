@@ -9,7 +9,7 @@ router.get("/profile", isAuctionManager, async(req,res) => {
     res.render("./auctionmanager/managerprofile", { user });
 });
 
-
+  
 router.post("/update-details", isAuctionManager, async(req, res) => {
     // Ensure req.user and req.user._id are available
     if (!req.user || !req.user._id) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
-const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedin');
 
 // Get pending mechanics, approved mechanics, buyers, and sellers
 router.get('/manage-user', isAdminLoggedIn, async (req, res) => {

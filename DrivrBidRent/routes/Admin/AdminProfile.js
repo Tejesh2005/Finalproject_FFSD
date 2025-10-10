@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const bcrypt = require('bcrypt');
-const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedin');
 
 // Route to render admin profile page
 router.get('/admin-profile', isAdminLoggedIn, async (req, res) => {

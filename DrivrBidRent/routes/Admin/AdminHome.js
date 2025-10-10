@@ -6,7 +6,7 @@ const AuctionCost = require("../../models/AuctionCost");
 const RentalRequest = require("../../models/RentalRequest");
 const AuctionRequest = require("../../models/AuctionRequest");
 const AuctionBid = require("../../models/AuctionBid");
-const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedin');
 
 // Admin homepage route
 router.get("/admin", isAdminLoggedIn, async (req, res) => {

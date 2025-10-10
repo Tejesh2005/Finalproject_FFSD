@@ -6,25 +6,22 @@
     <title>DriveBidRent - Place Bid on <%= auction.vehicleName %></title>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: "Montserrat", sans-serif;
         }
-
-        body {
-            background-color: #f8f9fa;
-            color: #333333;
-        }
-
         .container {
             max-width: 800px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
-
+        body {
+            background-color: #f8f9fa;
+            color: #333333;
+        }
+        
         /* Auction Details Section */
         .auction-details {
             background-color: #fff;
@@ -33,7 +30,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
         }
-
         .auction-details img {
             width: 100%;
             height: 250px;
@@ -41,26 +37,22 @@
             border-radius: 0.5rem;
             margin-bottom: 1.5rem;
         }
-
         .auction-details h1 {
             color: #ff6b00;
             font-size: 2rem;
             margin-bottom: 1rem;
         }
-
         .auction-details p {
             margin-bottom: 0.75rem;
             color: #555;
             font-size: 1.1rem;
         }
-
         .current-bid {
             font-size: 1.5rem;
             font-weight: 700;
             color: #333;
             margin: 1.5rem 0;
         }
-
         /* Bid Form Section */
         .bid-form {
             background-color: #fff;
@@ -68,24 +60,20 @@
             padding: 2rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-
         .bid-form h2 {
             color: #ff6b00;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
         }
-
         .form-group {
             margin-bottom: 1.5rem;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #333;
         }
-
         .form-group input {
             width: 100%;
             padding: 0.75rem;
@@ -93,7 +81,6 @@
             border-radius: 0.5rem;
             font-size: 1rem;
         }
-
         .error-message, .success-message {
             display: none;
             padding: 1rem;
@@ -101,19 +88,16 @@
             margin-bottom: 1.5rem;
             font-size: 1rem;
         }
-
         .error-message {
             background-color: #ffe6e6;
             color: #d32f2f;
             border: 1px solid #d32f2f;
         }
-
         .success-message {
             background-color: #e6ffed;
             color: #2e7d32;
             border: 1px solid #2e7d32;
         }
-
         .bid-btn {
             background-color: #ff6b00;
             color: white;
@@ -125,34 +109,27 @@
             transition: background-color 0.3s;
             width: 100%;
         }
-
         .bid-btn:hover {
             background-color: #e65c00;
         }
-
         .bid-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 padding: 0 1rem;
             }
-
             .auction-details img {
                 height: 200px;
             }
-
             .auction-details h1 {
                 font-size: 1.5rem;
             }
-
             .current-bid {
                 font-size: 1.2rem;
             }
-
             .bid-form h2 {
                 font-size: 1.2rem;
             }
@@ -162,7 +139,6 @@
 <body>
     <!-- Include Navigation Bar -->
     <%- include('partials/navbar') %>
-
     <div class="container">
         <!-- Auction Details Section -->
         <div class="auction-details">
@@ -171,10 +147,10 @@
             <p><strong>Year:</strong> <%= auction.year %></p>
             <p><strong>Condition:</strong> <%= auction.condition.charAt(0).toUpperCase() + auction.condition.slice(1) %></p>
             <p><strong>Starting Bid:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
-            <p><strong>Auction Date:</strong> <%= new Date(auction.auctionDate).toLocaleDateString('en-IN', { 
+            <p><strong>Auction Date:</strong> <%= new Date(auction.auctionDate).toLocaleDateString('en-IN', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
             <p class="current-bid">
-                <strong>Current Bid:</strong> 
+                <strong>Current Bid:</strong>
                 <% if (currentBid) { %>
                     ₹<%= currentBid.bidAmount.toLocaleString() %>
                 <% } else { %>
@@ -182,7 +158,6 @@
                 <% } %>
             </p>
         </div>
-
         <!-- Bid Form Section -->
         <div class="bid-form">
             <h2>Place Your Bid</h2>
@@ -201,7 +176,7 @@
             <% } else { %>
                 <div id="errorMessage" class="error-message"></div>
                 <div id="successMessage" class="success-message"></div>
-                <form id="bidForm" method="POST" action="/auction/place-bid">
+                <form id="bidForm">
                     <input type="hidden" name="auctionId" value="<%= auction._id %>">
                     <div class="form-group">
                         <label for="bidAmount">Your Bid Amount (₹)</label>
@@ -212,10 +187,8 @@
             <% } %>
         </div>
     </div>
-
     <!-- Include Footer -->
     <%- include('partials/footer') %>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const bidForm = document.getElementById('bidForm');
@@ -223,7 +196,6 @@
             const bidButton = document.querySelector('.bid-btn');
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
-
             if (!bidForm) return;
 
             // Calculate minimum bid
@@ -236,7 +208,6 @@
                 const bidValue = parseFloat(bidInput.value);
                 bidButton.disabled = false;
                 errorMessage.style.display = 'none';
-
                 if (isNaN(bidValue) || bidValue <= 0) {
                     errorMessage.textContent = 'Please enter a valid bid amount.';
                     errorMessage.style.display = 'block';
@@ -248,13 +219,14 @@
                 }
             });
 
-            // Form submission
+            // Form submission with Fetch
             bidForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 errorMessage.style.display = 'none';
                 successMessage.style.display = 'none';
 
                 const bidValue = parseFloat(bidInput.value);
+                const auctionId = '<%= auction._id %>';
 
                 // Additional validation
                 if (bidValue < minBid) {
@@ -270,14 +242,13 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            auctionId: '<%= auction._id %>',
+                            auctionId: auctionId,
                             bidAmount: bidValue
                         })
                     });
 
                     const data = await response.json();
-
-                    if (data.success) {
+                    if (response.ok && data.success) {
                         successMessage.textContent = 'Your bid has been placed successfully!';
                         successMessage.style.display = 'block';
                         bidForm.reset();

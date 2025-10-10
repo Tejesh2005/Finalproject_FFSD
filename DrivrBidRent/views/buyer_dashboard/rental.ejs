@@ -166,75 +166,58 @@
             background-color: #45a049;
         }
 
-        /* Payment Gateway Styles */
-        .payment-methods {
-            margin: 1.5rem 0;
-        }
-        .payment-method {
-            border: 2px solid #ddd;
-            border-radius: 8px;
+        /* Simplified Payment Gateway Styles */
+        .payment-summary {
+            background: #f8f9fa;
             padding: 1rem;
-            margin-bottom: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
         }
-        .payment-method:hover {
-            border-color: #ff6b00;
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
-        .payment-method.selected {
-            border-color: #ff6b00;
-            background-color: #fff9f5;
-        }
-        .payment-method-header {
+        .payment-option {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .payment-option:hover {
+            border-color: #ff6b00;
+            background-color: #fff9f5;
+        }
+        .payment-option.selected {
+            border-color: #ff6b00;
+            background-color: #fff9f5;
         }
         .payment-icon {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: #f0f0f0;
-            border-radius: 50%;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 1.2rem;
         }
-        .upi-details {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            display: none;
+        .payment-info {
+            flex: 1;
         }
-        .upi-details.active {
-            display: block;
+        .payment-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: #333;
         }
-        .qr-code {
-            text-align: center;
-            margin: 1rem 0;
-        }
-        .qr-code img {
-            width: 150px;
-            height: 150px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        .upi-id {
-            background: white;
-            padding: 0.75rem;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            font-family: monospace;
-            text-align: center;
-            margin: 1rem 0;
-            font-weight: bold;
-        }
-        .payment-instructions {
-            font-size: 0.85rem;
+        .payment-info p {
+            margin: 0;
             color: #666;
-            margin: 1rem 0;
+            font-size: 0.9rem;
         }
         .payment-actions {
             display: flex;
@@ -257,11 +240,11 @@
         .cancel-payment:hover {
             background: #e9ecef;
         }
-        .confirm-payment {
+        .pay-now-btn {
             background: #ff6b00;
             color: white;
         }
-        .confirm-payment:hover {
+        .pay-now-btn:hover {
             background: #e65c00;
         }
         .payment-processing {
@@ -367,7 +350,7 @@
         </div>
     </div>
 
-    <!-- Payment Gateway Popup -->
+    <!-- Simplified Payment Gateway Popup -->
     <div class="popup" id="paymentPopup">
         <div class="popup-content">
             <button class="close-btn" onclick="closePaymentPopup()">×</button>
@@ -378,56 +361,35 @@
                 <p><strong>Amount to Pay:</strong> <span id="paymentAmount">₹0</span></p>
             </div>
 
-            <div class="payment-methods">
-                <div class="payment-method selected" onclick="selectPaymentMethod('upi')">
-                    <div class="payment-method-header">
-                        <div class="payment-icon">UPI</div>
-                        <div>
-                            <h4>UPI Payment</h4>
-                            <p>Pay using any UPI app</p>
-                        </div>
-                    </div>
-                    <div class="upi-details active" id="upiDetails">
-                        <div class="qr-code">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCI+cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJibGFjayI+UVIgQ09ERTwvdGV4dD48L3N2Zz4=" alt="QR Code">
-                        </div>
-                        <div class="upi-id">drivebidrent@paytm</div>
-                        <div class="payment-instructions">
-                            <p><strong>How to pay:</strong></p>
-                            <ol>
-                                <li>Open any UPI app on your phone</li>
-                                <li>Scan the QR code or enter the UPI ID</li>
-                                <li>Enter the amount shown above</li>
-                                <li>Complete the payment</li>
-                            </ol>
-                        </div>
+            <div class="payment-options">
+                <div class="payment-option selected" onclick="selectPaymentMethod('upi')">
+                    <div class="payment-icon">UPI</div>
+                    <div class="payment-info">
+                        <h4>Pay with UPI</h4>
+                        <p>Instant payment using any UPI app</p>
                     </div>
                 </div>
 
-                <div class="payment-method" onclick="selectPaymentMethod('card')">
-                    <div class="payment-method-header">
-                        <div class="payment-icon">💳</div>
-                        <div>
-                            <h4>Credit/Debit Card</h4>
-                            <p>Pay using your card</p>
-                        </div>
+                <div class="payment-option" onclick="selectPaymentMethod('card')">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-info">
+                        <h4>Credit/Debit Card</h4>
+                        <p>Pay using your card</p>
                     </div>
                 </div>
 
-                <div class="payment-method" onclick="selectPaymentMethod('netbanking')">
-                    <div class="payment-method-header">
-                        <div class="payment-icon">🏦</div>
-                        <div>
-                            <h4>Net Banking</h4>
-                            <p>Pay using net banking</p>
-                        </div>
+                <div class="payment-option" onclick="selectPaymentMethod('netbanking')">
+                    <div class="payment-icon">🏦</div>
+                    <div class="payment-info">
+                        <h4>Net Banking</h4>
+                        <p>Pay using net banking</p>
                     </div>
                 </div>
             </div>
 
             <div class="payment-actions">
                 <button class="payment-btn cancel-payment" onclick="closePaymentPopup()">Cancel</button>
-                <button class="payment-btn confirm-payment" onclick="processPayment()">Approve Payment</button>
+                <button class="payment-btn pay-now-btn" onclick="processPayment()">Pay Now</button>
             </div>
         </div>
     </div>
@@ -642,13 +604,10 @@
             selectedPaymentMethod = method;
             
             // Update UI
-            document.querySelectorAll('.payment-method').forEach(el => {
+            document.querySelectorAll('.payment-option').forEach(el => {
                 el.classList.remove('selected');
             });
             event.currentTarget.classList.add('selected');
-            
-            // Show/hide UPI details
-            document.getElementById('upiDetails').classList.toggle('active', method === 'upi');
         }
 
         async function processPayment() {

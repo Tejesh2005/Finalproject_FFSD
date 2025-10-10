@@ -99,7 +99,7 @@ app.post("/login", authController.postLogin);
 
 app.get("/logout", (req, res) => {
   res.clearCookie("jwt");
-  res.redirect("/login");
+  res.redirect("/");
 });
 
 app.use("/", BuyerDashboardRoute);

@@ -27,10 +27,9 @@ router.post(
     
     // NEW CHECK: Check if a file was successfully uploaded
     if (!req.file) {
-        return res.status(400).render('seller_dashboard/add-auction.ejs', { 
-            user: req.user, 
-            error: 'Vehicle image upload failed or is missing.',
-            formData: req.body
+        return res.status(400).json({ 
+            success: false,
+            message: 'Vehicle image upload failed or is missing.'
         });
     }
 
@@ -52,15 +51,18 @@ router.post(
       
       await auction.save();
       
-      // Redirect to view auctions with a success message
-      res.redirect('/seller_dashboard/view-auctions?success=Auction+Request+Submitted');
+      // Return JSON with redirect info
+      res.json({
+        success: true,
+        message: 'Auction Request Submitted',
+        redirect: '/seller_dashboard/view-auctions?success=Auction+Request+Submitted'
+      });
       
     } catch (err) {
       console.error(err);
-      res.status(500).render('seller_dashboard/add-auction.ejs', { 
-          user: req.user, 
-          error: 'Failed to submit auction: ' + err.message,
-          formData: req.body 
+      res.status(500).json({ 
+          success: false,
+          message: 'Failed to submit auction: ' + err.message
       });
     }
 });

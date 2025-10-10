@@ -187,7 +187,7 @@ form textarea {
         </div>
       <% } %>
       
-      <form id="rental-form" method="POST" action="/seller_dashboard/add-rental" enctype="multipart/form-data">
+      <form id="rental-form" enctype="multipart/form-data">
         <label for="vehicle-name">Vehicle Name:</label>
         <input 
           type="text" 
@@ -285,7 +285,9 @@ form textarea {
 
     <script>
       // Form validation script
-      document.getElementById('rental-form').addEventListener('submit', function(e) {
+      document.getElementById('rental-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
         // Basic validation
         const requiredFields = [
           'vehicle-name',
@@ -341,10 +343,24 @@ form textarea {
         }
 
         if (hasErrors) {
-          e.preventDefault();
           alert('Please correct the errors in the form');
+          return;
         }
-        // If no client-side errors, the form is submitted to the server for file processing.
+
+        // If no client-side errors, use fetch to submit
+        const formData = new FormData(this);
+        try {
+          const response = await fetch('/seller_dashboard/add-rental', {
+            method: 'POST',
+            body: formData
+          });
+          const html = await response.text();
+          document.open();
+          document.write(html);
+          document.close();
+        } catch (err) {
+          alert('Network error: ' + err.message);
+        }
       });
       
       // Show/hide driver rate field based on driver availability

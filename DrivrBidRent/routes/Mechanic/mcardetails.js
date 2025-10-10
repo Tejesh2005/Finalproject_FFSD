@@ -37,10 +37,18 @@ router.post('/submit-review/:id', isMechanicLoggedin, async (req, res) => {
       reviewStatus: 'completed' // Update reviewStatus to completed
     });
 
-    res.redirect('/mechanic_dashboard/index');
+    // Return JSON with redirect info
+    res.json({
+      success: true,
+      message: 'Review submitted successfully',
+      redirect: '/mechanic_dashboard/index'
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error submitting review');
+    res.status(500).json({ 
+        success: false,
+        message: 'Error submitting review: ' + err.message
+    });
   }
 });
 

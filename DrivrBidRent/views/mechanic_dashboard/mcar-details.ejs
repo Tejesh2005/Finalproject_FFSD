@@ -187,12 +187,12 @@
             </div>
           </div>
         <% } else { %>
-          <form action="/mechanic_dashboard/submit-review/<%= vehicle._id %>" method="POST">
+          <form id="review-form">
             <h3>Submit Vehicle Review</h3>
             
             <div>
               <label>Condition Rating:</label>
-              <select name="conditionRating" required>
+              <select name="conditionRating" id="conditionRating" required>
                 <option value="">Select rating</option>
                 <option value="1">1 Star</option>
                 <option value="2">2 Stars</option>
@@ -204,25 +204,69 @@
 
             <div>
               <label>Mechanical Condition:</label>
-              <textarea name="mechanicalCondition" required></textarea>
+              <textarea name="mechanicalCondition" id="mechanicalCondition" required></textarea>
             </div>
 
             <div>
               <label>Body & Interior Condition:</label>
-              <textarea name="bodyCondition" required></textarea>
+              <textarea name="bodyCondition" id="bodyCondition" required></textarea>
             </div>
 
             <div>
               <label>Recommendations:</label>
-              <textarea name="recommendations" required></textarea>
+              <textarea name="recommendations" id="recommendations" required></textarea>
             </div>
 
-            <button type="submit" class="submit-btn">Submit Review</button>
+            <button type="submit" class="submit-btn" id="submit-btn">Submit Review</button>
           </form>
         <% } %>
       </div>
     </main>
 
     <%- include('partials/footer') %>
+
+    <script>
+      // Form Submission for Review using Fetch
+      if (document.getElementById('review-form')) {
+        document.getElementById('review-form').addEventListener('submit', async (e) => {
+          e.preventDefault(); // Prevent default form submission
+
+          const submitBtn = document.getElementById('submit-btn');
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
+
+          // Collect form data
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+
+          try {
+            // Fetch POST to the endpoint
+            const response = await fetch(`/mechanic_dashboard/submit-review/<%= vehicle._id %>`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+            });
+
+            const result = await response.json(); // Server returns JSON
+
+            if (response.ok && result.success) {
+              alert('Review submitted successfully!');
+              // Redirect to dashboard
+              window.location.href = result.redirect;
+            } else {
+              alert(result.message || 'Error submitting review. Please try again.');
+            }
+          } catch (error) {
+            alert('Network error. Please try again.');
+            console.error('Fetch error:', error);
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Review';
+          }
+        });
+      }
+    </script>
   </body>
 </html>

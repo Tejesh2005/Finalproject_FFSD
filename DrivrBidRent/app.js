@@ -42,6 +42,7 @@ const BuyerRentalRoute = require("./routes/Buyer/Rental.js");
 const BuyerPurchaseRoute = require("./routes/Buyer/Purchase.js");
 const BuyerWishlistRoute = require("./routes/Buyer/Wishlist.js");
 const BuyerProfileRoute = require("./routes/Buyer/Profile.js"); 
+const buyerBidsRoute = require("./routes/Buyer/MyBids");
 
 const DriverDashboard = require("./routes/Driver/Dashboard.js");
 
@@ -110,6 +111,7 @@ app.use("/", BuyerPurchaseRoute);
 app.use("/", BuyerWishlistRoute);
 app.use("/", Aboutus);
 app.use("/", BuyerProfileRoute);
+app.use("/", buyerBidsRoute);
 
 app.get("/seller_dashboard/seller", isSellerLoggedin, async (req, res) => {
   try {
@@ -205,7 +207,7 @@ app.get("/logout",(req,res)=>{
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(Server running on port ${PORT});
 });
 
 module.exports = app;

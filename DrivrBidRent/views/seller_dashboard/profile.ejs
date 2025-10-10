@@ -336,7 +336,6 @@ form input, form select, form textarea {
       </div>
     </section>
 
-    <!-- Include Footer Partial -->
     <%- include('partials/footer') %>
 
     <script>
@@ -365,7 +364,7 @@ form input, form select, form textarea {
           phone: document.getElementById('phone').value
         };
         
-        // Parse address
+        //parsing
         const addressText = document.getElementById('address').value;
         const addressLines = addressText.trim().split('\n');
         
@@ -397,7 +396,6 @@ form input, form select, form textarea {
             document.getElementById('profileUpdateAlert').style.display = 'block';
             document.getElementById('profileUpdateError').style.display = 'none';
             
-            // Update displayed values after short delay
             setTimeout(() => {
               location.reload();
             }, 1500);
@@ -448,7 +446,6 @@ form input, form select, form textarea {
         }
         
         try {
-          // First update notification preferences
           const prefResponse = await fetch('/seller_dashboard/update-preferences', {
             method: 'POST',
             headers: {
@@ -459,7 +456,6 @@ form input, form select, form textarea {
           
           const prefResult = await prefResponse.json();
           
-          // Then update password if provided
           if (oldPassword && newPassword) {
             const pwResponse = await fetch('/seller_dashboard/change-password', {
               method: 'POST',

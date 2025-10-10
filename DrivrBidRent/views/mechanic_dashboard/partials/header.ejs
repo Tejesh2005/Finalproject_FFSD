@@ -1,14 +1,121 @@
-<header>
-  <div class="logo">
-    <a href="/mechanic_dashboard/index" class="logo-text">DriveBidRent</a>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+  
+  /* Navigation Bar */
+  .navbar {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    padding: 1rem 0;
+    box-shadow: 0 2px 20px rgba(255, 107, 0, 0.2);
+    z-index: 1000;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+  }
+  
+  .logo a {
+    color: #ff6b00;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav-links a {
+    color: #333333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: "Montserrat", sans-serif;
+  }
+  
+  .nav-links a:hover,
+  .nav-links a.active {
+    border-bottom: 3px solid #ff6b00;
+  }
+  
+  /* Logout Button */
+  .logout-btn {
+      background-color: #ff6b00;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: 0.5rem;
+      font-family: "Montserrat", sans-serif;
+  }
+  
+  .logout-btn:hover {
+      background-color: #e65c00;
+      transform: translateY(-1px);
+  }
+  
+  /* profile container */
+  .profile {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+  }
+  
+  .profile img {
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .profile-text {
+    color: #ff6b00;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+    font-family: "Montserrat", sans-serif;
+  }
+  
+  .profile-text:hover {
+    color: #e65c00;
+  }
+  
+  @media (max-width: 768px) {
+    .nav-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .nav-links {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>
+  
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo"><a href="/mechanic_dashboard/index">DriveBidRent</a></div>
+    <div class="nav-links">
+      <a href="/mechanic_dashboard/current-tasks">Current Tasks</a>
+      <a href="/mechanic_dashboard/past-tasks">Past Tasks</a>
+    </div>
+    <div class="profile">
+        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="profile symbol" style="height: 40px" />
+        <a href="/mechanic_dashboard/profile" class="profile-text">My Profile</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
   </div>
-  <nav>
-    <ul>
-      <li><a href="/mechanic_dashboard/current-tasks">Current Tasks</a></li>
-      <li><a href="/mechanic_dashboard/past-tasks">Past Tasks</a></li>
-      
-      <li><a href="/mechanic_dashboard/profile">Profile</a></li>
-      <li><a href="/logout">Logout</a></li>
-    </ul>
-  </nav>
-</header>
+</nav>

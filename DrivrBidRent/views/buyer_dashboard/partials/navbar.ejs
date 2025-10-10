@@ -1,3 +1,4 @@
+<!-- Navigation Bar Partial -->
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
@@ -87,10 +88,28 @@
         font-weight: 500;
         transition: all 0.3s ease;
         padding-bottom: 5px;
+        position: relative;
     }
 
     .nav-links a:hover, .nav-links a.active {
         border-bottom: 3px solid #ff6b00;
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 600;
     }
 
     /* Logout Button */
@@ -150,6 +169,11 @@
             flex-wrap: wrap;
             justify-content: center;
         }
+
+        .notification-badge {
+            top: -5px;
+            right: -5px;
+        }
     }
 </style>
 
@@ -157,16 +181,47 @@
     <div class="nav-container">
         <div class="logo"><a href="/buyer_dashboard?page=dashboard">DriveBidRent</a></div>
         <div class="nav-links">
-    <a href="/purchase">My Purchases</a>
-    <a href="/wishlist">Wishlist</a>
-    <a href="/buyer_dashboard/my-bids">My Bids</a>  
-    <a href="#notifications">Notifications</a>
-    <a href="/Aboutus">About Us</a>
-</div>
+            <a href="/purchase">My Purchases</a>
+            <a href="/wishlist">Wishlist</a>
+            <a href="/buyer_dashboard/my-bids">My Bids</a>
+            <a href="/notifications">
+                Notifications
+                <span class="notification-badge"></span>
+            </a>
+            <a href="/Aboutus">About Us</a>
+        </div>
         <div class="profile">
             <img src="<%= (typeof user !== 'undefined' && user.photoPath) ? user.photoPath : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' %>" alt="profile symbol">
             <a href="/profile" class="profile-text"><%= (typeof user !== 'undefined') ? (user.firstName + ' ' + user.lastName) : 'My Profile' %></a>
-            <button onclick="window.location.href='/logout'" class="logout-btn">Logout</button>
+            <a href="/logout" class="logout-btn">Logout</a>
         </div>
     </div>
 </nav>
+
+<script>
+// Update notification badge on all pages
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/notifications/unread-count')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateNavbarBadge(data.unreadCount);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching notification count:', error);
+        });
+});
+
+function updateNavbarBadge(unreadCount) {
+    const badge = document.querySelector('.notification-badge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+</script>

@@ -43,6 +43,7 @@ const BuyerPurchaseRoute = require("./routes/Buyer/Purchase.js");
 const BuyerWishlistRoute = require("./routes/Buyer/Wishlist.js");
 const BuyerProfileRoute = require("./routes/Buyer/Profile.js"); 
 const buyerBidsRoute = require("./routes/Buyer/MyBids");
+const buyerNotificationsRoute = require("./routes/Buyer/Notifications");
 
 const DriverDashboard = require("./routes/Driver/Dashboard.js");
 
@@ -112,6 +113,7 @@ app.use("/", BuyerWishlistRoute);
 app.use("/", Aboutus);
 app.use("/", BuyerProfileRoute);
 app.use("/", buyerBidsRoute);
+app.use("/", buyerNotificationsRoute);
 
 app.get("/seller_dashboard/seller", isSellerLoggedin, async (req, res) => {
   try {

@@ -294,13 +294,53 @@
             font-size: 1.2rem;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .card-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* Notification Toast Styles */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff6b00;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            cursor: pointer;
         }
-
+        
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+        
+        .notification-toast .icon {
+            font-size: 1.2rem;
+        }
+        
+        .notification-toast .message {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .notification-toast .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         @media (max-width: 768px) {
             /* Responsive Design for heading1 */
             .heading1 {
@@ -330,6 +370,19 @@
             .bid-btn {
                 margin: 0;
                 width: 100%;
+            }
+
+            /* Notification Toast Mobile */
+            .notification-toast {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+                transform: translateY(-100px);
+            }
+            
+            .notification-toast.show {
+                transform: translateY(0);
             }
         }
     </style>
@@ -486,6 +539,9 @@
                     });
                 });
             });
+
+            // Check for unread notifications on page load
+            checkNotifications();
         });
     
         // Initialize heart buttons based on wishlist
@@ -546,6 +602,81 @@
                     console.error('Error loading wishlist:', error);
                     // We already set states from localStorage, so no need for fallback
                 });
+        }
+
+        // Check for unread notifications
+        function checkNotifications() {
+            fetch('/api/notifications/unread-count')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.unreadCount > 0) {
+                        // Update navbar badge
+                        updateNavbarBadge(data.unreadCount);
+                        
+                        // Show toast notification
+                        showNotificationToast(data.unreadCount);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking notifications:', error);
+                });
+        }
+
+        function updateNavbarBadge(unreadCount) {
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex';
+            }
+        }
+
+        function showNotificationToast(unreadCount) {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <div class="icon">🔔</div>
+                <div class="message">
+                    You have ${unreadCount} new notification${unreadCount > 1 ? 's' : ''}
+                </div>
+                <button class="close-btn">&times;</button>
+            `;
+            
+            // Add to page
+            document.body.appendChild(toast);
+            
+            // Show toast with animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            // Close button functionality
+            const closeBtn = toast.querySelector('.close-btn');
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideToast(toast);
+            });
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideToast(toast);
+            }, 5000);
+            
+            // Click on toast to go to notifications
+            toast.addEventListener('click', (e) => {
+                if (e.target !== closeBtn) {
+                    window.location.href = '/notifications';
+                }
+            });
+        }
+
+        function hideToast(toast) {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
         }
     </script>
 </body>

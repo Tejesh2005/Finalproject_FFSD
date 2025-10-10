@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Notification = require('./Notification'); // Add this import
 
 const auctionBidSchema = new mongoose.Schema({
   auctionId: {
@@ -30,7 +31,7 @@ const auctionBidSchema = new mongoose.Schema({
   }
 });
 
-// Pre-save middleware to ensure bid is valid
+// Pre-save middleware to ensure bid is valid and create notifications
 auctionBidSchema.pre('save', async function(next) {
   try {
     // Only check for new bids, not updates to existing bids
@@ -48,12 +49,30 @@ auctionBidSchema.pre('save', async function(next) {
       return next(new Error('Auction has not started yet'));
     }
     
+    // Get the previous highest bidder
+    const previousBid = await this.constructor.findOne({
+      auctionId: this.auctionId,
+      isCurrentBid: true
+    });
+    
     // If this is a new bid, make all previous bids for this auction no longer current
     if (this.isCurrentBid) {
       await this.constructor.updateMany(
         { auctionId: this.auctionId, isCurrentBid: true },
         { isCurrentBid: false }
       );
+    }
+    
+    // Create notification for previous bidder if they got outbid
+    if (previousBid && previousBid.buyerId.toString() !== this.buyerId.toString()) {
+      await Notification.create({
+        userId: previousBid.buyerId,
+        type: 'outbid',
+        title: 'You\'ve been outbid!',
+        message: `Someone placed a higher bid (₹${this.bidAmount.toLocaleString()}) on ${auction.vehicleName}. Place a new bid to stay in the race!`,
+        auctionId: this.auctionId,
+        relatedBidId: this._id
+      });
     }
     
     next();

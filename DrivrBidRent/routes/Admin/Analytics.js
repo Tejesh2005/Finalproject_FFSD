@@ -5,7 +5,7 @@ const RentalRequest = require("../../models/RentalRequest");
 const AuctionRequest = require("../../models/AuctionRequest");
 const RentalCost = require("../../models/RentalCost");
 const AuctionCost = require("../../models/AuctionCost");
-const isAdminLoggedIn = require('../../middlewares/isAdminLoggedIn');
+const isAdminLoggedIn = require('../../middlewares/isAdminLoggedin');
 
 // GET: Show analytics page
 router.get("/analytics", isAdminLoggedIn, async (req, res) => {

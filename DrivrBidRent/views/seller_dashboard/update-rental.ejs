@@ -75,6 +75,10 @@
         gap: 0.5rem;
       }
 
+      .radio-option input[type="radio"] {
+        margin: 0;
+      }
+
       .driver-rate-container {
         margin-top: 1rem;
         padding-left: 1.5rem;
@@ -96,6 +100,11 @@
 
       .btn:hover {
         background-color: #ff8c3f;
+      }
+
+      .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
       }
 
       .back-btn {
@@ -164,7 +173,7 @@
       <% } %>
       
       <% if (rental) { %>
-        <form class="update-form" action="/seller_dashboard/update-rental/<%= rental._id %>" method="POST" id="rental-form">
+        <form class="update-form" id="rental-form">
           <div class="form-group">
             <label class="form-label">Cost per day (₹)</label>
             <input type="number" class="form-control" name="rental-cost" 
@@ -208,12 +217,13 @@
             <% } %>
           </div>
           
-          <button type="submit" class="btn">Update Rental</button>
+          <button type="submit" class="btn" id="submit-btn">Update Rental</button>
           <a href="/seller_dashboard/view-rentals" class="back-btn">Back to Rentals</a>
           
           <!-- Store original status for JavaScript validation -->
           <input type="hidden" id="original-status" value="<%= rental.status %>">
           <input type="hidden" id="is-before-return-date" value="<%= isBeforeReturnDate %>">
+          <input type="hidden" id="rental-id" value="<%= rental._id %>">
         </form>
       <% } else { %>
         <div class="error-message">
@@ -229,37 +239,140 @@
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         // Show/hide driver rate field based on selection
-        const driverYes = document.querySelector('input[value="yes"]');
-        const driverNo = document.querySelector('input[value="no"]');
+        const driverRadios = document.querySelectorAll('input[name="driver-available"]');
         const driverRateContainer = document.getElementById('driver-rate-container');
         const statusDropdown = document.getElementById('status-dropdown');
         const originalStatus = document.getElementById('original-status').value;
         const isBeforeReturnDate = document.getElementById('is-before-return-date').value === 'true';
         const rentalForm = document.getElementById('rental-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const rentalId = document.getElementById('rental-id').value;
         
         function toggleDriverRate() {
-          driverRateContainer.style.display = driverYes.checked ? 'block' : 'none';
-          if (driverYes.checked) {
-            document.querySelector('input[name="driver-rate"]').required = true;
+          const driverYesChecked = document.querySelector('input[name="driver-available"][value="yes"]:checked');
+          driverRateContainer.style.display = driverYesChecked ? 'block' : 'none';
+          const driverRateInput = document.querySelector('input[name="driver-rate"]');
+          if (driverYesChecked) {
+            driverRateInput.required = true;
           } else {
-            document.querySelector('input[name="driver-rate"]').required = false;
+            driverRateInput.required = false;
           }
         }
         
-        driverYes.addEventListener('change', toggleDriverRate);
-        driverNo.addEventListener('change', toggleDriverRate);
+        driverRadios.forEach(radio => radio.addEventListener('change', toggleDriverRate));
         
         // Initialize on page load
         toggleDriverRate();
         
         // Validate form submission - prevent changing from unavailable to available before return date
-        rentalForm.addEventListener('submit', function(event) {
+        rentalForm.addEventListener('submit', async function(event) {
+          event.preventDefault();
+          
           if (originalStatus === 'unavailable' && 
               statusDropdown.value === 'available' && 
               isBeforeReturnDate) {
-            event.preventDefault();
             alert('Cannot change status from unavailable to available before the return date');
             statusDropdown.value = 'unavailable';
+            return;
+          }
+          
+          // Disable submit button and change text
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Updating...';
+          
+          // Reset border colors
+          document.querySelectorAll('.form-control, .select-dropdown').forEach(el => el.style.borderColor = '#ddd');
+          document.querySelectorAll('input[name="driver-available"]').forEach(el => el.parentElement.style.borderColor = '#ddd');
+          
+          // Basic validation
+          let hasErrors = false;
+          
+          // Validate cost
+          const costInput = rentalForm.querySelector('[name="rental-cost"]');
+          const cost = parseFloat(costInput.value);
+          if (isNaN(cost) || cost <= 0) {
+            hasErrors = true;
+            costInput.style.borderColor = 'red';
+            alert('Cost per day must be greater than 0.');
+          }
+          
+          // Validate status
+          if (!statusDropdown.value) {
+            hasErrors = true;
+            statusDropdown.style.borderColor = 'red';
+            alert('Please select a status.');
+          }
+          
+          // Validate driver available (radio group)
+          const driverChecked = document.querySelector('input[name="driver-available"]:checked');
+          if (!driverChecked) {
+            hasErrors = true;
+            document.querySelectorAll('.radio-option').forEach(el => el.style.borderColor = 'red');
+            alert('Please select if driver is available.');
+          } else {
+            document.querySelectorAll('.radio-option').forEach(el => el.style.borderColor = '#ddd');
+          }
+          
+          // Check driver rate if driver is available
+          const driverYesChecked = document.querySelector('input[name="driver-available"][value="yes"]:checked');
+          if (driverYesChecked) {
+            const driverRateInput = document.querySelector('input[name="driver-rate"]');
+            const driverRate = parseFloat(driverRateInput.value);
+            if (isNaN(driverRate) || driverRate <= 0) {
+              hasErrors = true;
+              driverRateInput.style.borderColor = 'red';
+              alert('Driver rate must be greater than 0.');
+            }
+          }
+          
+          if (hasErrors) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Update Rental';
+            return;
+          }
+          
+          // Prepare data using URLSearchParams for urlencoded
+          const data = new URLSearchParams();
+          data.append('rental-cost', cost);
+          data.append('driver-available', driverChecked.value);
+          data.append('status', statusDropdown.value);
+          if (driverYesChecked) {
+            data.append('driver-rate', document.querySelector('input[name="driver-rate"]').value);
+          }
+          
+          try {
+            const response = await fetch(`/seller_dashboard/update-rental/${rentalId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+              },
+              body: data
+            });
+            
+            if (response.ok) {
+              // On success, directly redirect without parsing
+              alert('Rental updated successfully!');
+              window.location.href = `/seller_dashboard/rental-details/${rentalId}`;
+              return;
+            } else {
+              // On error, try to parse JSON for message
+              const responseText = await response.text();
+              let result;
+              try {
+                result = JSON.parse(responseText);
+              } catch (jsonErr) {
+                console.error('Response text:', responseText);
+                throw new Error('Server error. Please try again.');
+              }
+              alert(result.message || 'Error updating rental. Please try again.');
+            }
+          } catch (err) {
+            console.error('Fetch error:', err);
+            alert('Unable to fetch: ' + err.message + '. Please check your connection or try again.');
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Update Rental';
           }
         });
       });

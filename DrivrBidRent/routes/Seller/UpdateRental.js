@@ -49,7 +49,10 @@ router.post('/update-rental/:id', isSellerLoggedin, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      return res.redirect('/login');
+      return res.status(401).json({ 
+        success: false,
+        message: 'User not found. Please log in again.'
+      });
     }
     
     const rental = await RentalRequest.findOne({
@@ -58,7 +61,10 @@ router.post('/update-rental/:id', isSellerLoggedin, async (req, res) => {
     });
     
     if (!rental) {
-      return res.redirect('/seller_dashboard/view-rentals');
+      return res.status(404).json({ 
+        success: false,
+        message: 'Rental not found.'
+      });
     }
     
     // Check if current date is before return date
@@ -67,17 +73,41 @@ router.post('/update-rental/:id', isSellerLoggedin, async (req, res) => {
     
     // If changing from unavailable to available when before return date, show error
     if (rental.status === 'unavailable' && req.body['status'] === 'available' && isBeforeReturnDate) {
-      return res.render('seller_dashboard/update-rental', {
-        user,
-        rental,
-        error: 'Cannot change status from unavailable to available before the return date',
-        success: null,
-        isBeforeReturnDate
+      return res.status(400).json({ 
+        success: false,
+        message: 'Cannot change status from unavailable to available before the return date'
+      });
+    }
+    
+    // Validate required fields
+    const requiredFields = ['rental-cost', 'driver-available', 'status'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+    if (missingFields.length > 0) {
+      return res.status(400).json({ 
+        success: false,
+        message: `Missing required fields: ${missingFields.join(', ')}`
+      });
+    }
+    
+    // Validate cost
+    const cost = parseFloat(req.body['rental-cost']);
+    if (isNaN(cost) || cost <= 0) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Cost per day must be a positive number.'
+      });
+    }
+    
+    // Add additional validation for driver rate if driver is available
+    if (req.body['driver-available'] === 'yes' && (!req.body['driver-rate'] || isNaN(parseFloat(req.body['driver-rate'])))) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Driver rate is required and must be a positive number when driver is available'
       });
     }
     
     // Update fields
-    rental.costPerDay = parseFloat(req.body['rental-cost']);
+    rental.costPerDay = cost;
     rental.driverAvailable = req.body['driver-available'] === 'yes';
     rental.status = req.body['status'];
     
@@ -89,21 +119,17 @@ router.post('/update-rental/:id', isSellerLoggedin, async (req, res) => {
     
     await rental.save();
     
-    res.render('seller_dashboard/update-rental', {
-      user,
-      rental,
-      success: 'Rental updated successfully!',
-      error: null,
-      isBeforeReturnDate
+    res.json({
+      success: true,
+      message: 'Rental updated successfully!',
+      redirect: `/seller_dashboard/rental-details/${req.params.id}`
     });
+    
   } catch (err) {
     console.error('Error:', err);
-    res.status(500).render('seller_dashboard/update-rental', {
-      user: {},
-      rental: null,
-      error: 'Failed to update rental',
-      success: null,
-      isBeforeReturnDate: false
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to update rental: ' + err.message
     });
   }
 });

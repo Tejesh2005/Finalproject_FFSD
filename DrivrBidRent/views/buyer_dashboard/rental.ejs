@@ -32,7 +32,7 @@
             gap: 1rem;
             margin-top: 2rem;
         }
-        .details-btn, .placebid-btn {
+        .details-btn, .placebid-btn, .contact-btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
             border-radius: 0.3rem;
@@ -49,11 +49,18 @@
             color: white;
             cursor: pointer;
         }
+        .contact-btn {
+            background-color: #000000;
+            color: white;
+        }
         .details-btn:hover {
             background-color: #222;
         }
         .placebid-btn:hover {
             background-color: #e65c00;
+        }
+        .contact-btn:hover {
+            background-color: #333333;
         }
         .specs-grid {
             display: grid;
@@ -77,243 +84,130 @@
         
         <div class="specs-grid">
             <div class="spec-item">
-                <h3>Vehicle Specifications</h3>
+                <h3>Vehicle Details</h3>
                 <p><strong>Year:</strong> <%= year %></p>
-                <p><strong>Condition:</strong> <%= condition.charAt(0).toUpperCase() + condition.slice(1) %></p>
+                <p><strong>Condition:</strong> <%= condition %></p>
                 <p><strong>Capacity:</strong> <%= capacity %> passengers</p>
+                <p><strong>Fuel Type:</strong> <%= fuelType %></p>
+                <p><strong>Transmission:</strong> <%= transmission %></p>
+                <p><strong>AC:</strong> <%= AC %></p>
             </div>
             <div class="spec-item">
-                <h3>Technical Details</h3>
-                <p><strong>Fuel Type:</strong> <%= fuelType.charAt(0).toUpperCase() + fuelType.slice(1) %></p>
-                <p><strong>Transmission:</strong> <%= transmission.charAt(0).toUpperCase() + transmission.slice(1) %></p>
-                <p><strong>AC:</strong> <%= AC === 'available' ? 'Yes' : 'No' %></p>
+                <h3>Rental Info</h3>
+                <p><strong>Cost per Day:</strong> ₹<%= costPerDay %></p>
+                <p><strong>Driver Available:</strong> <%= driverAvailable ? 'Yes' : 'No' %></p>
+                <% if (driverAvailable && driverRate) { %>
+                    <p><strong>Driver Rate:</strong> ₹<%= driverRate %>/day</p>
+                <% } %>
             </div>
         </div>
-        
-        <div class="spec-item">
-            <h3>Pricing</h3>
-            <p><strong>Cost per day:</strong> ₹<%= costPerDay %></p>
-            <% if (driverAvailable) { %>
-                <p><strong>Driver Available:</strong> Yes (₹<%= driverRate %>/day)</p>
-            <% } else { %>
-                <p><strong>Driver Available:</strong> No</p>
-            <% } %>
-        </div>
-        
+
         <div class="seller-info">
-            <h2>Seller Information</h2>
+            <h3>Seller Information</h3>
             <p><strong>Name:</strong> <%= seller.firstName %> <%= seller.lastName %></p>
             <p><strong>Email:</strong> <%= seller.email %></p>
-            <% if (seller.phone) { %>
-                <p><strong>Phone:</strong> <%= seller.phone %></p>
-            <% } %>
-            <% if (seller.city) { %>
-                <p><strong>City:</strong> <%= seller.city %></p>
-            <% } %>
-            <% if (seller.state) { %>
-                <p><strong>State:</strong> <%= seller.state %></p>
-            <% } %>
+            <p><strong>Phone:</strong> <%= seller.phone %></p>
+            <p><strong>Location:</strong> <%= seller.city %>, <%= seller.state %></p>
         </div>
-        
+
         <div class="action-buttons">
-            <a href="mailto:<%= seller.email %>" class="details-btn">Contact Seller</a>
-            <div class="placebid-btn" onclick="openDatePopup()">Rent Now</div>
+            <a href="tel:<%= seller.phone %>" class="contact-btn">Contact Seller</a>
+            <button class="placebid-btn" onclick="openPaymentPopup()">Rent Now</button>
         </div>
     </div>
 
-    <%- include('popups/datePopup') %>
-    <%- include('popups/paymentPopup') %>
-    <%- include('popups/processingPopup') %>
-    <%- include('popups/successPopup') %>
+    <!-- Payment Popup -->
+    <div id="paymentPopup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <span class="close" onclick="closePaymentPopup()">&times;</span>
+            <h2>Rental Payment</h2>
+            <div id="rentalForm">
+                <label for="pickupDate">Pickup Date:</label>
+                <input type="date" id="pickupDate" required min="<%= new Date().toISOString().split('T')[0] %>">
 
-    <%- include('partials/footer') %>
+                <label for="dropDate">Drop Date:</label>
+                <input type="date" id="dropDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+
+                <% if (driverAvailable) { %>
+                    <label>
+                        <input type="checkbox" id="includeDriver"> Include Driver (₹<%= driverRate %>/day)
+                    </label>
+                <% } %>
+
+                <div id="totalCostDisplay">
+                    <strong>Total Cost: ₹<span id="totalCost">0</span></strong>
+                </div>
+
+                <button onclick="confirmPayment()" class="confirm-btn">Confirm & Pay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Popup -->
+    <div id="processingPopup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2>Processing Payment...</h2>
+            <p>Please wait while we process your payment.</p>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div id="successPopup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2>Payment Successful!</h2>
+            <p>Your rental has been booked successfully.</p>
+            <button onclick="redirectToDashboard()" class="confirm-btn">Go to Dashboard</button>
+        </div>
+    </div>
 
     <script>
-        const costPerDay = <%= costPerDay %>;
-        const rentalCarId = '<%= rentalId %>';
-        const buyerId = '<%= user._id %>';
+        const rentalId = '<%= rentalId %>';
         const sellerId = '<%= seller._id %>';
-        <% if (driverAvailable) { %>
-        const driverRate = <%= driverRate %>;
-        const driverAvailable = true;
-        <% } else { %>
-        const driverAvailable = false;
-        const driverRate = 0;
-        <% } %>
-
-        let selectedPaymentMethod = 'upi';
+        const buyerId = '<%= user._id %>';
+        const costPerDay = <%= costPerDay %>;
+        const driverRate = <%= driverAvailable ? driverRate : 0 %>;
+        const driverAvailable = <%= driverAvailable %>;
         let currentTotalCost = 0;
 
-        function openDatePopup() {
-            document.getElementById('datePopup').style.display = 'flex';
-            
-            // Set date constraints
-            const today = new Date();
-            const maxPickupDate = new Date();
-            maxPickupDate.setDate(today.getDate() + 3);
-            
-            const pickupInput = document.getElementById('pickupDate');
-            pickupInput.min = formatDate(today);
-            pickupInput.max = formatDate(maxPickupDate);
-            
-            const dropDateInput = document.getElementById('dropDate');
-            const minDropDate = new Date(today);
-            minDropDate.setDate(today.getDate() + 1);
-            dropDateInput.min = formatDate(minDropDate);
-            
-            calculateCost();
-        }
-
-        function closeDatePopup() {
-            document.getElementById('datePopup').style.display = 'none';
+        function openPaymentPopup() {
+            document.getElementById('paymentPopup').style.display = 'block';
+            calculateTotalCost();
         }
 
         function closePaymentPopup() {
             document.getElementById('paymentPopup').style.display = 'none';
         }
 
-        function closeSuccessPopup() {
-            document.getElementById('successPopup').style.display = 'none';
-        }
-
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function validatePickupDate() {
-            const pickupDateInput = document.getElementById('pickupDate');
-            const pickupDateError = document.getElementById('pickupDateError');
-            
-            const today = new Date();
-            const maxPickupDate = new Date();
-            maxPickupDate.setDate(today.getDate() + 3);
-            
-            const selectedPickupDate = new Date(pickupDateInput.value);
-            
-            if (selectedPickupDate < today || selectedPickupDate > maxPickupDate) {
-                pickupDateError.textContent = 'Pickup date must be within 3 days from today.';
-                pickupDateError.style.display = 'block';
-                pickupDateInput.value = '';
-            } else {
-                pickupDateError.style.display = 'none';
-                const dropDateInput = document.getElementById('dropDate');
-                const minDropDate = new Date(selectedPickupDate);
-                minDropDate.setDate(selectedPickupDate.getDate() + 1);
-                dropDateInput.min = formatDate(minDropDate);
-                if (dropDateInput.value && new Date(dropDateInput.value) <= selectedPickupDate) {
-                    dropDateInput.value = '';
-                }
-            }
-        }
-
-        function validateDropDate() {
-            const pickupDateInput = document.getElementById('pickupDate');
-            const dropDateInput = document.getElementById('dropDate');
-            const dropDateError = document.getElementById('dropDateError');
-            
-            if (!pickupDateInput.value) {
-                dropDateError.textContent = 'Please select a pickup date first.';
-                dropDateError.style.display = 'block';
-                dropDateInput.value = '';
-                return;
-            }
-            
-            const pickupDate = new Date(pickupDateInput.value);
-            const dropDate = new Date(dropDateInput.value);
-            
-            if (dropDate <= pickupDate) {
-                dropDateError.textContent = 'Drop date must be after pickup date.';
-                dropDateError.style.display = 'block';
-                const minDropDate = new Date(pickupDate);
-                minDropDate.setDate(pickupDate.getDate() + 1);
-                dropDateInput.value = formatDate(minDropDate);
-            } else {
-                dropDateError.style.display = 'none';
-            }
-        }
-
-        function calculateCost() {
+        function calculateTotalCost() {
             const pickupDate = new Date(document.getElementById('pickupDate').value);
             const dropDate = new Date(document.getElementById('dropDate').value);
             const includeDriver = driverAvailable && document.getElementById('includeDriver')?.checked;
 
             if (pickupDate && dropDate && dropDate > pickupDate) {
-                const timeDiff = dropDate - pickupDate;
-                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                const vehicleCost = days * costPerDay;
-                const driverCost = includeDriver ? days * driverRate : 0;
-                currentTotalCost = vehicleCost + driverCost;
-                
-                document.getElementById('totalCost').textContent = `Total Cost: ₹${currentTotalCost}`;
-                
-                const costBreakdownEl = document.getElementById('costBreakdown');
-                if (includeDriver) {
-                    costBreakdownEl.innerHTML = `
-                        Vehicle: ₹${vehicleCost} (₹${costPerDay} × ${days} days)<br>
-                        Driver: ₹${driverCost} (₹${driverRate} × ${days} days)
-                    `;
-                } else {
-                    costBreakdownEl.innerHTML = `Vehicle: ₹${vehicleCost} (₹${costPerDay} × ${days} days)`;
-                }
-            } else {
-                document.getElementById('totalCost').textContent = 'Total Cost: ₹0';
-                document.getElementById('costBreakdown').innerHTML = '';
-                currentTotalCost = 0;
+                const days = Math.ceil((dropDate - pickupDate) / (1000 * 60 * 60 * 24)) + 1;
+                let baseCost = days * costPerDay;
+                let driverCost = includeDriver ? days * driverRate : 0;
+                currentTotalCost = baseCost + driverCost;
+                document.getElementById('totalCost').textContent = currentTotalCost.toLocaleString();
             }
         }
 
-        function proceedToPayment() {
+        // Add event listeners for date changes
+        document.getElementById('pickupDate').addEventListener('change', calculateTotalCost);
+        document.getElementById('dropDate').addEventListener('change', calculateTotalCost);
+        if (document.getElementById('includeDriver')) {
+            document.getElementById('includeDriver').addEventListener('change', calculateTotalCost);
+        }
+
+        async function confirmPayment() {
+            // Validate dates
             const pickupDate = document.getElementById('pickupDate').value;
             const dropDate = document.getElementById('dropDate').value;
-
-            if (!pickupDate || !dropDate) {
-                alert('Please select both pickup and drop dates.');
+            if (!pickupDate || !dropDate || new Date(dropDate) <= new Date(pickupDate)) {
+                alert('Please select valid pickup and drop dates.');
                 return;
             }
 
-            // Validate dates
-            const today = new Date();
-            const maxPickupDate = new Date();
-            maxPickupDate.setDate(today.getDate() + 3);
-            
-            const selectedPickupDate = new Date(pickupDate);
-            const selectedDropDate = new Date(dropDate);
-            
-            if (selectedPickupDate < today || selectedPickupDate > maxPickupDate) {
-                alert('Pickup date must be within 3 days from today.');
-                return;
-            }
-            
-            if (selectedDropDate <= selectedPickupDate) {
-                alert('Drop date must be after pickup date.');
-                return;
-            }
-
-            if (currentTotalCost <= 0) {
-                alert('Please select valid dates to calculate the cost.');
-                return;
-            }
-
-            // Update payment amount and open payment popup
-            document.getElementById('paymentAmount').textContent = `₹${currentTotalCost}`;
-            closeDatePopup();
-            document.getElementById('paymentPopup').style.display = 'flex';
-        }
-
-        function selectPaymentMethod(method) {
-            selectedPaymentMethod = method;
-            
-            // Update UI
-            document.querySelectorAll('.payment-option').forEach(el => {
-                el.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-        }
-
-        async function processPayment() {
             // Show processing popup
             closePaymentPopup();
             document.getElementById('processingPopup').style.display = 'flex';
@@ -321,8 +215,6 @@
             // Simulate payment processing
             setTimeout(async () => {
                 // After payment processing, save rental data
-                const pickupDate = document.getElementById('pickupDate').value;
-                const dropDate = document.getElementById('dropDate').value;
                 const includeDriver = driverAvailable && document.getElementById('includeDriver')?.checked;
 
                 const rentalData = {

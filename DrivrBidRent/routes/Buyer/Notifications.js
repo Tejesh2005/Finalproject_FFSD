@@ -1,3 +1,4 @@
+// Notifications.js
 const express = require('express');
 const router = express.Router();
 const Notification = require('../../models/Notification');
@@ -53,20 +54,18 @@ router.post('/notifications/:id/read', isBuyerLoggedin, async (req, res) => {
   }
 });
 
-// Mark all notifications as read
+// Delete all notifications
 router.post('/notifications/mark-all-read', isBuyerLoggedin, async (req, res) => {
   try {
     const userId = req.user._id;
     
-    await Notification.updateMany(
-      { userId, isRead: false },
-      { isRead: true }
-    );
+    // Delete all notifications for this user
+    await Notification.deleteMany({ userId });
     
     res.json({ success: true });
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
-    res.json({ success: false, error: 'Failed to mark all notifications as read' });
+    console.error('Error deleting all notifications:', error);
+    res.json({ success: false, error: 'Failed to delete all notifications' });
   }
 });
 

@@ -87,10 +87,50 @@ auctionBidSchema.statics.getBidsForAuction = async function(auctionId) {
     const bids = await this.find({ auctionId })
       .populate('buyerId', 'firstName lastName email')
       .sort({ bidTime: -1 })
-      .limit(4); // Get current bid + past 3 bids
+      .limit(4);
     
     return bids;
   } catch (error) {
+    throw error;
+  }
+};
+
+// Static method to notify auction winner
+auctionBidSchema.statics.notifyAuctionWinner = async function(auctionId, winnerId) {
+  try {
+    console.log('Notifying auction winner:', { auctionId, winnerId });
+    
+    const AuctionRequest = mongoose.model('AuctionRequest');
+    const auction = await AuctionRequest.findById(auctionId);
+    
+    if (!auction) {
+      throw new Error('Auction not found');
+    }
+
+    const winningBid = await this.findOne({
+      auctionId: auctionId,
+      buyerId: winnerId,
+      isCurrentBid: true
+    });
+
+    if (!winningBid) {
+      throw new Error('Winning bid not found');
+    }
+
+    // Create notification for the winner
+    const notification = await Notification.create({
+      userId: winnerId,
+      type: 'auction_won',
+      title: 'Congratulations! You won the auction!',
+      message: `You won the auction for ${auction.vehicleName} with a bid of ₹${winningBid.bidAmount.toLocaleString()}. To complete the payment process, proceed through My Purchases page.`,
+      auctionId: auctionId,
+      relatedBidId: winningBid._id
+    });
+
+    console.log('Notification created successfully:', notification._id);
+    return true;
+  } catch (error) {
+    console.error('Error creating winner notification:', error);
     throw error;
   }
 };

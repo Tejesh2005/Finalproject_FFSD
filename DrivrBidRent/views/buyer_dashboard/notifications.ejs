@@ -199,6 +199,25 @@
             margin-left: 0.5rem;
         }
 
+        .alert-message {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -227,8 +246,8 @@
     <div class="container">
         <div class="page-header">
             <h1>Notifications</h1>
-            <button class="mark-all-read" id="markAllRead" <%= notifications.filter(n => !n.isRead).length === 0 ? 'disabled' : '' %>>
-                Mark All as Read
+            <button class="mark-all-read" id="markAllRead" <%= notifications.length === 0 ? 'disabled' : '' %>>
+                Clear All Notifications
             </button>
         </div>
 
@@ -266,6 +285,12 @@
                                     </a>
                                     <a href="/buyer_dashboard?page=auction&id=<%= notification.auctionId._id %>" class="btn btn-secondary">
                                         Place New Bid
+                                    </a>
+                                </div>
+                            <% } else if (notification.auctionId && notification.type === 'auction_won') { %>
+                                <div class="notification-actions">
+                                    <a href="/purchase" class="btn btn-primary">
+                                        Go to My Purchases
                                     </a>
                                 </div>
                             <% } %>
@@ -309,9 +334,13 @@
                 });
             });
 
-            // Mark all as read
+            // Clear all notifications
             document.getElementById('markAllRead').addEventListener('click', function() {
                 if (this.disabled) return;
+                
+                if (!confirm('Are you sure you want to clear all notifications? This action cannot be undone.')) {
+                    return;
+                }
                 
                 fetch('/notifications/mark-all-read', {
                     method: 'POST',
@@ -322,17 +351,45 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        document.querySelectorAll('.notification-card.unread').forEach(card => {
-                            card.classList.remove('unread');
-                        });
-                        this.disabled = true;
-                        updateUnreadCount();
+                        // Show success message
+                        showMessage('All notifications have been cleared successfully!', 'success');
+                        
+                        // Refresh the page after 1 second to show empty state
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage('Failed to clear notifications', 'error');
                     }
                 })
                 .catch(error => {
-                    console.error('Error marking all as read:', error);
+                    console.error('Error clearing all notifications:', error);
+                    showMessage('Error clearing notifications', 'error');
                 });
             });
+
+            function showMessage(message, type) {
+                // Remove existing message if any
+                const existingAlert = document.querySelector('.alert-message');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert-message alert-${type}`;
+                alertDiv.textContent = message;
+                
+                // Insert after the page header
+                const pageHeader = document.querySelector('.page-header');
+                pageHeader.parentNode.insertBefore(alertDiv, pageHeader.nextSibling);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 5000);
+            }
 
             function updateUnreadCount() {
                 fetch('/api/notifications/unread-count')

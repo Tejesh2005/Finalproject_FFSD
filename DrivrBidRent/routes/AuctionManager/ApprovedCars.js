@@ -4,6 +4,7 @@ const AuctionRequest = require('../../models/AuctionRequest');
 const AuctionBid = require('../../models/AuctionBid');
 const Purchase = require('../../models/Purchase');
 const User = require('../../models/User');
+const Notification = require('../../models/Notification'); // Add this import
 const isAuctionManager = require('../../middlewares/isAuctionManager');
 
 // Helper function to safely capitalize strings
@@ -90,6 +91,7 @@ router.post('/stop-auction/:id', isAuctionManager, async (req, res) => {
     // Update auction status
     auction.auction_stopped = true;
     auction.started_auction = 'ended';
+    
     if (currentBid) {
       auction.winnerId = currentBid.buyerId._id;
       auction.finalPurchasePrice = currentBid.bidAmount;
@@ -111,6 +113,15 @@ router.post('/stop-auction/:id', isAuctionManager, async (req, res) => {
       });
 
       console.log(`Purchase record created for auction ${req.params.id}:`, purchase);
+
+      // ✅ NOTIFY THE WINNER
+      try {
+        await AuctionBid.notifyAuctionWinner(auction._id, currentBid.buyerId._id);
+        console.log(`Winner notification sent to buyer: ${currentBid.buyerId._id}`);
+      } catch (notificationError) {
+        console.error('Error sending winner notification:', notificationError);
+        // Don't fail the whole request if notification fails
+      }
     } else {
       console.warn(`No bids found for auction ${req.params.id}`);
     }
@@ -120,7 +131,11 @@ router.post('/stop-auction/:id', isAuctionManager, async (req, res) => {
 
     // Return JSON for AJAX requests
     if (req.xhr || req.headers.accept.includes('application/json')) {
-      return res.json({ success: true, message: 'Auction stopped successfully' });
+      return res.json({ 
+        success: true, 
+        message: 'Auction stopped successfully',
+        hasWinner: !!currentBid
+      });
     }
 
     // Fallback redirect for non-AJAX requests

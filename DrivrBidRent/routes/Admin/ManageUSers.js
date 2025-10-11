@@ -47,10 +47,15 @@ router.get('/manage-user', isAdminLoggedIn, async (req, res) => {
 // Approve mechanic
 router.post('/approve-user/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    console.log('Approve request received for user:', req.params.id);
+    
     // Verify admin user exists
     const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      return res.redirect('/login');
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Unauthorized access' 
+      });
     }
 
     const userId = req.params.id;
@@ -60,11 +65,13 @@ router.post('/approve-user/:id', isAdminLoggedIn, async (req, res) => {
       { $set: { approved_status: 'Yes' } },
       { new: true }
     );
+    
     console.log('Updated User:', updatedUser);
+    
     if (!updatedUser) {
       return res.status(404).json({ 
         success: false, 
-        message: 'Mechanic not found or already approved' 
+        message: 'Mechanic not found' 
       });
     }
     
@@ -85,35 +92,37 @@ router.post('/approve-user/:id', isAdminLoggedIn, async (req, res) => {
 // Decline mechanic (also used for deleting approved mechanics)
 router.post('/decline-user/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    console.log('Decline/Delete request received for user:', req.params.id);
+    
     // Verify admin user exists
     const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      return res.redirect('/login');
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Unauthorized access' 
+      });
     }
 
     const userId = req.params.id;
     
-    const deletedUser = await User.findOneAndDelete({ 
-      _id: userId, 
-      userType: 'mechanic' 
-    });
+    const deletedUser = await User.findByIdAndDelete(userId);
     
     if (!deletedUser) {
       return res.status(404).json({ 
         success: false, 
-        message: 'Mechanic not found' 
+        message: 'User not found' 
       });
     }
     
     res.json({ 
       success: true, 
-      message: 'Mechanic deleted successfully' 
+      message: 'User deleted successfully' 
     });
   } catch (error) {
-    console.error('Error deleting mechanic:', error);
+    console.error('Error deleting user:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error deleting mechanic' 
+      message: 'Error deleting user: ' + error.message 
     });
   }
 });
@@ -121,10 +130,15 @@ router.post('/decline-user/:id', isAdminLoggedIn, async (req, res) => {
 // Delete buyer
 router.post('/delete-buyer/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    console.log('Delete buyer request received for user:', req.params.id);
+    
     // Verify admin user exists
     const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      return res.redirect('/login');
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Unauthorized access' 
+      });
     }
 
     const userId = req.params.id;
@@ -149,7 +163,7 @@ router.post('/delete-buyer/:id', isAdminLoggedIn, async (req, res) => {
     console.error('Error deleting buyer:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error deleting buyer' 
+      message: 'Error deleting buyer: ' + error.message 
     });
   }
 });
@@ -157,10 +171,15 @@ router.post('/delete-buyer/:id', isAdminLoggedIn, async (req, res) => {
 // Delete seller
 router.post('/delete-seller/:id', isAdminLoggedIn, async (req, res) => {
   try {
+    console.log('Delete seller request received for user:', req.params.id);
+    
     // Verify admin user exists
     const adminUser = await User.findById(req.user._id);
     if (!adminUser || adminUser.userType !== 'admin') {
-      return res.redirect('/login');
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Unauthorized access' 
+      });
     }
 
     const userId = req.params.id;
@@ -185,7 +204,7 @@ router.post('/delete-seller/:id', isAdminLoggedIn, async (req, res) => {
     console.error('Error deleting seller:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error deleting seller' 
+      message: 'Error deleting seller: ' + error.message 
     });
   }
 });

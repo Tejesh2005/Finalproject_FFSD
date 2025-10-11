@@ -453,7 +453,8 @@
       modalContent.innerHTML = detailsHtml;
 
       // Show/hide action buttons based on context
-      if (userType === 'mechanic' && document.getElementById(`mechanic-${id}`).parentElement.id === 'mechanic-list') {
+      const userElement = document.getElementById(`${userType}-${id}`);
+      if (userType === 'mechanic' && userElement && userElement.parentElement.id === 'mechanic-list') {
         // Pending mechanic: show Approve and Decline buttons
         approveBtn.style.display = 'inline-block';
         declineBtn.style.display = 'inline-block';
@@ -473,10 +474,10 @@
 
     // Handle mechanic approval/decline
     async function handleAction(id, action) {
-      const url = `/${action === 'approve' ? 'approve-user' : 'decline-user'}/${id}`;
-      const confirmMessage = action === 'decline' ? 'Are you sure you want to decline and delete this mechanic?' : null;
+      const url = `/admin/approve-user/${id}`;
+      const confirmMessage = action === 'decline' ? 'Are you sure you want to decline and delete this mechanic?' : 'Are you sure you want to approve this mechanic?';
       
-      if (action === 'decline' && !confirm(confirmMessage)) {
+      if (!confirm(confirmMessage)) {
         return;
       }
 
@@ -485,14 +486,12 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
+          credentials: 'same-origin' // Important for session cookies
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const result = await response.json();
+        console.log(`${action} response:`, result);
 
         if (result.success) {
           showAlert(result.message, 'success');
@@ -519,7 +518,15 @@
 
     // Handle deletion for all user types
     async function handleDelete(id, userType) {
-      const url = userType === 'buyer' ? `/delete-buyer/${id}` : userType === 'seller' ? `/delete-seller/${id}` : `/decline-user/${id}`;
+      let url;
+      if (userType === 'buyer') {
+        url = `/admin/delete-buyer/${id}`;
+      } else if (userType === 'seller') {
+        url = `/admin/delete-seller/${id}`;
+      } else {
+        url = `/admin/decline-user/${id}`;
+      }
+      
       const confirmMessage = `Are you sure you want to delete this ${userType}?`;
       
       if (!confirm(confirmMessage)) {
@@ -531,14 +538,12 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
+          credentials: 'same-origin'
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const result = await response.json();
+        console.log(`Delete ${userType} response:`, result);
 
         if (result.success) {
           showAlert(result.message, 'success');
@@ -548,7 +553,7 @@
             setTimeout(() => {
               item.remove();
               const list = document.getElementById(`${userType}-list`);
-              if (list.children.length === 0) {
+              if (list && list.children.length === 0) {
                 list.innerHTML = `<li class="no-${userType}s">No ${userType}s found</li>`;
               }
             }, 500);

@@ -334,6 +334,19 @@
                 width: 90%;
             }
         }
+.payment-option {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease;
+
+}
+.payment-option.selected {
+  border-color: #ff6b00;
+  background-color: #fff4eb;
+}
     </style>
 </head>
 <body>
@@ -405,87 +418,107 @@
         <% } %>
     </section>
 
-    <!-- Popup Overlay -->
-    <div class="popup-overlay" id="paymentPopup">
-        <div class="popup">
-            <span class="popup-close" id="popupClose">×</span>
-            <h2>Congratulations on Buying the Car!</h2>
-            <p><strong>Amount for Car:</strong> ₹<span id="carAmount"></span></p>
-            <p><strong>Convenience Fee (1%):</strong> ₹<span id="convenienceFee"></span></p>
-            <p><strong>Total Amount:</strong> ₹<span id="totalAmount"></span></p>
-            <button class="pay-now-final" id="finalPayNow">Pay Now</button>
-        </div>
+    <!-- Payment Popup -->
+<div class="popup-overlay" id="paymentPopup">
+  <div class="popup" style="width: 450px;">
+    <span class="popup-close" onclick="closePaymentPopup()">×</span>
+    <h2>Complete Your Payment</h2>
+    <p><strong>Car Amount:</strong> ₹<span id="carAmount"></span></p>
+    <p><strong>Convenience Fee (1%):</strong> ₹<span id="convenienceFee"></span></p>
+    <p><strong>Total Amount:</strong> ₹<span id="totalAmount"></span></p>
+
+    <h3>Select Payment Method</h3>
+    <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0;">
+      <div class="payment-option selected" onclick="selectPaymentMethod('upi')">💳 UPI</div>
+      <div class="payment-option" onclick="selectPaymentMethod('card')">💰 Card</div>
+      <div class="payment-option" onclick="selectPaymentMethod('netbanking')">🏦 Netbanking</div>
     </div>
+
+    <button class="pay-now-final" onclick="processAuctionPayment()">Pay Now</button>
+  </div>
+</div>
+
+
 
     <!-- Include Footer -->
     <%- include('partials/footer') %>
 
     <!-- JavaScript for Popup -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const payNowButtons = document.querySelectorAll('.pay-now-btn');
-            const popupOverlay = document.getElementById('paymentPopup');
-            const popupClose = document.getElementById('popupClose');
-            const finalPayNowButton = document.getElementById('finalPayNow');
-            let currentPurchaseId = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const payNowButtons = document.querySelectorAll('.pay-now-btn');
+  const popupOverlay = document.getElementById('paymentPopup');
+  let currentPurchaseId = null;
+  let selectedPaymentMethod = 'upi';
 
-            payNowButtons.forEach(button => {
-                button.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const auctionId = button.getAttribute('data-auction-id');
-                    currentPurchaseId = button.getAttribute('data-purchase-id');
+  // Handle Pay Now button click
+  payNowButtons.forEach(button => {
+    button.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const auctionId = button.getAttribute('data-auction-id');
+      currentPurchaseId = button.getAttribute('data-purchase-id');
 
-                    try {
-                        const response = await fetch(`/auction/confirm-payment/${auctionId}`);
-                        const data = await response.json();
+      try {
+        const response = await fetch(`/auction/confirm-payment/${auctionId}`);
+        const data = await response.json();
 
-                        if (data.success) {
-                            document.getElementById('carAmount').textContent = data.amount.toLocaleString();
-                            document.getElementById('convenienceFee').textContent = data.convenienceFee.toLocaleString();
-                            document.getElementById('totalAmount').textContent = data.totalAmount.toLocaleString();
-                            popupOverlay.style.display = 'flex';
-                        } else {
-                            alert(data.message);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching payment details:', error);
-                        alert('Failed to load payment details');
-                    }
-                });
-            });
+        if (data.success) {
+          document.getElementById('carAmount').textContent = data.amount.toLocaleString();
+          document.getElementById('convenienceFee').textContent = data.convenienceFee.toLocaleString();
+          document.getElementById('totalAmount').textContent = data.totalAmount.toLocaleString();
+          popupOverlay.style.display = 'flex';
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching payment details:', error);
+        alert('Failed to load payment details');
+      }
+    });
+  });
 
-            popupClose.addEventListener('click', () => {
-                popupOverlay.style.display = 'none';
-            });
+  // Close popup
+  window.closePaymentPopup = function () {
+    popupOverlay.style.display = 'none';
+  };
 
-            finalPayNowButton.addEventListener('click', async () => {
-                if (!currentPurchaseId) {
-                    alert('Purchase ID not found');
-                    return;
-                }
+  // Select payment method
+  window.selectPaymentMethod = function (method) {
+    selectedPaymentMethod = method;
+    document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+  };
 
-                try {
-                    const response = await fetch(`/auction/complete-payment/${currentPurchaseId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    const data = await response.json();
+  // Finalize payment
+  window.processAuctionPayment = async function () {
+    if (!currentPurchaseId) {
+      alert('Purchase ID not found');
+      return;
+    }
 
-                    if (data.success) {
-                        alert('Payment completed successfully!, Contact the seller for further details.');
-                        popupOverlay.style.display = 'none';
-                        location.reload(); // Refresh the page to update payment status
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error completing payment:', error);
-                    alert('Failed to complete payment');
-                }
-            });
-        });
-    </script>
+    try {
+      const response = await fetch(`/auction/complete-payment/${currentPurchaseId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod: selectedPaymentMethod })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Payment successful! Contact the seller for further details.');
+        popupOverlay.style.display = 'none';
+        location.reload();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Error completing payment:', error);
+      alert('Failed to complete payment');
+    }
+  };
+});
+</script>
+
 </body>
 </html>

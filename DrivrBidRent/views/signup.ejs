@@ -127,8 +127,11 @@
           <label for="email">Email Address</label>
           <div class="input-group">
             <i class="fas fa-envelope"></i>
-            <input type="email" id="email" name="email" class="form-control" 
-                   value="<%= typeof formData !== 'undefined' ? formData.email : '' %>" required>
+            <input type="email" id="email" name="email" class="form-control"
+       value="<%= typeof formData !== 'undefined' ? formData.email : '' %>"
+       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+       title="Please enter a valid email address (e.g., example@gmail.com)"
+       required>
           </div>
         </div>
         
@@ -144,20 +147,26 @@
         </div>
         
         <div class="form-group">
-          <label for="password">Password (at least 8 characters)</label>
-          <div class="input-group">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="password" name="password" class="form-control" minlength="8" required>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <div class="input-group">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" minlength="8" required>
-          </div>
-        </div>
+  <label for="password">Password (at least 8 characters)</label>
+  <div class="input-group">
+    <i class="fas fa-lock"></i>
+    <input type="password" id="password" name="password" class="form-control"
+           pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+           title="Password must be at least 8 characters long, include one uppercase letter, one number, and one special character."
+           required>
+  </div>
+  <small id="passwordStrength" class="form-text text-muted"></small>
+</div>
+
+<div class="form-group">
+  <label for="confirmPassword">Confirm Password</label>
+  <div class="input-group">
+    <i class="fas fa-lock"></i>
+    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+  </div>
+  <small id="confirmMessage" class="form-text text-muted"></small>
+</div>
+
         
         <div class="form-group">
           <label for="dateOfBirth">Date of Birth</label>
@@ -188,9 +197,15 @@
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="city">City</label>
-                <input type="text" id="city" name="city" class="form-control" 
-                       value="<%= typeof formData !== 'undefined' ? formData.city : '' %>"
-                       placeholder="City">
+<select id="city" name="city" class="form-control" required>
+  <option value="">Select City</option>
+  <option value="Hyderabad" <%= (typeof formData !== 'undefined' && formData.city === 'Hyderabad') ? 'selected' : '' %>>Hyderabad</option>
+  <option value="Chennai" <%= (typeof formData !== 'undefined' && formData.city === 'Chennai') ? 'selected' : '' %>>Chennai</option>
+  <option value="Kurnool" <%= (typeof formData !== 'undefined' && formData.city === 'Kurnool') ? 'selected' : '' %>>Kurnool</option>
+  <option value="Mumbai" <%= (typeof formData !== 'undefined' && formData.city === 'Mumbai') ? 'selected' : '' %>>Mumbai</option>
+  <option value="Bangalore" <%= (typeof formData !== 'undefined' && formData.city === 'Bangalore') ? 'selected' : '' %>>Bangalore</option>
+</select>
+
               </div>
               <div class="form-group col-md-6">
                 <label for="state">State</label>
@@ -411,6 +426,40 @@
     document.getElementById('phone').addEventListener('input', function() {
       this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
     });
+    // Password strength check
+document.getElementById('password').addEventListener('input', function () {
+  const password = this.value;
+  const strengthMsg = document.getElementById('passwordStrength');
+  const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+  if (!password) {
+    strengthMsg.textContent = '';
+  } else if (!strongRegex.test(password)) {
+    strengthMsg.textContent = '❌ Weak password: add uppercase, number, and special character.';
+    strengthMsg.style.color = 'red';
+  } else {
+    strengthMsg.textContent = '✅ Strong password.';
+    strengthMsg.style.color = 'green';
+  }
+});
+
+// Confirm password match check (real-time)
+document.getElementById('confirmPassword').addEventListener('input', function () {
+  const password = document.getElementById('password').value;
+  const confirm = this.value;
+  const confirmMsg = document.getElementById('confirmMessage');
+
+  if (!confirm) {
+    confirmMsg.textContent = '';
+  } else if (password !== confirm) {
+    confirmMsg.textContent = '❌ Passwords do not match.';
+    confirmMsg.style.color = 'red';
+  } else {
+    confirmMsg.textContent = '✅ Passwords match.';
+    confirmMsg.style.color = 'green';
+  }
+});
+
   </script>
 
 </body>

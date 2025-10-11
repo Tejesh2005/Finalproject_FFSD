@@ -34,8 +34,12 @@ router.post('/change-password', isMechanicLoggedin, async (req, res) => {
       return res.status(400).json({ success: false, message: 'New password must be at least 8 characters long' });
     }
     
-    // Get user from req.user
-    const user = req.user;
+    // Fetch user with password
+    const user = await User.findById(req.user._id).select('+password');
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
     
     // Check if old password is correct
     const isMatch = await user.comparePassword(oldPassword);
@@ -44,7 +48,7 @@ router.post('/change-password', isMechanicLoggedin, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Current password is incorrect' });
     }
     
-    // Update password
+    // Update password 
     user.password = newPassword;
     await user.save();
     

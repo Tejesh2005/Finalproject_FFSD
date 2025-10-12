@@ -1,6 +1,6 @@
 # DriveBidRent
 
-*DriveBidRent* is a comprehensive, user-friendly web platform designed to connect *vehicle sellers*, *buyers*, *mechanics*, *drivers*, and *auction managers* for all your car auction, rental, and service needs. Our platform streamlines the process of selling, buying, renting, and maintaining vehicles, ensuring a seamless and transparent experience for every user.
+*DriveBidRent* is a comprehensive, user-friendly web platform designed to connect *vehicle sellers*, *buyers*, *mechanics*, and *auction managers* for all your car auction, rental, and service needs. Our platform streamlines the process of selling, buying, renting, and maintaining vehicles, ensuring a seamless and transparent experience for every user.
 
 ---
 
@@ -25,18 +25,13 @@
 - **Inspection Updates:** Submit inspection reports and update task statuses.
 - **Profile Management:** Update personal and professional details.
 
-### 🚚 Driver Features
-- **Job Requests:** View and accept driving requests for vehicle deliveries.
-- **Job History:** Track completed and ongoing jobs.
-- **Profile Management:** Manage driver profile and availability.
-
 ### 🏢 Auction Manager Features
 - **Auction Approval:** Review and approve/reject auction listings.
 - **Mechanic Assignment:** Assign mechanics for vehicle inspections.
 - **Auction Monitoring:** Oversee all ongoing auctions and manage auction statuses.
 
 ### ⚙️ Admin Features
-- **User Management:** Full visibility and control over all users (Sellers, Buyers, Mechanics, Drivers, Auction Managers).
+- **User Management:** Full visibility and control over all users (Sellers, Buyers, Mechanics, Auction Managers).
 - **Analytics:** Access platform analytics and earnings reports.
 - **Profile Editing:** Edit and moderate any user profile.
 
@@ -75,7 +70,7 @@ Follow these steps to set up the project locally for development and testing.
 
 2. **Navigate into the project directory:**
     ```bash
-    cd DriveBidRent
+    cd DrivrBidRent
     ```
 
 3. **Change directory to the application root (where `app.js` is located):**
@@ -113,9 +108,12 @@ If you have any questions, feel free to contact the project maintainers.
 
 - **Project Link:** [Coming Soon]
 - **Maintainers:**
-    - *Lead:* [Your Name] / [your.email@example.com]
-    - *Team Members:* [Add your team members and emails here]
-
+    - *Lead:* MV Tejesh / [venkatatejesh.m23@iiits.in]
+    - *Team Members:* Jeevan Vanakadara / [jeevanguptha.v23@iiits.in]
+    - *Team Members:* Shaik Toufeeq / [toufeeq.sk23@iiits.in]
+    - *Team Members:* Kishan Achanta / [hariharasaikishan.a23@iiits.in]
+    - *Team Members:* Nithwik Mantrala / [nitwikreddy.m23@iiits.in]
+    - *Team Members:* Karthik / [karthik.s23@iiits.in]
 ---
 
 *Thank you for using DriveBidRent!*

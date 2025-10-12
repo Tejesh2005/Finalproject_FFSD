@@ -143,7 +143,8 @@
         <!-- Auction Details Section -->
         <div class="auction-details">
             <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>">
-            <h1><%= auction.vehicleName %></h1>
+            <h1><%= auction.vehicleName %></h1 >
+            <p><strong>Seller : </strong> <%= auction.sellerId.firstName + auction.sellerId.lastName%></p>
             <p><strong>Year:</strong> <%= auction.year %></p>
             <p><strong>Condition:</strong> <%= auction.condition.charAt(0).toUpperCase() + auction.condition.slice(1) %></p>
             <p><strong>Starting Bid:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>

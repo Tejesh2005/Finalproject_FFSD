@@ -117,3 +117,47 @@
 ---
 *Last Updated: October 12, 2025*  
 *Test Plan Version: 2.0*
+
+# DriveBidRent - Auction Test Cases
+
+## Auction Bidding Test Cases
+
+### Test Case: Invalid Bid Amount
+| Case | Input | Expected Result | Actual Result | Status | Screenshot |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Invalid Bid** | `Bid Amount: ₹9,020` | Error message: "Your bid must be at least ₹902,000" | Validation prevents bid submission with insufficient amount | Passed | ![Invalid Auction Bid](test_auction_invalid.png) |
+
+### Test Case: Valid Bid Placement
+| Case | Input | Expected Result | Actual Result | Status | Screenshot |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Valid Bid** | `Bid Amount: ₹902,000` | Bid placed successfully with confirmation message | "Your bid has been placed successfully!" message displayed | Passed | ![Valid Auction Bid](test_auction.png) |
+
+### Test Case: Successful Bid Confirmation
+| Case | Input | Expected Result | Actual Result | Status | Screenshot |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Bid Confirmation** | N/A (Post-bid view) | Display updated current bid and success message | Current bid updated to ₹902,000 with success confirmation | Passed | ![Bid Confirmation](test_auction_done.png) |
+
+## Auction Flow Summary
+
+### Pre-Bid State
+- **Starting Bid**: ₹7,00,000
+- **Current Bid**: ₹9,00,000
+- **Minimum Bid**: ₹902,000
+- **Auction Date**: Sunday, 12 October 2025
+
+### Post-Bid State
+- **Current Bid**: ₹902,000
+- **Status**: Bid successfully placed
+- **User**: BUYER 3
+
+## Test Results
+- **Total Auction Test Cases**: 3
+- **Passed**: 3
+- **Failed**: 0
+- **Success Rate**: 100%
+
+## Observations
+1. Bid validation correctly prevents bids below minimum threshold
+2. Successful bids update the current bid amount immediately
+3. Clear user feedback provided for both success and error states
+4. UI consistently displays auction information across all states

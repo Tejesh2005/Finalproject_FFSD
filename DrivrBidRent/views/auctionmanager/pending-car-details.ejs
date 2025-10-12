@@ -189,11 +189,7 @@
 
       .declined {
         background-color: #f44336;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
+
       }
 
       .error-message {
@@ -206,10 +202,7 @@
         color: #f44336;
         font-size: 16px;
         margin-top: 10px;
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
       }
     </style>
   </head>
@@ -308,7 +301,7 @@
         <!-- Status (Approved/Declined) -->
         <div id="status" class="status" style="display: none"></div>
       <% } %>
->>>>>>> Stashed changes
+
     </div>
 
     <!-- Car Details Container -->
@@ -330,7 +323,6 @@
         <div class="car-info"><strong>Starting Bid:</strong> $<%= car.startingBid %></div>
         <div class="car-info"><strong>Auction Date:</strong> <%= new Date(car.auctionDate).toLocaleDateString() %></div>
         <div class="car-info"><strong>Status:</strong> <%= car.status %></div>
->>>>>>> Stashed changes
 
         <!-- Mechanic's Ratings and Comments -->
         <div class="rating-section">
@@ -375,8 +367,6 @@
     <%- include('partials/footer') %>
 
     <script>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
       function approveCar() {
         const buttons = document.getElementById("action-buttons");
         const status = document.getElementById("status");
@@ -395,7 +385,28 @@
         status.textContent = "Declined";
         status.className = "declined";
         status.style.display = "block";
-=======
+      async function updateStatus(status) {
+        const carId = '<%= car ? car._id : "" %>';
+        const buttons = document.getElementById('action-buttons');
+        const statusDiv = document.getElementById('status');
+
+        // Prevent approval client-side if mechanic review is incomplete
+        if (status === 'approved') {
+          const hasReview = <%= car && car.mechanicReview && car.mechanicReview.mechanicalCondition && car.mechanicReview.bodyCondition && car.mechanicReview.submittedAt ? 'true' : 'false' %>;
+          if (!hasReview) {
+            alert('Cannot approve car without a complete mechanic review');
+            return;
+          }
+        }
+
+        try {
+          const response = await fetch(`/auctionmanager/update-status/${carId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+          });
       async function updateStatus(status) {
         const carId = '<%= car ? car._id : "" %>';
         const buttons = document.getElementById('action-buttons');
@@ -419,31 +430,6 @@
             body: JSON.stringify({ status }),
           });
 
-=======
-      async function updateStatus(status) {
-        const carId = '<%= car ? car._id : "" %>';
-        const buttons = document.getElementById('action-buttons');
-        const statusDiv = document.getElementById('status');
-
-        // Prevent approval client-side if mechanic review is incomplete
-        if (status === 'approved') {
-          const hasReview = <%= car && car.mechanicReview && car.mechanicReview.mechanicalCondition && car.mechanicReview.bodyCondition && car.mechanicReview.submittedAt ? 'true' : 'false' %>;
-          if (!hasReview) {
-            alert('Cannot approve car without a complete mechanic review');
-            return;
-          }
-        }
-
-        try {
-          const response = await fetch(`/auctionmanager/update-status/${carId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status }),
-          });
-
->>>>>>> Stashed changes
           const result = await response.json();
 
           if (result.success) {
@@ -458,10 +444,6 @@
           console.error('Error updating status:', err);
           alert('Failed to update status');
         }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
       }
     </script>
   </body>

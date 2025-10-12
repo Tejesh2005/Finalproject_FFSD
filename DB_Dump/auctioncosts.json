@@ -1,0 +1,1 @@
+{"_id":{"$oid":"68ebab7fb7ffca2804f187e1"},"auctionId":{"$oid":"68eabc741d05411022325660"},"buyerId":{"$oid":"68eab7271d05411022325634"},"sellerId":{"$oid":"68eab63f9fc5f89fb3da118a"},"amountPaid":{"$numberInt":"1910000"},"convenienceFee":{"$numberInt":"19100"},"totalAmount":{"$numberInt":"1929100"},"paymentDate":{"$date":{"$numberLong":"1760275327028"}},"__v":{"$numberInt":"0"}}

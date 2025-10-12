@@ -37,7 +37,7 @@ DrivrBidRent is a full-stack web application for vehicle auctions and rentals, s
 ## Technical Responsibilities Breakdown
 - **Frontend:** EJS templates for dynamic pages, CSS for styling, JavaScript for interactivity.
 - **Backend:** Node.js and Express.js for server logic, routing, and API creation.
-- **Database:** SQLite for storing user, vehicle, auction, rental, and notification data.
+- **Database:** MongoDb for storing user, vehicle, auction, rental, and notification data.
 - **Full-Stack Collaboration:** All members contributed across frontend and backend, ensuring integration of all modules.
 
 ---
@@ -61,7 +61,6 @@ DrivrBidRent was developed through collaborative teamwork, integrating robust fr
 - Seller and buyer dashboards with real-time updates.
 - Admin analytics and reporting.
 - Secure authentication and session management.
-- Full-stack implementation using EJS, CSS, JavaScript, Node.js, Express, and SQLite.
+- Full-stack implementation using EJS, CSS, JavaScript, Node.js, Express, and MongoDb.
 
 ---
-*Update team member names and specific contributions as needed.*

@@ -15,6 +15,14 @@
       background-color: #f8d7da;
       border: 1px solid #f5c6cb;
     }
+    .success-message {
+      color: #155724;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
     .age-error, .email-error {
       color: #dc3545;
       font-size: 0.875rem;
@@ -74,6 +82,10 @@
     .btn:hover {
       background: #0069d9;
     }
+    .btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
     .service-item {
       display: flex;
       justify-content: space-between;
@@ -126,6 +138,10 @@
     .form-check {
       padding-left: 0;
     }
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -133,11 +149,16 @@
     <div class="form-container">
       <h1 class="form-title">Create an Account</h1>
 
+      <!-- Server-side error message -->
       <% if (typeof error !== 'undefined') { %>
         <div class="error-message"><%= error %></div>
       <% } %>
       
-      <form action="/signup" method="POST" id="signupForm">
+      <!-- Client-side messages -->
+      <div id="clientError" class="error-message" style="display: none;"></div>
+      <div id="clientSuccess" class="success-message" style="display: none;"></div>
+      
+      <form id="signupForm">
         <div class="form-group">
           <label for="userType">I am a:</label>
           <select id="userType" name="userType" class="form-control" required>
@@ -387,7 +408,7 @@
         </div>
         
         <div class="form-group">
-          <button type="submit" class="btn btn-primary">Sign Up</button>
+          <button type="submit" class="btn btn-primary" id="signupBtn">Sign Up</button>
         </div>
         
         <div class="text-center mt-3">
@@ -398,145 +419,268 @@
   </div>
 
   <script>
-    // Email validation function
-    function validateEmail(email) {
+    document.addEventListener("DOMContentLoaded", function() {
+      const signupForm = document.getElementById("signupForm");
+      const signupBtn = document.getElementById("signupBtn");
+      const clientError = document.getElementById("clientError");
+      const clientSuccess = document.getElementById("clientSuccess");
+
+      function showMessage(element, message) {
+        element.textContent = message;
+        element.style.display = 'block';
+        // Hide server-side error if client-side error is shown
+        const serverError = document.querySelector('.error-message:not(#clientError)');
+        if (serverError) serverError.style.display = 'none';
+      }
+
+      function hideMessages() {
+        clientError.style.display = 'none';
+        clientSuccess.style.display = 'none';
+      }
+
+      // Email validation function
+      function validateEmail(email) {
         const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return pattern.test(email);
-    }
-
-    // Age validation
-    function calculateAge(birthday) {
-      const today = new Date();
-      const birthDate = new Date(birthday);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
       }
-      return age;
-    }
 
-    // Form submission handler
-    document.getElementById('signupForm').addEventListener('submit', function(e) {
-      const dobInput = document.getElementById('dateOfBirth');
-      const ageError = document.getElementById('ageError');
-      const password = document.getElementById('password');
-      const confirmPassword = document.getElementById('confirmPassword');
-      const email = document.getElementById('email');
-      
       // Age validation
-      if (dobInput.value) {
-        const age = calculateAge(dobInput.value);
-        if (age < 18) {
-          e.preventDefault();
-          ageError.style.display = 'block';
-          dobInput.focus();
+      function calculateAge(birthday) {
+        const today = new Date();
+        const birthDate = new Date(birthday);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+
+      // Form validation
+      function validateForm() {
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const dateOfBirth = document.getElementById('dateOfBirth').value;
+        const userType = document.getElementById('userType').value;
+        const termsAccepted = document.getElementById('termsAccepted').checked;
+
+        // Basic validation
+        if (!firstName || !lastName || !email || !phone || !password || !confirmPassword || !dateOfBirth || !userType) {
+          showMessage(clientError, "Please fill in all required fields.");
           return false;
         }
-      }
-      
-      // Email validation
-      if (email.value && !validateEmail(email.value)) {
-        e.preventDefault();
-        document.getElementById('emailError').style.display = 'block';
-        email.style.borderColor = '#dc3545';
-        email.focus();
-        return false;
-      }
-      
-      // Password confirmation validation
-      if (password.value !== confirmPassword.value) {
-        e.preventDefault();
-        alert("Passwords do not match!");
-        confirmPassword.focus();
-        return false;
-      }
-      
-      return true;
-    });
 
-    // Real-time email validation
-    document.getElementById('email').addEventListener('blur', function() {
+        // Email validation
+        if (!validateEmail(email)) {
+          showMessage(clientError, "Please enter a valid email address.");
+          return false;
+        }
+
+        // Phone validation
+        if (!/^\d{10}$/.test(phone)) {
+          showMessage(clientError, "Please enter a valid 10-digit phone number.");
+          return false;
+        }
+
+        // Age validation
+        if (dateOfBirth) {
+          const age = calculateAge(dateOfBirth);
+          if (age < 18) {
+            showMessage(clientError, "You must be at least 18 years old to sign up.");
+            return false;
+          }
+        }
+
+        // Password validation
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+          showMessage(clientError, "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character.");
+          return false;
+        }
+
+        // Password confirmation
+        if (password !== confirmPassword) {
+          showMessage(clientError, "Passwords do not match.");
+          return false;
+        }
+
+        // Terms and conditions
+        if (!termsAccepted) {
+          showMessage(clientError, "You must accept the terms and conditions.");
+          return false;
+        }
+
+        return true;
+      }
+
+      // Form submission handler with fetch
+      signupForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        // Hide previous messages
+        hideMessages();
+        
+        // Validate form
+        if (!validateForm()) {
+          return;
+        }
+        
+        // Show loading state
+        signupBtn.disabled = true;
+        signupBtn.textContent = "Creating Account...";
+        signupForm.classList.add('loading');
+
+        try {
+          // Create form data
+          const formData = new FormData(signupForm);
+          const data = Object.fromEntries(formData.entries());
+
+          // Convert checkbox values to boolean
+          data.repairBikes = formData.get('repairBikes') === 'on';
+          data.repairCars = formData.get('repairCars') === 'on';
+          data.termsAccepted = formData.get('termsAccepted') === 'on';
+
+          const response = await fetch('/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data)
+          });
+
+          // Check if response is a redirect (success case)
+          if (response.redirected) {
+            showMessage(clientSuccess, "Account created successfully! Redirecting to login...");
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+            return;
+          }
+
+          // If not redirected, check for error response
+          const responseText = await response.text();
+          
+          // Try to parse as JSON first, if it fails, it's probably HTML
+          try {
+            const result = JSON.parse(responseText);
+            if (result.success) {
+              showMessage(clientSuccess, "Account created successfully! Redirecting...");
+              setTimeout(() => {
+                window.location.href = result.redirectUrl || '/login';
+              }, 1000);
+            } else {
+              showMessage(clientError, result.message || "Signup failed. Please try again.");
+            }
+          } catch (parseError) {
+            // If it's HTML, it means there was an error and the signup page was re-rendered
+            // We can't easily parse HTML, so show a generic error
+            showMessage(clientError, "Signup failed. Please check your information and try again.");
+          }
+
+        } catch (error) {
+          console.error('Signup error:', error);
+          showMessage(clientError, "Network error. Please check your connection and try again.");
+        } finally {
+          // Reset loading state
+          signupBtn.disabled = false;
+          signupBtn.textContent = "Sign Up";
+          signupForm.classList.remove('loading');
+        }
+      });
+
+      // Real-time email validation
+      document.getElementById('email').addEventListener('blur', function() {
         const email = this.value;
         const emailError = document.getElementById('emailError');
         
         if (email && !validateEmail(email)) {
-            emailError.style.display = 'block';
-            this.style.borderColor = '#dc3545';
+          emailError.style.display = 'block';
+          this.style.borderColor = '#dc3545';
         } else {
-            emailError.style.display = 'none';
-            this.style.borderColor = email ? '#28a745' : '#ddd';
+          emailError.style.display = 'none';
+          this.style.borderColor = email ? '#28a745' : '#ddd';
         }
-    });
+      });
 
-    // Real-time age validation
-    document.getElementById('dateOfBirth').addEventListener('change', function() {
-      const ageError = document.getElementById('ageError');
-      if (this.value) {
-        const age = calculateAge(this.value);
-        ageError.style.display = age < 18 ? 'block' : 'none';
-      } else {
-        ageError.style.display = 'none';
-      }
-    });
+      // Real-time age validation
+      document.getElementById('dateOfBirth').addEventListener('change', function() {
+        const ageError = document.getElementById('ageError');
+        if (this.value) {
+          const age = calculateAge(this.value);
+          ageError.style.display = age < 18 ? 'block' : 'none';
+        } else {
+          ageError.style.display = 'none';
+        }
+      });
 
-    // Show/hide fields based on user type
-    document.getElementById('userType').addEventListener('change', function() {
-      const userType = this.value;
-      document.getElementById('addressFields').style.display = 
-        ['buyer', 'seller', 'driver'].includes(userType) ? 'block' : 'none';
-      document.getElementById('driverFields').style.display = 
-        userType === 'driver' ? 'block' : 'none';
-      document.getElementById('mechanicFields').style.display = 
-        userType === 'mechanic' ? 'block' : 'none';
-    });
+      // Show/hide fields based on user type
+      document.getElementById('userType').addEventListener('change', function() {
+        const userType = this.value;
+        document.getElementById('addressFields').style.display = 
+          ['buyer', 'seller', 'driver'].includes(userType) ? 'block' : 'none';
+        document.getElementById('driverFields').style.display = 
+          userType === 'driver' ? 'block' : 'none';
+        document.getElementById('mechanicFields').style.display = 
+          userType === 'mechanic' ? 'block' : 'none';
+      });
 
-    // Initialize fields based on any existing form data
-    window.addEventListener('DOMContentLoaded', function() {
-      const userType = document.getElementById('userType').value;
-      if (userType) {
-        document.getElementById('userType').dispatchEvent(new Event('change'));
-      }
-    });
+      // Initialize fields based on any existing form data
+      window.addEventListener('DOMContentLoaded', function() {
+        const userType = document.getElementById('userType').value;
+        if (userType) {
+          document.getElementById('userType').dispatchEvent(new Event('change'));
+        }
+      });
 
-    // Phone number validation
-    document.getElementById('phone').addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
-    });
+      // Phone number validation
+      document.getElementById('phone').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+      });
 
-    // Password strength check
-    document.getElementById('password').addEventListener('input', function () {
-      const password = this.value;
-      const strengthMsg = document.getElementById('passwordStrength');
-      const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+      // Password strength check
+      document.getElementById('password').addEventListener('input', function () {
+        const password = this.value;
+        const strengthMsg = document.getElementById('passwordStrength');
+        const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
-      if (!password) {
-        strengthMsg.textContent = '';
-      } else if (!strongRegex.test(password)) {
-        strengthMsg.textContent = '❌ Weak password: add uppercase, number, and special character.';
-        strengthMsg.style.color = 'red';
-      } else {
-        strengthMsg.textContent = '✅ Strong password.';
-        strengthMsg.style.color = 'green';
-      }
-    });
+        if (!password) {
+          strengthMsg.textContent = '';
+        } else if (!strongRegex.test(password)) {
+          strengthMsg.textContent = '❌ Weak password: add uppercase, number, and special character.';
+          strengthMsg.style.color = 'red';
+        } else {
+          strengthMsg.textContent = '✅ Strong password.';
+          strengthMsg.style.color = 'green';
+        }
+      });
 
-    // Confirm password match check (real-time)
-    document.getElementById('confirmPassword').addEventListener('input', function () {
-      const password = document.getElementById('password').value;
-      const confirm = this.value;
-      const confirmMsg = document.getElementById('confirmMessage');
+      // Confirm password match check (real-time)
+      document.getElementById('confirmPassword').addEventListener('input', function () {
+        const password = document.getElementById('password').value;
+        const confirm = this.value;
+        const confirmMsg = document.getElementById('confirmMessage');
 
-      if (!confirm) {
-        confirmMsg.textContent = '';
-      } else if (password !== confirm) {
-        confirmMsg.textContent = '❌ Passwords do not match.';
-        confirmMsg.style.color = 'red';
-      } else {
-        confirmMsg.textContent = '✅ Passwords match.';
-        confirmMsg.style.color = 'green';
-      }
+        if (!confirm) {
+          confirmMsg.textContent = '';
+        } else if (password !== confirm) {
+          confirmMsg.textContent = '❌ Passwords do not match.';
+          confirmMsg.style.color = 'red';
+        } else {
+          confirmMsg.textContent = '✅ Passwords match.';
+          confirmMsg.style.color = 'green';
+        }
+      });
+
+      // Clear error messages when user starts typing
+      const formInputs = signupForm.querySelectorAll('input, select');
+      formInputs.forEach(input => {
+        input.addEventListener('input', hideMessages);
+      });
     });
   </script>
 </body>

@@ -6,17 +6,52 @@
   <title>Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* Additional styles for loading and messages */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <div class="form-container">
       <h1 class="form-title">Login to Your Account</h1>
       
+      <!-- Server-side error message -->
       <% if (typeof error !== 'undefined') { %>
         <div class="error-message"><%= error %></div>
       <% } %>
       
-      <form action="/login" method="POST" id="loginForm">
+      <!-- Client-side messages -->
+      <div id="clientError" class="error-message" style="display: none;"></div>
+      <div id="clientSuccess" class="success-message" style="display: none;"></div>
+      
+      <form id="loginForm">
         <div class="form-group">
           <label for="email">Email Address</label>
           <div class="input-group">
@@ -34,7 +69,7 @@
         </div>
         
         <div class="form-group">
-          <button type="submit" class="btn">Login</button>
+          <button type="submit" class="btn" id="loginBtn">Login</button>
         </div>
         
         <div class="divider">
@@ -62,18 +97,110 @@
       const loginForm = document.getElementById("loginForm");
       const emailInput = document.getElementById("email");
       const passwordInput = document.getElementById("password");
+      const loginBtn = document.getElementById("loginBtn");
+      const clientError = document.getElementById("clientError");
+      const clientSuccess = document.getElementById("clientSuccess");
 
-      loginForm.addEventListener("submit", function(e) {
-        if (!emailInput.value || !passwordInput.value) {
-          e.preventDefault();
-          alert("Please fill in both email and password.");
+      function showMessage(element, message) {
+        element.textContent = message;
+        element.style.display = 'block';
+        // Hide server-side error if client-side error is shown
+        const serverError = document.querySelector('.error-message:not(#clientError)');
+        if (serverError) serverError.style.display = 'none';
+      }
+
+      function hideMessages() {
+        clientError.style.display = 'none';
+        clientSuccess.style.display = 'none';
+      }
+
+      loginForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        // Hide previous messages
+        hideMessages();
+        
+        // Basic validation
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        if (!email || !password) {
+          showMessage(clientError, "Please fill in both email and password.");
+          return;
+        }
+        
+        // Email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          showMessage(clientError, "Please enter a valid email address.");
+          return;
+        }
+        
+        // Show loading state
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Logging in...";
+        loginForm.classList.add('loading');
+
+        try {
+          // Create form data for URL encoded format (compatible with your current backend)
+          const formData = new URLSearchParams();
+          formData.append('email', email);
+          formData.append('password', password);
+
+          const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData
+          });
+
+          // Check if response is a redirect (your current backend returns redirects)
+          if (response.redirected) {
+            // Success - redirect to the intended page
+            window.location.href = response.url;
+            return;
+          }
+
+          // If not redirected, check for error response
+          const responseText = await response.text();
+          
+          // Try to parse as JSON first, if it fails, it's probably HTML
+          try {
+            const result = JSON.parse(responseText);
+            if (result.success) {
+              showMessage(clientSuccess, "Login successful! Redirecting...");
+              setTimeout(() => {
+                window.location.href = result.redirectUrl || '/';
+              }, 1000);
+            } else {
+              showMessage(clientError, result.message || "Login failed. Please try again.");
+            }
+          } catch (parseError) {
+            // If it's HTML, it means there was an error and the login page was re-rendered
+            // We can't easily parse HTML, so show a generic error
+            showMessage(clientError, "Login failed. Please check your credentials.");
+          }
+
+        } catch (error) {
+          console.error('Login error:', error);
+          showMessage(clientError, "Network error. Please check your connection and try again.");
+        } finally {
+          // Reset loading state
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+          loginForm.classList.remove('loading');
         }
       });
 
-      // Optional: restrict email input to trim spaces
+      // Trim spaces from email input
       emailInput.addEventListener("input", function() {
         this.value = this.value.trim();
       });
+
+      // Clear error messages when user starts typing
+      emailInput.addEventListener('input', hideMessages);
+      passwordInput.addEventListener('input', hideMessages);
     });
   </script>
 </body>

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -16,7 +15,7 @@
       background-color: #f8d7da;
       border: 1px solid #f5c6cb;
     }
-    .age-error {
+    .age-error, .email-error {
       color: #dc3545;
       font-size: 0.875rem;
       margin-top: 0.25rem;
@@ -50,6 +49,17 @@
     }
     .input-group input {
       padding-left: 40px;
+      width: 100%;
+      height: 45px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .input-group input:valid {
+      border-color: #28a745;
+    }
+    .input-group input:invalid {
+      border-color: #dc3545;
     }
     .btn {
       width: 100%;
@@ -81,6 +91,40 @@
     .service-checkbox {
       height: 20px;
       width: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-control {
+      width: 100%;
+      height: 45px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 0 15px;
+      font-size: 16px;
+    }
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+    .form-group.col-md-6 {
+      flex: 1;
+    }
+    .form-text {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    .text-muted {
+      color: #6c757d !important;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .mt-3 {
+      margin-top: 1rem;
+    }
+    .form-check {
+      padding-left: 0;
     }
   </style>
 </head>
@@ -128,11 +172,12 @@
           <div class="input-group">
             <i class="fas fa-envelope"></i>
             <input type="email" id="email" name="email" class="form-control"
-       value="<%= typeof formData !== 'undefined' ? formData.email : '' %>"
-       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-       title="Please enter a valid email address (e.g., example@gmail.com)"
-       required>
+                   value="<%= typeof formData !== 'undefined' ? formData.email : '' %>"
+                   pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                   title="Please enter a valid email address (e.g., example@gmail.com)"
+                   required>
           </div>
+          <div id="emailError" class="email-error">Please enter a valid email address (e.g., example@gmail.com)</div>
         </div>
         
         <!-- Phone Number Field -->
@@ -147,26 +192,25 @@
         </div>
         
         <div class="form-group">
-  <label for="password">Password (at least 8 characters)</label>
-  <div class="input-group">
-    <i class="fas fa-lock"></i>
-    <input type="password" id="password" name="password" class="form-control"
-           pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-           title="Password must be at least 8 characters long, include one uppercase letter, one number, and one special character."
-           required>
-  </div>
-  <small id="passwordStrength" class="form-text text-muted"></small>
-</div>
+          <label for="password">Password (at least 8 characters)</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" class="form-control"
+                   pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                   title="Password must be at least 8 characters long, include one uppercase letter, one number, and one special character."
+                   required>
+          </div>
+          <small id="passwordStrength" class="form-text text-muted"></small>
+        </div>
 
-<div class="form-group">
-  <label for="confirmPassword">Confirm Password</label>
-  <div class="input-group">
-    <i class="fas fa-lock"></i>
-    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
-  </div>
-  <small id="confirmMessage" class="form-text text-muted"></small>
-</div>
-
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+          </div>
+          <small id="confirmMessage" class="form-text text-muted"></small>
+        </div>
         
         <div class="form-group">
           <label for="dateOfBirth">Date of Birth</label>
@@ -197,15 +241,14 @@
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="city">City</label>
-<select id="city" name="city" class="form-control" required>
-  <option value="">Select City</option>
-  <option value="Hyderabad" <%= (typeof formData !== 'undefined' && formData.city === 'Hyderabad') ? 'selected' : '' %>>Hyderabad</option>
-  <option value="Chennai" <%= (typeof formData !== 'undefined' && formData.city === 'Chennai') ? 'selected' : '' %>>Chennai</option>
-  <option value="Kurnool" <%= (typeof formData !== 'undefined' && formData.city === 'Kurnool') ? 'selected' : '' %>>Kurnool</option>
-  <option value="Mumbai" <%= (typeof formData !== 'undefined' && formData.city === 'Mumbai') ? 'selected' : '' %>>Mumbai</option>
-  <option value="Bangalore" <%= (typeof formData !== 'undefined' && formData.city === 'Bangalore') ? 'selected' : '' %>>Bangalore</option>
-</select>
-
+                <select id="city" name="city" class="form-control">
+                  <option value="">Select City</option>
+                  <option value="Hyderabad" <%= (typeof formData !== 'undefined' && formData.city === 'Hyderabad') ? 'selected' : '' %>>Hyderabad</option>
+                  <option value="Chennai" <%= (typeof formData !== 'undefined' && formData.city === 'Chennai') ? 'selected' : '' %>>Chennai</option>
+                  <option value="Kurnool" <%= (typeof formData !== 'undefined' && formData.city === 'Kurnool') ? 'selected' : '' %>>Kurnool</option>
+                  <option value="Mumbai" <%= (typeof formData !== 'undefined' && formData.city === 'Mumbai') ? 'selected' : '' %>>Mumbai</option>
+                  <option value="Bangalore" <%= (typeof formData !== 'undefined' && formData.city === 'Bangalore') ? 'selected' : '' %>>Bangalore</option>
+                </select>
               </div>
               <div class="form-group col-md-6">
                 <label for="state">State</label>
@@ -274,9 +317,14 @@
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="mechCity">City</label>
-                <input type="text" id="mechCity" name="city" class="form-control" 
-                       value="<%= typeof formData !== 'undefined' ? formData.city : '' %>"
-                       placeholder="City">
+                <select id="mechCity" name="city" class="form-control">
+                  <option value="">Select City</option>
+                  <option value="Hyderabad" <%= (typeof formData !== 'undefined' && formData.city === 'Hyderabad') ? 'selected' : '' %>>Hyderabad</option>
+                  <option value="Chennai" <%= (typeof formData !== 'undefined' && formData.city === 'Chennai') ? 'selected' : '' %>>Chennai</option>
+                  <option value="Kurnool" <%= (typeof formData !== 'undefined' && formData.city === 'Kurnool') ? 'selected' : '' %>>Kurnool</option>
+                  <option value="Mumbai" <%= (typeof formData !== 'undefined' && formData.city === 'Mumbai') ? 'selected' : '' %>>Mumbai</option>
+                  <option value="Bangalore" <%= (typeof formData !== 'undefined' && formData.city === 'Bangalore') ? 'selected' : '' %>>Bangalore</option>
+                </select>
               </div>
               <div class="form-group col-md-6">
                 <label for="mechState">State</label>
@@ -350,6 +398,12 @@
   </div>
 
   <script>
+    // Email validation function
+    function validateEmail(email) {
+        const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return pattern.test(email);
+    }
+
     // Age validation
     function calculateAge(birthday) {
       const today = new Date();
@@ -369,6 +423,7 @@
       const ageError = document.getElementById('ageError');
       const password = document.getElementById('password');
       const confirmPassword = document.getElementById('confirmPassword');
+      const email = document.getElementById('email');
       
       // Age validation
       if (dobInput.value) {
@@ -381,6 +436,15 @@
         }
       }
       
+      // Email validation
+      if (email.value && !validateEmail(email.value)) {
+        e.preventDefault();
+        document.getElementById('emailError').style.display = 'block';
+        email.style.borderColor = '#dc3545';
+        email.focus();
+        return false;
+      }
+      
       // Password confirmation validation
       if (password.value !== confirmPassword.value) {
         e.preventDefault();
@@ -390,6 +454,20 @@
       }
       
       return true;
+    });
+
+    // Real-time email validation
+    document.getElementById('email').addEventListener('blur', function() {
+        const email = this.value;
+        const emailError = document.getElementById('emailError');
+        
+        if (email && !validateEmail(email)) {
+            emailError.style.display = 'block';
+            this.style.borderColor = '#dc3545';
+        } else {
+            emailError.style.display = 'none';
+            this.style.borderColor = email ? '#28a745' : '#ddd';
+        }
     });
 
     // Real-time age validation
@@ -426,41 +504,40 @@
     document.getElementById('phone').addEventListener('input', function() {
       this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
     });
+
     // Password strength check
-document.getElementById('password').addEventListener('input', function () {
-  const password = this.value;
-  const strengthMsg = document.getElementById('passwordStrength');
-  const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    document.getElementById('password').addEventListener('input', function () {
+      const password = this.value;
+      const strengthMsg = document.getElementById('passwordStrength');
+      const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
-  if (!password) {
-    strengthMsg.textContent = '';
-  } else if (!strongRegex.test(password)) {
-    strengthMsg.textContent = '❌ Weak password: add uppercase, number, and special character.';
-    strengthMsg.style.color = 'red';
-  } else {
-    strengthMsg.textContent = '✅ Strong password.';
-    strengthMsg.style.color = 'green';
-  }
-});
+      if (!password) {
+        strengthMsg.textContent = '';
+      } else if (!strongRegex.test(password)) {
+        strengthMsg.textContent = '❌ Weak password: add uppercase, number, and special character.';
+        strengthMsg.style.color = 'red';
+      } else {
+        strengthMsg.textContent = '✅ Strong password.';
+        strengthMsg.style.color = 'green';
+      }
+    });
 
-// Confirm password match check (real-time)
-document.getElementById('confirmPassword').addEventListener('input', function () {
-  const password = document.getElementById('password').value;
-  const confirm = this.value;
-  const confirmMsg = document.getElementById('confirmMessage');
+    // Confirm password match check (real-time)
+    document.getElementById('confirmPassword').addEventListener('input', function () {
+      const password = document.getElementById('password').value;
+      const confirm = this.value;
+      const confirmMsg = document.getElementById('confirmMessage');
 
-  if (!confirm) {
-    confirmMsg.textContent = '';
-  } else if (password !== confirm) {
-    confirmMsg.textContent = '❌ Passwords do not match.';
-    confirmMsg.style.color = 'red';
-  } else {
-    confirmMsg.textContent = '✅ Passwords match.';
-    confirmMsg.style.color = 'green';
-  }
-});
-
+      if (!confirm) {
+        confirmMsg.textContent = '';
+      } else if (password !== confirm) {
+        confirmMsg.textContent = '❌ Passwords do not match.';
+        confirmMsg.style.color = 'red';
+      } else {
+        confirmMsg.textContent = '✅ Passwords match.';
+        confirmMsg.style.color = 'green';
+      }
+    });
   </script>
-
 </body>
 </html>

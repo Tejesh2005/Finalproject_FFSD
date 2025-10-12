@@ -35,8 +35,9 @@ router.get('/view-auctions', isSellerLoggedin, async (req, res) => {
       return res.redirect('/login');
     }
     
-    // Fetch all auctions for this seller
+    // Fetch all auctions for this seller, populate assignedMechanic
     const auctions = await AuctionRequest.find({ sellerId: req.user._id })
+      .populate('assignedMechanic', 'firstName lastName doorNo street city state')
       .sort({ createdAt: -1 })
       .lean();
     
@@ -70,7 +71,7 @@ router.get('/view-bids/:id', isSellerLoggedin, async (req, res) => {
     const auction = await AuctionRequest.findOne({ 
       _id: auctionId,
       sellerId: req.user._id
-    }).lean();
+    }).populate('assignedMechanic', 'firstName lastName doorNo street city state').lean();
     
     if (!auction) {
       return res.redirect('/seller_dashboard/view-auctions');

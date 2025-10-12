@@ -70,10 +70,15 @@
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-left: 4px solid #ff6b00;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
             display: flex;
             align-items: flex-start;
             gap: 1rem;
+        }
+
+        .notification-card.removing {
+            opacity: 0;
+            transform: translateX(-20px);
         }
 
         .notification-card:hover {
@@ -178,6 +183,11 @@
             text-align: center;
             padding: 3rem;
             color: #666;
+            display: none;
+        }
+
+        .no-notifications.visible {
+            display: block;
         }
 
         .no-notifications h3 {
@@ -204,6 +214,14 @@
             margin: 1rem 0;
             border-radius: 0.5rem;
             font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .alert-message.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .alert-success {
@@ -251,13 +269,9 @@
             </button>
         </div>
 
-        <% if (typeof error !== 'undefined' && error) { %>
-            <div class="alert alert-danger">
-                <%= error %>
-            </div>
-        <% } %>
+        <div id="messageContainer"></div>
 
-        <div class="notifications-container">
+        <div class="notifications-container" id="notificationsContainer">
             <% if (notifications && notifications.length > 0) { %>
                 <% notifications.forEach(notification => { %>
                     <div class="notification-card <%= notification.isRead ? '' : 'unread' %>" data-notification-id="<%= notification._id %>">
@@ -298,7 +312,7 @@
                     </div>
                 <% }); %>
             <% } else { %>
-                <div class="no-notifications">
+                <div class="no-notifications visible">
                     <h3>No Notifications</h3>
                     <p>You don't have any notifications yet.</p>
                 </div>
@@ -342,6 +356,10 @@
                     return;
                 }
                 
+                // Disable button during request
+                this.disabled = true;
+                this.textContent = 'Clearing...';
+                
                 fetch('/notifications/mark-all-read', {
                     method: 'POST',
                     headers: {
@@ -354,40 +372,79 @@
                         // Show success message
                         showMessage('All notifications have been cleared successfully!', 'success');
                         
-                        // Refresh the page after 1 second to show empty state
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
+                        // Remove all notifications with animation
+                        removeAllNotifications();
+                        
+                        // Update button state
+                        this.disabled = true;
+                        this.textContent = 'Clear All Notifications';
+                        
+                        // Update unread count
+                        updateUnreadCount();
                     } else {
                         showMessage('Failed to clear notifications', 'error');
+                        this.disabled = false;
+                        this.textContent = 'Clear All Notifications';
                     }
                 })
                 .catch(error => {
                     console.error('Error clearing all notifications:', error);
                     showMessage('Error clearing notifications', 'error');
+                    this.disabled = false;
+                    this.textContent = 'Clear All Notifications';
                 });
             });
 
+            function removeAllNotifications() {
+                const notificationCards = document.querySelectorAll('.notification-card');
+                const notificationsContainer = document.getElementById('notificationsContainer');
+                const noNotifications = document.querySelector('.no-notifications');
+                
+                if (notificationCards.length === 0) return;
+                
+                // Add removing class to each card for animation
+                notificationCards.forEach(card => {
+                    card.classList.add('removing');
+                });
+                
+                // Remove cards after animation completes
+                setTimeout(() => {
+                    notificationCards.forEach(card => {
+                        card.remove();
+                    });
+                    
+                    // Show "no notifications" message
+                    if (noNotifications) {
+                        noNotifications.classList.add('visible');
+                    }
+                }, 300);
+            }
+
             function showMessage(message, type) {
+                const messageContainer = document.getElementById('messageContainer');
+                
                 // Remove existing message if any
-                const existingAlert = document.querySelector('.alert-message');
-                if (existingAlert) {
-                    existingAlert.remove();
-                }
+                messageContainer.innerHTML = '';
                 
                 const alertDiv = document.createElement('div');
                 alertDiv.className = `alert-message alert-${type}`;
                 alertDiv.textContent = message;
                 
-                // Insert after the page header
-                const pageHeader = document.querySelector('.page-header');
-                pageHeader.parentNode.insertBefore(alertDiv, pageHeader.nextSibling);
+                messageContainer.appendChild(alertDiv);
+                
+                // Trigger animation
+                setTimeout(() => {
+                    alertDiv.classList.add('show');
+                }, 10);
                 
                 // Auto remove after 5 seconds
                 setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
-                    }
+                    alertDiv.classList.remove('show');
+                    setTimeout(() => {
+                        if (alertDiv.parentNode) {
+                            alertDiv.remove();
+                        }
+                    }, 300);
                 }, 5000);
             }
 

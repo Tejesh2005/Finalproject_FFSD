@@ -153,7 +153,7 @@ const placeBid = async (req, res) => {
 
     await newBid.save();
 
-    res.json({ success: true, message: 'Bid placed successfully' });
+    res.json({ success: true, message: 'Bid placed successfully',bidAmount: bidValue, auctionId: auctionId , buyerId: buyerId });
   } catch (error) {
     console.error('Error placing bid:', error);
     res.status(500).json({ success: false, message: error.message });

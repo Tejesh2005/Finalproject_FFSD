@@ -147,8 +147,7 @@ const bookRental = async (req, res) => {
 
     const savedRentalCost = await rentalCost.save();
 
-    res.json({ success: true });
-  } catch (err) {
+    res.json({ success: true, message: 'Rental booked successfully', rentalRequest: updatedRentalRequest, rentalCost: totalCost});  } catch (err) {
     console.error('Error in POST /rental:', err);
     res.status(500).json({ success: false, error: 'Failed to save rental details: ' + err.message });
   }

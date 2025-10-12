@@ -43,7 +43,7 @@ router.post('/update-profile', isBuyerLoggedin, async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        return res.json({ success: true, message: 'Profile updated successfully' });
+        return res.json({ success: true, message: 'Profile updated successfully', user: updatedUser , userId: userId, userEmail: email, userFirstName: firstName, userLastName: lastName, userPhone: phone, userDoorNo: doorNo, userStreet: street, userCity: city, userState: state });
     } catch (error) {
         console.error('Error updating profile:', error);
         return res.status(500).json({ success: false, message: 'An error occurred while updating the profile' });
@@ -74,7 +74,7 @@ router.post('/change-password', isBuyerLoggedin, async (req, res) => {
         user.password = newPassword;
         await user.save();
 
-        return res.json({ success: true, message: 'Password changed successfully' });
+        return res.json({ success: true, message: 'Password changed successfully', userId: userId , userEmail: user.email, userFirstName: user.firstName, userLastName: user.lastName, userPhone: user.phone, userDoorNo: user.doorNo, userStreet: user.street, userCity: user.city, userState: user.state });
     } catch (error) {
         console.error('Error changing password:', error);
         return res.status(500).json({ success: false, message: 'An error occurred while changing the password' });

@@ -53,12 +53,12 @@
 
 ---
 
-## 7. Profile Update Test Cases for Shopmanager
+## 7. Profile Update Test Cases for Auction Manager
 
 | Case | Input | Expected Result | Actual Result | Status | Screenshot |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Invalid** | `Email: veda.prakasah.vendor@gmaail.com` | Alert message: "Please use a Valid email from  a valid provider" | A JavaScript alert appears. | Passed | ![Invalid Profile Case](./test_plan/shop_manager_profile_edit_invalid.png) |
-| **Valid** | `Email: veda.prakasah.vendor@gmail.com` | Profile updated successfully. | A JavaScript alert appears saying: "Profile updated successfully!". | Passed | ![Valid Profile Case](./test_plan/shop_manager_profile_edit_valid.png) |
+| **Invalid** | `Email: auction_manager@gmail.com` | Alert message: "New password does not match " | the message appears in a box above the upadate profile form. | Failed | ![Invalid Profile Case](./test_plan/auction_up_i.png) |
+| **Valid** | `Email: auction@manager@gmail.com` | Profile updated successfully. | A JavaScript alert appears saying: "Profile updated successfully!". | Passed | ![Valid Profile Case](./test_plan/auction_up_v.png) |
 
 ---
 

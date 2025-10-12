@@ -518,7 +518,7 @@
         return true;
       }
 
-      // Form submission handler with fetch
+      // Form submission handler with fetch - 201 RESPONSE IMPLEMENTATION
       signupForm.addEventListener("submit", async function(e) {
         e.preventDefault();
         
@@ -548,38 +548,35 @@
           const response = await fetch('/signup', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json', // Send as JSON
             },
-            body: new URLSearchParams(data)
+            body: JSON.stringify(data)
           });
 
-          // Check if response is a redirect (success case)
-          if (response.redirected) {
-            showMessage(clientSuccess, "Account created successfully! Redirecting to login...");
+          // Handle 201 Created response
+          if (response.status === 201) {
+            const result = await response.json();
+            showMessage(clientSuccess, result.message);
+            
+            // Redirect after success message
             setTimeout(() => {
               window.location.href = '/login';
             }, 2000);
-            return;
-          }
-
-          // If not redirected, check for error response
-          const responseText = await response.text();
-          
-          // Try to parse as JSON first, if it fails, it's probably HTML
-          try {
-            const result = JSON.parse(responseText);
-            if (result.success) {
-              showMessage(clientSuccess, "Account created successfully! Redirecting...");
-              setTimeout(() => {
-                window.location.href = result.redirectUrl || '/login';
-              }, 1000);
-            } else {
-              showMessage(clientError, result.message || "Signup failed. Please try again.");
-            }
-          } catch (parseError) {
-            // If it's HTML, it means there was an error and the signup page was re-rendered
-            // We can't easily parse HTML, so show a generic error
-            showMessage(clientError, "Signup failed. Please check your information and try again.");
+            
+          } else if (response.status === 400) {
+            // Handle validation errors
+            const result = await response.json();
+            showMessage(clientError, result.message);
+            
+          } else if (response.status === 409) {
+            // Handle duplicate email/phone
+            const result = await response.json();
+            showMessage(clientError, result.message);
+            
+          } else {
+            // Handle other errors
+            const result = await response.json();
+            showMessage(clientError, result.message || "Signup failed. Please try again.");
           }
 
         } catch (error) {

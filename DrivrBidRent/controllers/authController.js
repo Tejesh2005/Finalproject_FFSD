@@ -55,7 +55,17 @@ const authController = {
       const repairBikes = req.body.repairBikes === "on";
       const repairCars = req.body.repairCars === "on";
 
+      // Check if request is JSON (from fetch API)
+      const isJsonRequest = req.headers['content-type'] === 'application/json';
+
+      // Validation checks
       if (!phone || !phone.match(/^\d{10}$/)) {
+        if (isJsonRequest) {
+          return res.status(400).json({
+            success: false,
+            message: "Phone number must be 10 digits"
+          });
+        }
         return res.render("signup", {
           error: "Phone number must be 10 digits",
           formData: req.body,
@@ -72,6 +82,12 @@ const authController = {
       }
 
       if (age < 18) {
+        if (isJsonRequest) {
+          return res.status(400).json({
+            success: false,
+            message: "You must be at least 18 years old to sign up"
+          });
+        }
         return res.render("signup", {
           error: "You must be at least 18 years old to sign up",
           formData: req.body,
@@ -79,6 +95,12 @@ const authController = {
       }
 
       if (password !== confirmPassword) {
+        if (isJsonRequest) {
+          return res.status(400).json({
+            success: false,
+            message: "Passwords do not match"
+          });
+        }
         return res.render("signup", {
           error: "Passwords do not match",
           formData: req.body,
@@ -86,6 +108,12 @@ const authController = {
       }
 
       if (password.length < 8) {
+        if (isJsonRequest) {
+          return res.status(400).json({
+            success: false,
+            message: "Password must be at least 8 characters long"
+          });
+        }
         return res.render("signup", {
           error: "Password must be at least 8 characters long",
           formData: req.body,
@@ -93,6 +121,12 @@ const authController = {
       }
 
       if (!termsAccepted) {
+        if (isJsonRequest) {
+          return res.status(400).json({
+            success: false,
+            message: "You must accept the terms and conditions"
+          });
+        }
         return res.render("signup", {
           error: "You must accept the terms and conditions",
           formData: req.body,
@@ -101,8 +135,29 @@ const authController = {
 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
+        if (isJsonRequest) {
+          return res.status(409).json({
+            success: false,
+            message: "Email already exists"
+          });
+        }
         return res.render("signup", {
           error: "Email already exists",
+          formData: req.body,
+        });
+      }
+
+      // Check for existing phone number
+      const existingPhone = await User.findOne({ phone });
+      if (existingPhone) {
+        if (isJsonRequest) {
+          return res.status(409).json({
+            success: false,
+            message: "Phone number already exists"
+          });
+        }
+        return res.render("signup", {
+          error: "Phone number already exists",
           formData: req.body,
         });
       }
@@ -133,10 +188,53 @@ const authController = {
       
       const user = new User(userData);
       await user.save();
+
+      // Return 201 Created for JSON requests
+      if (isJsonRequest) {
+        return res.status(201).json({
+          success: true,
+          message: "Account created successfully! Redirecting to login...",
+          userId: user._id,
+          userType: user.userType,
+          redirectUrl: "/login"
+        });
+      }
       
+      // Keep original redirect for form submissions
       res.redirect("/login");
     } catch (err) {
       console.error("Error in signup process:", err);
+      
+      // Check if request is JSON
+      const isJsonRequest = req.headers['content-type'] === 'application/json';
+      
+      if (isJsonRequest) {
+        let errorMessage = "An error occurred during signup";
+        
+        // Handle specific error types
+        if (err.name === 'ValidationError') {
+          errorMessage = "Validation failed: " + Object.values(err.errors).map(e => e.message).join(', ');
+          return res.status(400).json({
+            success: false,
+            message: errorMessage
+          });
+        }
+        
+        if (err.code === 11000) {
+          errorMessage = "User already exists with this email or phone number";
+          return res.status(409).json({
+            success: false,
+            message: errorMessage
+          });
+        }
+        
+        return res.status(500).json({
+          success: false,
+          message: errorMessage
+        });
+      }
+      
+      // Original error handling for form submissions
       res.render("signup", {
         error: "An error occurred during signup: " + err.message,
         formData: req.body,

@@ -16,7 +16,7 @@
         <div class="error-message"><%= error %></div>
       <% } %>
       
-      <form action="/login" method="POST">
+      <form action="/login" method="POST" id="loginForm">
         <div class="form-group">
           <label for="email">Email Address</label>
           <div class="input-group">
@@ -56,5 +56,25 @@
       </form>
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const loginForm = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+
+      loginForm.addEventListener("submit", function(e) {
+        if (!emailInput.value || !passwordInput.value) {
+          e.preventDefault();
+          alert("Please fill in both email and password.");
+        }
+      });
+
+      // Optional: restrict email input to trim spaces
+      emailInput.addEventListener("input", function() {
+        this.value = this.value.trim();
+      });
+    });
+  </script>
 </body>
 </html>

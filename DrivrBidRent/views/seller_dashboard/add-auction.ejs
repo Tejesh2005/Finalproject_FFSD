@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Auction - DriveBidRent</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700& display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
     * {
       margin: 0;
@@ -77,15 +77,13 @@
     }
 
     /* Forms */
-    .add-auction,
-    .add-rental {
+    .add-auction {
       padding: 4rem 2rem;
       max-width: 1200px;
       margin: 0 auto;
     }
 
-    .add-auction h1,
-    .add-rental h1 {
+    .add-auction h1 {
       color: #ff6b00;
       font-size: 2.5rem;
       margin-bottom: 2rem;
@@ -124,6 +122,14 @@
       min-height: 100px;
     }
 
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: -0.75rem;
+      margin-bottom: 0.75rem;
+      display: none;
+    }
+
     .submit-btn {
       display: block;
       width: 100%;
@@ -160,119 +166,223 @@
 <body>
   <%- include('partials/navbar', { currentPage: 'add-auction' }) %>
 
-    <section class="add-auction">
-      <h1>Add Vehicle for Auction</h1>
-      <form id="auction-form" enctype="multipart/form-data">
-        <label for="vehicle-name">Vehicle Name:</label>
-        <input type="text" id="vehicle-name" name="vehicle-name" required />
+  <section class="add-auction">
+    <h1>Add Vehicle for Auction</h1>
+    <form id="auction-form" enctype="multipart/form-data">
+      <label for="vehicle-name">Vehicle Name:</label>
+      <input type="text" id="vehicle-name" name="vehicle-name" required />
+      <div id="vehicle-name-error" class="error-message">Vehicle name is required and should be at least 2 characters.</div>
 
-        <label for="vehicle-image">Vehicle Image:</label>
-        <input type="file" id="vehicle-image" name="vehicleImage" required accept="image/*" />
+      <label for="vehicle-image">Vehicle Image:</label>
+      <input type="file" id="vehicle-image" name="vehicleImage" required accept="image/*" />
+      <div id="vehicle-image-error" class="error-message">Please upload a valid image file.</div>
 
-        <label for="vehicle-year">Year:</label>
-        <input type="number" id="vehicle-year" name="vehicle-year" required min="1900" max="2025" />
+      <label for="vehicle-year">Year:</label>
+      <input type="number" id="vehicle-year" name="vehicle-year" required min="1900" max="2025" />
+      <div id="vehicle-year-error" class="error-message">Year must be between 1900 and current year (2025).</div>
 
-        <label for="vehicle-mileage">Mileage (km):</label>
-        <input type="number" id="vehicle-mileage" name="vehicle-mileage" required />
+      <label for="vehicle-mileage">Mileage (km):</label>
+      <input type="number" id="vehicle-mileage" name="vehicle-mileage" required min="0" />
+      <div id="vehicle-mileage-error" class="error-message">Mileage must be a positive number.</div>
 
-        <label for="fuel-type">Fuel Type:</label>
-        <select id="fuel-type" name="fuel-type" required>
-          <option value="petrol">Petrol</option>
-          <option value="diesel">Diesel</option>
-        </select>
+      <label for="fuel-type">Fuel Type:</label>
+      <select id="fuel-type" name="fuel-type" required>
+        <option value="">Select Fuel Type</option>
+        <option value="petrol">Petrol</option>
+        <option value="diesel">Diesel</option>
+      </select>
+      <div id="fuel-type-error" class="error-message">Please select a fuel type.</div>
 
-        <label for="transmission">Transmission:</label>
-        <select id="transmission" name="transmission" required>
-          <option value="manual">Manual</option>
-          <option value="automatic">Automatic</option>
-        </select>
+      <label for="transmission">Transmission:</label>
+      <select id="transmission" name="transmission" required>
+        <option value="">Select Transmission</option>
+        <option value="manual">Manual</option>
+        <option value="automatic">Automatic</option>
+      </select>
+      <div id="transmission-error" class="error-message">Please select a transmission type.</div>
 
-        <label for="vehicle-condition">Condition:</label>
-        <select id="vehicle-condition" name="vehicle-condition" required>
-          <option value="excellent">Excellent</option>
-          <option value="good">Good</option>
-          <option value="fair">Fair</option>
-        </select>
+      <label for="vehicle-condition">Condition:</label>
+      <select id="vehicle-condition" name="vehicle-condition" required>
+        <option value="">Select Condition</option>
+        <option value="excellent">Excellent</option>
+        <option value="good">Good</option>
+        <option value="fair">Fair</option>
+      </select>
+      <div id="vehicle-condition-error" class="error-message">Please select a vehicle condition.</div>
 
-        <label for="auction-date">Auction Date:</label>
-        <input type="date" id="auction-date" name="auction-date" required />
+      <label for="auction-date">Auction Date:</label>
+      <input type="date" id="auction-date" name="auction-date" required />
+      <div id="auction-date-error" class="error-message">Auction date must be today or in the future.</div>
 
-        <label for="starting-bid">Starting Bid (₹):</label>
-        <input type="number" id="starting-bid" name="starting-bid" required />
+      <label for="starting-bid">Starting Bid (₹):</label>
+      <input type="number" id="starting-bid" name="starting-bid" required min="0" />
+      <div id="starting-bid-error" class="error-message">Starting bid must be a positive amount.</div>
 
-        <button type="submit" class="submit-btn" id="submit-btn">Submit</button>
-      </form>
-    </section>
+      <button type="submit" class="submit-btn" id="submit-btn">Submit</button>
+    </form>
+  </section>
 
-    <%- include('partials/footer') %>
+  <%- include('partials/footer') %>
 
-      <script>
-        // Form Submission for Auction with Validation using Fetch
-        document.getElementById('auction-form').addEventListener('submit', async (e) => {
-          e.preventDefault(); // Prevent default form submission
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('auction-form');
+      const submitBtn = document.getElementById('submit-btn');
 
-          const submitBtn = document.getElementById('submit-btn');
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Submitting...';
+      // Set min date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('auction-date').setAttribute('min', today);
 
-          // Get form inputs for validation
-          const vehicleYear = parseInt(document.getElementById('vehicle-year').value);
-          const auctionDate = new Date(document.getElementById('auction-date').value);
-          const currentYear = new Date().getFullYear();
-          const currentDate = new Date();
-          currentDate.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
+      // Validation functions
+      const validateForm = () => {
+        let isValid = true;
 
-          // Validation for year
-          if (vehicleYear > currentYear) {
-            alert(`Vehicle year cannot be later than ${currentYear}.`);
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit';
-            return;
+        // Vehicle Name
+        const vehicleName = document.getElementById('vehicle-name').value.trim();
+        const vehicleNameError = document.getElementById('vehicle-name-error');
+        if (vehicleName.length < 2) {
+          vehicleNameError.style.display = 'block';
+          isValid = false;
+        } else {
+          vehicleNameError.style.display = 'none';
+        }
+
+        // Vehicle Image
+        const vehicleImage = document.getElementById('vehicle-image').files[0];
+        const vehicleImageError = document.getElementById('vehicle-image-error');
+        if (!vehicleImage || !vehicleImage.type.startsWith('image/')) {
+          vehicleImageError.style.display = 'block';
+          isValid = false;
+        } else {
+          vehicleImageError.style.display = 'none';
+        }
+
+        // Vehicle Year
+        const vehicleYear = parseInt(document.getElementById('vehicle-year').value);
+        const vehicleYearError = document.getElementById('vehicle-year-error');
+        const currentYear = new Date().getFullYear();
+        if (vehicleYear < 1900 || vehicleYear > currentYear) {
+          vehicleYearError.style.display = 'block';
+          isValid = false;
+        } else {
+          vehicleYearError.style.display = 'none';
+        }
+
+        // Vehicle Mileage
+        const vehicleMileage = parseInt(document.getElementById('vehicle-mileage').value);
+        const vehicleMileageError = document.getElementById('vehicle-mileage-error');
+        if (vehicleMileage <= 0) {
+          vehicleMileageError.style.display = 'block';
+          isValid = false;
+        } else {
+          vehicleMileageError.style.display = 'none';
+        }
+
+        // Fuel Type
+        const fuelType = document.getElementById('fuel-type').value;
+        const fuelTypeError = document.getElementById('fuel-type-error');
+        if (!fuelType) {
+          fuelTypeError.style.display = 'block';
+          isValid = false;
+        } else {
+          fuelTypeError.style.display = 'none';
+        }
+
+        // Transmission
+        const transmission = document.getElementById('transmission').value;
+        const transmissionError = document.getElementById('transmission-error');
+        if (!transmission) {
+          transmissionError.style.display = 'block';
+          isValid = false;
+        } else {
+          transmissionError.style.display = 'none';
+        }
+
+        // Vehicle Condition
+        const vehicleCondition = document.getElementById('vehicle-condition').value;
+        const vehicleConditionError = document.getElementById('vehicle-condition-error');
+        if (!vehicleCondition) {
+          vehicleConditionError.style.display = 'block';
+          isValid = false;
+        } else {
+          vehicleConditionError.style.display = 'none';
+        }
+
+        // Auction Date
+        const auctionDate = new Date(document.getElementById('auction-date').value);
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        const auctionDateError = document.getElementById('auction-date-error');
+        if (auctionDate < currentDate) {
+          auctionDateError.style.display = 'block';
+          isValid = false;
+        } else {
+          auctionDateError.style.display = 'none';
+        }
+
+        // Starting Bid
+        const startingBid = parseInt(document.getElementById('starting-bid').value);
+        const startingBidError = document.getElementById('starting-bid-error');
+        if (startingBid <= 0) {
+          startingBidError.style.display = 'block';
+          isValid = false;
+        } else {
+          startingBidError.style.display = 'none';
+        }
+
+        submitBtn.disabled = !isValid;
+        return isValid;
+      };
+
+      // Real-time validation
+      ['vehicle-name', 'vehicle-image', 'vehicle-year', 'vehicle-mileage', 'fuel-type', 'transmission', 'vehicle-condition', 'auction-date', 'starting-bid'].forEach(id => {
+        const element = document.getElementById(id);
+        element.addEventListener('input', validateForm);
+        if (element.type === 'file') {
+          element.addEventListener('change', validateForm);
+        }
+      });
+
+      // Form submission
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+          alert('Please fix the errors in the form.');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        const formData = new FormData(form);
+
+        try {
+          const response = await fetch('/seller_dashboard/add-auction', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            alert('Auction added successfully!');
+            form.reset();
+            if (result.redirect) window.location.href = result.redirect;
+          } else {
+            alert(result.message || 'Error adding auction. Please try again.');
           }
-
-          // Validation for auction date
-          if (auctionDate < currentDate) {
-            alert('Auction date cannot be in the past.');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit';
-            return;
-          }
-
-          // Create FormData from the form
-          const formData = new FormData(e.target);
-
-          try {
-            // Fetch POST to the endpoint
-            const response = await fetch('/seller_dashboard/add-auction', {
-              method: 'POST',
-              body: formData // FormData handles multipart/form-data automatically
-            });
-
-            const result = await response.json(); // Server returns JSON
-
-            if (response.ok && result.success) {
-              alert('Auction added successfully!');
-              // Optionally reset form or redirect
-              e.target.reset();
-              window.location.href = result.redirect;
-            } else {
-              alert(result.message || 'Error adding auction. Please try again.');
-            }
-          } catch (error) {
-            alert('Network error. Please try again.');
-            console.error('Fetch error:', error);
-          } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit';
-          }
-        });
-
-        // Set min attribute for auction date to today
-        document.addEventListener('DOMContentLoaded', () => {
-          const today = new Date().toISOString().split('T')[0];
-          document.getElementById('auction-date').setAttribute('min', today);
-        });
-      </script>
+        } catch (error) {
+          alert('Network error. Please try again.');
+          console.error('Fetch error:', error);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit';
+          validateForm(); // Re-validate to show any persistent errors
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

@@ -108,6 +108,15 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        /* Error Messages */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: -0.75rem;
+            margin-bottom: 0.75rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -195,13 +204,15 @@
                 <form id="password-form">
                     <label for="old-password">Current Password:</label>
                     <input type="password" id="old-password" name="oldPassword" required>
+                    <div id="old-password-error" class="error-message">Current password is required.</div>
 
                     <label for="new-password">New Password:</label>
                     <input type="password" id="new-password" name="newPassword" required>
-                    <small>Password must be at least 8 characters long</small>
+                    <div id="new-password-error" class="error-message">Password must be at least 8 characters, include uppercase, lowercase, numbers, and special characters (e.g., !@#$%).</div>
 
                     <label for="confirm-password">Confirm New Password:</label>
                     <input type="password" id="confirm-password" name="confirmPassword" required>
+                    <div id="confirm-password-error" class="error-message">Passwords do not match or confirmation is required.</div>
 
                     <button type="submit" class="change-btn">Change Password</button>
                 </form>
@@ -217,6 +228,7 @@
             const passwordForm = document.getElementById('password-form');
             const successAlert = document.getElementById('success-alert');
             const errorAlert = document.getElementById('error-alert');
+            const changeBtn = document.querySelector('.change-btn');
             
             // Function to show alerts
             function showAlert(element, message) {
@@ -227,24 +239,65 @@
                 }, 5000);
             }
             
+            // Password validation regex: at least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+            // Validate form
+            function validatePasswordForm() {
+                let isValid = true;
+
+                const oldPassword = document.getElementById('old-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const oldPasswordError = document.getElementById('old-password-error');
+                const newPasswordError = document.getElementById('new-password-error');
+                const confirmPasswordError = document.getElementById('confirm-password-error');
+
+                if (!oldPassword) {
+                    oldPasswordError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    oldPasswordError.style.display = 'none';
+                }
+
+                if (!newPassword || !passwordRegex.test(newPassword)) {
+                    newPasswordError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    newPasswordError.style.display = 'none';
+                }
+
+                if (!confirmPassword || newPassword !== confirmPassword) {
+                    confirmPasswordError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    confirmPasswordError.style.display = 'none';
+                }
+
+                changeBtn.disabled = !isValid;
+                return isValid;
+            }
+
+            // Real-time validation
+            ['old-password', 'new-password', 'confirm-password'].forEach(id => {
+                document.getElementById(id).addEventListener('input', validatePasswordForm);
+            });
+
             // Change password
             passwordForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
+                if (!validatePasswordForm()) {
+                    showAlert(errorAlert, 'Please fix the errors in the form.');
+                    return;
+                }
+
+                changeBtn.disabled = true;
+                changeBtn.textContent = 'Changing...';
+
                 const oldPassword = document.getElementById('old-password').value;
                 const newPassword = document.getElementById('new-password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
-                
-                // Basic validation
-                if (newPassword !== confirmPassword) {
-                    showAlert(errorAlert, 'New passwords do not match');
-                    return;
-                }
-                
-                if (newPassword.length < 8) {
-                    showAlert(errorAlert, 'Password must be at least 8 characters long');
-                    return;
-                }
                 
                 try {
                     const response = await fetch('/mechanic_dashboard/change-password', {
@@ -271,6 +324,9 @@
                 } catch (error) {
                     showAlert(errorAlert, 'An error occurred. Please try again.');
                     console.error(error);
+                } finally {
+                    changeBtn.disabled = false;
+                    changeBtn.textContent = 'Change Password';
                 }
             });
         });

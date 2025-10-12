@@ -4,195 +4,434 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DriveBidRent - Profile Settings</title>
-<style>
-/* Profile Settings Specific Styles */
-.profile-settings { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
 .profile-settings h2 { color: #ff6b00; font-size: 2rem; text-align: center; margin-bottom: 2rem; }
 .profile-container { display: flex; gap: 2rem; flex-wrap: wrap; }
-.profile-details, .change-password { flex: 1; background-color: #f9f9f9; padding: 2rem; border-radius: 1rem; border: 1px solid #ff6b00; box-shadow: 0 5px 15px rgba(255, 107, 0, 0.1); }
-.profile-details h3, .change-password h3 { color: #ff6b00; font-size: 1.5rem; margin-bottom: 1.5rem; }
-.profile-details label, .change-password label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-.profile-details input, .profile-details textarea, .change-password input { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 0.3rem; font-size: 1rem; }
-.profile-details textarea { resize: vertical; height: 100px; }
-.save-btn, .change-btn { display: inline-block; background-color: #ff6b00; color: white; padding: 0.75rem 2rem; border: none; border-radius: 0.3rem; font-size: 1rem; cursor: pointer; transition: background-color 0.3s ease; }
-.save-btn:hover, .change-btn:hover { background-color: #e65c00; }
 /* Alert messages */
 .alert { padding: 1rem; border-radius: 0.3rem; margin-bottom: 1rem; text-align: center; display: none; }
-.alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-.alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveBidRent - Profile Settings</title>
+        :root {
+            --primary-color: #ff6b00;
+            --primary-dark: #e65c00;
+            --light-bg: #f5f5f5;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-color: #dddddd;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .profile-settings {
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .profile-settings h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+        
+        .profile-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .profile-details, .change-password {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-details h3, .change-password h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.3rem;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
+        }
+        
+        .form-control:read-only {
+            background-color: #f9f9f9;
+            color: var(--text-light);
+            cursor: not-allowed;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.3rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* Alert messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .field-info {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        
+        .password-strength {
+            margin-top: 0.25rem;
+            font-size: 0.85rem;
+        }
+        
+        .strength-weak {
+            color: var(--error-color);
+        }
+        
+        .strength-strong {
+            color: var(--success-color);
+        }
+        
+        @media (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+            }
+            
+            .profile-details, .change-password {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<%- include('partials/navbar') %>
+    <!-- Navigation would be included here -->
+    <!-- <%- include('partials/navbar') %> -->
 
-<section class="profile-settings">
-<h2>Profile Settings</h2>
-<div id="success-alert" class="alert alert-success"></div>
-<div id="error-alert" class="alert alert-danger"></div>
-<div class="profile-container">
+    <section class="profile-settings">
+        <h2>Profile Settings</h2>
+        
+        <div id="success-alert" class="alert alert-success"></div>
+        <div id="error-alert" class="alert alert-danger"></div>
+        
+        <div class="profile-container">
+            <!-- Personal Details -->
+            <div class="profile-details">
+                <h3>Personal Details</h3>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" value="<%= user.firstName %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" value="<%= user.lastName %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" value="<%= user.phone || '' %>" required>
+                        <div class="field-info">Must be 10 digits</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" readonly>
+                        <div class="field-info">Email cannot be changed</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doorNo">Door/Flat No</label>
+                        <input type="text" id="doorNo" name="doorNo" class="form-control" value="<%= user.doorNo || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="street">Street/Area</label>
+                        <input type="text" id="street" name="street" class="form-control" value="<%= user.street || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" class="form-control" value="<%= user.city || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" class="form-control" value="<%= user.state || '' %>">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-block">Save Changes</button>
+                </form>
+            </div>
 
-    <!-- Personal Details -->
-    <div class="profile-details">
-        <h3>Personal Details</h3>
-        <form id="profile-form">
-            <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
-            <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<%= user.email %>" required>
-            <label for="phone">Phone:</label>
-            <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>">
-            <label for="doorNo">Door/Flat No:</label>
-            <input type="text" id="doorNo" name="doorNo" value="<%= user.doorNo || '' %>">
-            <label for="street">Street/Area:</label>
-            <input type="text" id="street" name="street" value="<%= user.street || '' %>">
-            <label for="city">City:</label>
-            <input type="text" id="city" name="city" value="<%= user.city || '' %>">
-            <label for="state">State:</label>
-            <input type="text" id="state" name="state" value="<%= user.state || '' %>">
-            <button type="submit" class="save-btn">Save Changes</button>
-        </form>
-    </div>
+            <!-- Change Password -->
+            <div class="change-password">
+                <h3>Change Password</h3>
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="old-password">Current Password</label>
+                        <input type="password" id="old-password" name="oldPassword" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="newPassword" class="form-control" required>
+                        <div id="password-strength" class="password-strength">
+                            Password must be at least 8 characters, include uppercase, number, and special character
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" name="confirmPassword" class="form-control" required>
+                        <div id="confirm-message" class="password-strength"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-block">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </section>
 
-    <!-- Change Password -->
-    <div class="change-password">
-        <h3>Change Password</h3>
-        <form id="password-form">
-            <label for="old-password">Current Password:</label>
-            <input type="password" id="old-password" name="oldPassword" required>
-            <label for="new-password">New Password:</label>
-            <input type="password" id="new-password" name="newPassword" required>
-            <small id="password-strength">Password must be at least 8 characters, include uppercase, number, special char</small>
-            <label for="confirm-password">Confirm New Password:</label>
-            <input type="password" id="confirm-password" name="confirmPassword" required>
-            <small id="confirm-message"></small>
-            <button type="submit" class="change-btn">Change Password</button>
-        </form>
-    </div>
+    <!-- Footer would be included here -->
+    <!-- <%- include('partials/footer') %> -->
 
-</div>
-</section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileForm = document.getElementById('profile-form');
+            const passwordForm = document.getElementById('password-form');
+            const successAlert = document.getElementById('success-alert');
+            const errorAlert = document.getElementById('error-alert');
+            const newPasswordInput = document.getElementById('new-password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            const passwordStrengthMsg = document.getElementById('password-strength');
+            const confirmMsg = document.getElementById('confirm-message');
+            const phoneInput = document.getElementById('phone');
 
-<%- include('partials/footer') %>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const profileForm = document.getElementById('profile-form');
-    const passwordForm = document.getElementById('password-form');
-    const successAlert = document.getElementById('success-alert');
-    const errorAlert = document.getElementById('error-alert');
-    const newPasswordInput = document.getElementById('new-password');
-    const confirmPasswordInput = document.getElementById('confirm-password');
-    const passwordStrengthMsg = document.getElementById('password-strength');
-    const confirmMsg = document.getElementById('confirm-message');
-
-    function showAlert(element, message) {
-        successAlert.style.display = 'none';
-        errorAlert.style.display = 'none';
-        element.textContent = message;
-        element.style.display = 'block';
-        setTimeout(() => { element.style.display = 'none'; }, 5000);
-    }
-
-    profileForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const formData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            doorNo: document.getElementById('doorNo').value,
-            street: document.getElementById('street').value,
-            city: document.getElementById('city').value,
-            state: document.getElementById('state').value
-        };
-        try {
-            const response = await fetch('/update-profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            const result = await response.json();
-            if (result.success) {
-                showAlert(successAlert, result.message);
-                const firstName = document.getElementById('firstName').value;
-                const lastName = document.getElementById('lastName').value;
-                const profileText = document.querySelector('.profile-text');
-                if (profileText) profileText.textContent = `${firstName} ${lastName}`;
-            } else {
-                showAlert(errorAlert, result.message || 'Failed to update profile.');
+            function showAlert(element, message) {
+                successAlert.style.display = 'none';
+                errorAlert.style.display = 'none';
+                element.textContent = message;
+                element.style.display = 'block';
+                setTimeout(() => { 
+                    element.style.display = 'none'; 
+                }, 5000);
             }
-        } catch (error) {
-            showAlert(errorAlert, 'An error occurred. Please try again.');
-            console.error(error);
-        }
-    });
 
-    // Password validation
-    newPasswordInput.addEventListener('input', function() {
-        const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-        if (!this.value) {
-            passwordStrengthMsg.textContent = 'Password must be at least 8 characters, include uppercase, number, special char';
-            passwordStrengthMsg.style.color = '#666';
-        } else if (!strongRegex.test(this.value)) {
-            passwordStrengthMsg.textContent = '❌ Weak password: must include uppercase, number, special char';
-            passwordStrengthMsg.style.color = 'red';
-        } else {
-            passwordStrengthMsg.textContent = '✅ Strong password';
-            passwordStrengthMsg.style.color = 'green';
-        }
-    });
-
-    confirmPasswordInput.addEventListener('input', function() {
-        if (!this.value) {
-            confirmMsg.textContent = '';
-        } else if (newPasswordInput.value !== this.value) {
-            confirmMsg.textContent = '❌ Passwords do not match';
-            confirmMsg.style.color = 'red';
-        } else {
-            confirmMsg.textContent = '✅ Passwords match';
-            confirmMsg.style.color = 'green';
-        }
-    });
-
-    passwordForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const oldPassword = document.getElementById('old-password').value;
-        const newPassword = newPasswordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-        if (newPassword !== confirmPassword) {
-            showAlert(errorAlert, 'New passwords do not match');
-            return;
-        }
-        if (newPassword.length < 8) {
-            showAlert(errorAlert, 'Password must be at least 8 characters long');
-            return;
-        }
-
-        try {
-            const response = await fetch('/change-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
+            // Phone number validation
+            phoneInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+                if (this.value.length > 10) {
+                    this.value = this.value.slice(0, 10);
+                }
             });
-            const result = await response.json();
-            if (result.success) {
-                showAlert(successAlert, result.message);
-                passwordForm.reset();
-                passwordStrengthMsg.textContent = 'Password must be at least 8 characters, include uppercase, number, special char';
-                passwordStrengthMsg.style.color = '#666';
-                confirmMsg.textContent = '';
-            } else {
-                showAlert(errorAlert, result.message || 'Failed to change password.');
-            }
-        } catch (error) {
-            showAlert(errorAlert, 'An error occurred. Please try again.');
-            console.error(error);
-        }
-    });
-});
-</script>
+
+            // Profile form submission
+            profileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Validate phone number
+                const phoneRegex = /^\d{10}$/;
+                if (!phoneRegex.test(phoneInput.value)) {
+                    showAlert(errorAlert, 'Phone number must be exactly 10 digits');
+                    phoneInput.focus();
+                    return;
+                }
+                
+                const formData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    phone: phoneInput.value,
+                    email: document.getElementById('email').value,
+                    doorNo: document.getElementById('doorNo').value,
+                    street: document.getElementById('street').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value
+                };
+                
+                try {
+                    const response = await fetch('/update-profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert(successAlert, result.message);
+                        // Update user name in navigation if needed
+                        const profileText = document.querySelector('.profile-text');
+                        if (profileText) {
+                            profileText.textContent = `${formData.firstName} ${formData.lastName}`;
+                        }
+                    } else {
+                        showAlert(errorAlert, result.message || 'Failed to update profile.');
+                    }
+                } catch (error) {
+                    showAlert(errorAlert, 'An error occurred. Please try again.');
+                    console.error('Profile update error:', error);
+                }
+            });
+
+            // Password validation & submission
+            newPasswordInput.addEventListener('input', function() {
+                const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+                
+                if (!this.value) {
+                    passwordStrengthMsg.textContent = 'Password must be at least 8 characters, include uppercase, number, and special character';
+                    passwordStrengthMsg.className = 'password-strength';
+                } else if (!strongRegex.test(this.value)) {
+                    passwordStrengthMsg.textContent = 'Weak password: must include uppercase letter, number, and special character';
+                    passwordStrengthMsg.className = 'password-strength strength-weak';
+                } else {
+                    passwordStrengthMsg.textContent = 'Strong password';
+                    passwordStrengthMsg.className = 'password-strength strength-strong';
+                }
+            });
+
+            confirmPasswordInput.addEventListener('input', function() {
+                if (!this.value) {
+                    confirmMsg.textContent = '';
+                    confirmMsg.className = 'password-strength';
+                } else if (newPasswordInput.value !== this.value) {
+                    confirmMsg.textContent = 'Passwords do not match';
+                    confirmMsg.className = 'password-strength strength-weak';
+                } else {
+                    confirmMsg.textContent = 'Passwords match';
+                    confirmMsg.className = 'password-strength strength-strong';
+                }
+            });
+
+            passwordForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const oldPassword = document.getElementById('old-password').value;
+                const newPassword = newPasswordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                // Validate password match
+                if (newPassword !== confirmPassword) {
+                    showAlert(errorAlert, 'New passwords do not match');
+                    confirmPasswordInput.focus();
+                    return;
+                }
+                
+                // Validate password strength
+                const strongRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+                if (!strongRegex.test(newPassword)) {
+                    showAlert(errorAlert, 'Password must be at least 8 characters and include an uppercase letter, number, and special character');
+                    newPasswordInput.focus();
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert(successAlert, result.message);
+                        passwordForm.reset();
+                        passwordStrengthMsg.textContent = 'Password must be at least 8 characters, include uppercase, number, and special character';
+                        passwordStrengthMsg.className = 'password-strength';
+                        confirmMsg.textContent = '';
+                        confirmMsg.className = 'password-strength';
+                    } else {
+                        showAlert(errorAlert, result.message || 'Failed to change password.');
+                    }
+                } catch (error) {
+                    showAlert(errorAlert, 'An error occurred. Please try again.');
+                    console.error('Password change error:', error);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

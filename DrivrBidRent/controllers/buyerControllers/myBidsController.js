@@ -1,4 +1,3 @@
-// controllers/buyerControllers/myBidsController.js
 const AuctionBid = require('../../models/AuctionBid');
 const AuctionRequest = require('../../models/AuctionRequest');
 
@@ -38,24 +37,34 @@ const getMyBids = async (req, res) => {
             }
         });
 
-        // Convert map to array and determine bid status using only schema attributes
-        const auctionsWithBids = Array.from(auctionMap.values()).map(item => {
-            let bidStatus = 'active';
-            
-            // Priority-based status checking using only schema attributes
-            if (item.auction.auction_stopped || item.auction.started_auction === 'ended') {
-                bidStatus = 'ended';
-            } else if (item.auction.started_auction === 'no') {
-                bidStatus = 'pending';
-            } else if (item.auction.started_auction === 'yes') {
-                bidStatus = 'active';
-            }
+        // For each auction, fetch the highest bid (car's highest bid)
+        const auctionsWithBids = await Promise.all(
+            Array.from(auctionMap.values()).map(async item => {
+                let bidStatus = 'active';
+                if (item.auction.auction_stopped || item.auction.started_auction === 'ended') {
+                    bidStatus = 'ended';
+                } else if (item.auction.started_auction === 'no') {
+                    bidStatus = 'pending';
+                } else if (item.auction.started_auction === 'yes') {
+                    bidStatus = 'active';
+                }
 
-            return {
-                ...item,
-                bidStatus
-            };
-        });
+                // Fetch the highest bid for this auction
+                let highestBid = null;
+                if (bidStatus === 'ended' || bidStatus === 'active') {
+                    const topBid = await AuctionBid.findOne({ auctionId: item.auction._id })
+                        .sort({ bidAmount: -1 })
+                        .select('bidAmount');
+                    highestBid = topBid ? topBid.bidAmount : null;
+                }
+
+                return {
+                    ...item,
+                    bidStatus,
+                    highestBid
+                };
+            })
+        );
 
         res.render('buyer_dashboard/my-bids', {
             user: req.user,

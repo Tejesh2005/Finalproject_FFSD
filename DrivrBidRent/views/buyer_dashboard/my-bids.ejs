@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Bids - DriveBidRent</title>
+
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap");
 
@@ -201,6 +202,7 @@
         }
     </style>
 </head>
+
 <body>
     <%- include('partials/navbar') %>
 
@@ -225,6 +227,7 @@
                                 <h3><%= auctionBid.auction.vehicleName %></h3>
                                 <p>Seller: <%= auctionBid.seller.firstName %> <%= auctionBid.seller.lastName %></p>
                             </div>
+
                             <div class="bid-status status-<%= auctionBid.bidStatus %>">
                                 <%= auctionBid.bidStatus.charAt(0).toUpperCase() + auctionBid.bidStatus.slice(1) %>
                             </div>
@@ -233,30 +236,44 @@
                         <div class="bid-details">
                             <div class="detail-item">
                                 <span class="detail-label">Your Highest Bid</span>
-                                <span class="detail-value">₹<%= auctionBid.myHighestBid.toLocaleString() %></span>
+                                <span class="detail-value">
+                                    ₹<%= auctionBid.myHighestBid.toLocaleString() %>
+                                </span>
                             </div>
+
+                            <% if (auctionBid.bidStatus === 'ended') { %>
+                                <div class="detail-item">
+                                    <span class="detail-label">Car's Highest Bid</span>
+                                    <span class="detail-value">
+                                        ₹<%= auctionBid.highestBid ? auctionBid.highestBid.toLocaleString() : 'N/A' %>
+                                    </span>
+                                </div>
+                            <% } %>
+
                             <div class="detail-item">
                                 <span class="detail-label">Total Bids Placed</span>
                                 <span class="detail-value"><%= auctionBid.totalBids %></span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Last Bid Date</span>
-                                <span class="detail-value"><%= auctionBid.lastBidTime.toLocaleDateString() %></span>
-                            </div>
+
                             <div class="detail-item">
                                 <span class="detail-label">Auction Status</span>
-                                <span class="detail-value"><%= auctionBid.bidStatus.charAt(0).toUpperCase() + auctionBid.bidStatus.slice(1) %></span>
+                                <span class="detail-value">
+                                    <%= auctionBid.bidStatus.charAt(0).toUpperCase() + auctionBid.bidStatus.slice(1) %>
+                                </span>
                             </div>
                         </div>
 
                         <div class="bid-actions">
                             <% if (auctionBid.bidStatus !== 'ended') { %>
-                                <a href="/buyer_dashboard?page=auction&id=<%= auctionBid.auction._id %>" class="btn btn-primary">
+                                <a href="/buyer_dashboard?page=auction&id=<%= auctionBid.auction._id %>"
+                                   class="btn btn-primary">
                                     View Auction
                                 </a>
                             <% } %>
+
                             <% if (auctionBid.bidStatus === 'active') { %>
-                                <a href="/buyer_dashboard?page=auction&id=<%= auctionBid.auction._id %>" class="btn btn-secondary">
+                                <a href="/buyer_dashboard?page=auction&id=<%= auctionBid.auction._id %>"
+                                   class="btn btn-secondary">
                                     Place New Bid
                                 </a>
                             <% } %>

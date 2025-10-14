@@ -405,12 +405,12 @@
                         <button class="heart-btn" data-liked="false" data-auction-id="<%= auction._id %>">❤</button>
                         <img src="<%= auction.vehicleImage %>" alt="<%= auction.vehicleName %>">
                         <h3><%= auction.vehicleName %></h3>
-                        <p class="auction-date">Auction on: <strong><%= new Date(auction.auctionDate).toLocaleDateString() %></strong></p>
+                        <p class="auction-date">Auction started on: <strong><%= new Date(auction.auctionDate).toLocaleDateString() %></strong></p>
                         <div class="car-details">
                             <p><strong>Year:</strong> <%= auction.year %></p>
                             <p><strong>Mileage:</strong> <%= auction.mileage %> km</p>
                             <p><strong>Condition:</strong> <%= auction.condition.charAt(0).toUpperCase() + auction.condition.slice(1) %></p>
-                            <p><strong>Estimated Price:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
+                            <p><strong>Starting Price:</strong> ₹<%= auction.startingBid.toLocaleString() %></p>
                         </div>
                         <div class="button-container">
                             <a href="/buyer_dashboard?page=auction&id=<%= auction._id %>" class="details-btn">Details</a>
@@ -545,27 +545,7 @@
         });
     
         // Initialize heart buttons based on wishlist
-        function initializeWishlistStatus() {
-            // First try to set button states from localStorage for immediate visual feedback
-            document.querySelectorAll('.heart-btn').forEach(button => {
-                const rentalId = button.getAttribute('data-rental-id');
-                const auctionId = button.getAttribute('data-auction-id');
-                
-                if (rentalId) {
-                    const storedState = localStorage.getItem(`rental_${rentalId}_liked`);
-                    if (storedState === 'true') {
-                        button.setAttribute('data-liked', true);
-                        button.style.color = '#ff6b00';
-                    }
-                } else if (auctionId) {
-                    const storedState = localStorage.getItem(`auction_${auctionId}_liked`);
-                    if (storedState === 'true') {
-                        button.setAttribute('data-liked', true);
-                        button.style.color = '#ff6b00';
-                    }
-                }
-            });
-            
+        function initializeWishlistStatus() {          
             // Then fetch server data to ensure consistency
             fetch('/api/wishlist')
                 .then(response => response.json())

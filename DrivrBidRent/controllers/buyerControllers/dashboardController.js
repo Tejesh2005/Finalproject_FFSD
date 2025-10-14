@@ -15,7 +15,7 @@ const getDashboardHome = async (req, res) => {
       status: 'approved', 
       started_auction: 'yes'
     })
-      .sort({ auctionDate: 1 })
+      .sort({ auctionDate: -1 })
       .limit(3)
       .populate('sellerId', 'firstName lastName')
       .exec();

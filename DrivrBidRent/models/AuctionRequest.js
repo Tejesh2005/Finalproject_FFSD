@@ -11,10 +11,10 @@ const auctionRequestSchema = new mongoose.Schema({
   startingBid: { type: Number, required: true },
   auctionDate: { type: Date, required: true },
   status: { type: String, default: 'pending', enum: ['pending', 'approved', 'rejected', 'assignedMechanic'] },
+  started_auction: { type: String, default: 'no', enum: ['no', 'yes', 'ended'] },
   reviewStatus: { type: String, default: 'pending', enum: ['pending', 'completed'] }, // New field for review status
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   assignedMechanic: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  started_auction: { type: String, default: 'no', enum: ['no', 'yes', 'ended'] },
   auction_stopped: { type: Boolean, default: false },
   winnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   finalPurchasePrice: { type: Number },

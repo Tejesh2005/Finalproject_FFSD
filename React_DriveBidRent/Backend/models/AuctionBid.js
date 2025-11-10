@@ -29,11 +29,16 @@ const auctionBidSchema = new mongoose.Schema({
   bidTime: {
     type: Date,
     default: Date.now
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending'
   }
 });
 
 // Pre-save middleware to ensure bid is valid and create notifications
-auctionBidSchema.pre('save', async function(next) {
+auctionBidSchema.pre('save', async function (next) {
   try {
     // Only check for new bids, not updates to existing bids
     if (!this.isNew) return next();
@@ -83,7 +88,7 @@ auctionBidSchema.pre('save', async function(next) {
 });
 
 // Static method to get the current and past 3 bids for an auction
-auctionBidSchema.statics.getBidsForAuction = async function(auctionId) {
+auctionBidSchema.statics.getBidsForAuction = async function (auctionId) {
   try {
     const bids = await this.find({ auctionId })
       .populate('buyerId', 'firstName lastName email')
@@ -97,7 +102,7 @@ auctionBidSchema.statics.getBidsForAuction = async function(auctionId) {
 };
 
 // Static method to notify auction winner
-auctionBidSchema.statics.notifyAuctionWinner = async function(auctionId, winnerId) {
+auctionBidSchema.statics.notifyAuctionWinner = async function (auctionId, winnerId) {
   try {
     console.log('Notifying auction winner:', { auctionId, winnerId });
 

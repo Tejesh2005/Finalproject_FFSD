@@ -46,6 +46,21 @@ const auctionRequestSchema = new mongoose.Schema({
   finalPurchasePrice: { 
     type: Number 
   },
+  paymentDeadline: {
+    type: Date
+  },
+  paymentFailed: {
+    type: Boolean,
+    default: false
+  },
+  failedBuyerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  isReauctioned: {
+    type: Boolean,
+    default: false
+  },
   mechanicReview: {
     mechanicalCondition: String,
     bodyCondition: String,

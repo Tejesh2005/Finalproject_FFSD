@@ -3,6 +3,9 @@ import AuctionRequest from '../../models/AuctionRequest.js';
 import AuctionBid from '../../models/AuctionBid.js';
 import Purchase from '../../models/Purchase.js';
 import User from '../../models/User.js';
+import Notification from '../../models/Notification.js';
+import chatController from '../../controllers/chat.controller.js';
+const { createChatForAuction } = chatController;
 
 const send = (success, message, data = null) => ({
   success,
@@ -41,6 +44,11 @@ export const stopAuction = async (req, res) => {
     if (currentBid) {
       auction.winnerId = currentBid.buyerId._id;
       auction.finalPurchasePrice = currentBid.bidAmount;
+      
+      // Set payment deadline to 4 days from now
+      const paymentDeadline = new Date();
+      paymentDeadline.setDate(paymentDeadline.getDate() + 4);
+      auction.paymentDeadline = paymentDeadline;
 
       const seller = await User.findById(auction.sellerId);
       await Purchase.create({
@@ -57,6 +65,13 @@ export const stopAuction = async (req, res) => {
       });
 
       await AuctionBid.notifyAuctionWinner(auction._id, currentBid.buyerId._id);
+
+      // create auction chat (5 days duration) between winner and seller
+      try {
+        await createChatForAuction(auction, currentBid.buyerId._id, new Date());
+      } catch (e) {
+        console.error('create auction chat error:', e);
+      }
     }
 
     await auction.save();
@@ -76,12 +91,106 @@ export const viewBids = async (req, res) => {
     if (!auction) return res.json(send(false, 'Auction not found'));
 
     const bids = await AuctionBid.getBidsForAuction(req.params.id);
-    const currentBid = bids.find(b => b.isCurrentBid) || null;
-    const pastBids = bids.filter(b => !b.isCurrentBid).slice(0, 3);
+    
+    // Filter out bids from blocked users
+    const filteredBids = [];
+    for (const bid of bids) {
+      if (bid.buyerId && bid.buyerId._id) {
+        const buyer = await User.findById(bid.buyerId._id).select('isBlocked');
+        if (!buyer || !buyer.isBlocked) {
+          filteredBids.push(bid);
+        }
+      }
+    }
+    
+    const currentBid = filteredBids.find(b => b.isCurrentBid) || null;
+    const pastBids = filteredBids.filter(b => !b.isCurrentBid).slice(0, 3);
 
     res.json(send(true, 'Bids loaded', { auction, currentBid, pastBids }));
   } catch (err) {
     console.error('View bids error:', err);
     res.json(send(false, 'Failed to load bids'));
+  }
+};
+
+export const reAuction = async (req, res) => {
+  try {
+    const auction = await AuctionRequest.findById(req.params.id);
+    if (!auction) return res.json(send(false, 'Auction not found'));
+
+    console.log('Re-auction attempt:', {
+      auctionId: auction._id,
+      paymentDeadline: auction.paymentDeadline,
+      currentTime: new Date(),
+      auction_stopped: auction.auction_stopped,
+      started_auction: auction.started_auction
+    });
+
+    // Check if auction has ended
+    if (!auction.auction_stopped && auction.started_auction !== 'ended') {
+      return res.json(send(false, 'Auction must be ended first'));
+    }
+
+    // Check if payment deadline has passed (allow if deadline exists and is in the past)
+    const now = new Date();
+    if (auction.paymentDeadline) {
+      const deadline = new Date(auction.paymentDeadline);
+      if (now <= deadline) {
+        console.log('Payment deadline not passed:', { now, deadline });
+        return res.json(send(false, 'Payment deadline has not passed yet'));
+      }
+    } else if (!auction.winnerId) {
+      // If no payment deadline and no winner, auction ended without bids
+      return res.json(send(false, 'Auction ended without any winner'));
+    }
+
+    // Check if payment was already completed
+    const purchase = await Purchase.findOne({ auctionId: auction._id });
+    if (purchase && purchase.paymentStatus === 'completed') {
+      return res.json(send(false, 'Payment already completed'));
+    }
+
+    // Check if already re-auctioned
+    if (auction.paymentFailed === true) {
+      return res.json(send(false, 'This auction has already been re-auctioned'));
+    }
+
+    // Mark the previous winner as failed buyer and report them
+    if (auction.winnerId) {
+      auction.failedBuyerId = auction.winnerId;
+      auction.paymentFailed = true;
+
+      // Report the buyer to admin
+      const failedBuyer = await User.findById(auction.winnerId);
+      if (failedBuyer) {
+        failedBuyer.isReported = true;
+        failedBuyer.reportReason = `Failed to complete payment for ${auction.vehicleName} within 4 days after auction ended.`;
+        failedBuyer.reportedAt = new Date();
+        await failedBuyer.save();
+      }
+    }
+
+    // Reset auction to ongoing state
+    auction.started_auction = 'yes';
+    auction.auction_stopped = false;
+    auction.isReauctioned = true;
+    auction.winnerId = null;
+    auction.finalPurchasePrice = null;
+    auction.paymentDeadline = null;
+
+    // Delete ALL previous bids from the old auction
+    await AuctionBid.deleteMany({ auctionId: auction._id });
+
+    // Delete the incomplete purchase record
+    if (purchase) {
+      await Purchase.deleteOne({ _id: purchase._id });
+    }
+
+    await auction.save();
+    console.log('Re-auction successful for:', auction._id);
+    res.json(send(true, 'Auction re-opened successfully'));
+  } catch (err) {
+    console.error('Re-auction error:', err);
+    res.json(send(false, `Failed to re-auction: ${err.message}`));
   }
 };

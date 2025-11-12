@@ -15,7 +15,7 @@ const auctionManagerMiddleware = require("./middlewares/auction_manager.middlewa
 // === Routes ===
 const sellerRoutes = require("./routes/seller.routes");
 const auctionManagerRoutes = require("./routes/auctionManager.routes");
-
+const mechanicRoutes = require("./routes/mechanic.routes");
 const app = express();
 
 // === CORS Configuration ===

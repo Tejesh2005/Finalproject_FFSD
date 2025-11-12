@@ -1,0 +1,70 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f8; padding: 20px; }
+    h1 { text-align: center; color: #333; }
+    #searchBox { width: 250px; padding: 8px; margin: 10px 0; border: 1px solid #aaa; border-radius: 4px; }
+    #fetchBtn { padding: 8px 15px; background: #06050c; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
+    #fetchBtn:hover { background: #0056b3; }
+    .product { background: #fff; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .badge { background: #9b0606; color: white; padding: 3px 7px; border-radius: 5px; font-size: 12px; margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Product</h1>
+
+  
+  <input type="text" id="searchBox" placeholder="Search products...">
+
+  
+  <button id="fetchBtn">Fetch Products</button>
+
+  
+  <div id="productContainer"></div>
+
+  <script>
+    let products = []; 
+
+    
+    document.getElementById("fetchBtn").addEventListener("click", function () {
+      fetch("http://localhost:5000/products")
+        .then(response => response.json())
+        .then(data => {
+          products = data;
+          renderProducts(products);
+        })
+        .catch(err => console.error("Error fetching:", err));
+    });
+
+    
+    function renderProducts(list) {
+      const container = document.getElementById("productContainer");
+      container.innerHTML = ""; 
+      list.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <strong>${p.name}</strong> - ₹${p.price} <br>
+          Category: ${p.category} <br>
+          Manufactured on: ${p.date}
+          ${p.sale ? '<span class="badge">On Sale</span>' : ""}
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // (4) Search filter
+    document.getElementById("searchBox").addEventListener("keyup", function () {
+      const query = this.value.toLowerCase();
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query)
+      );
+      renderProducts(filtered); 
+    });
+  </script>
+</body>
+</html> -->

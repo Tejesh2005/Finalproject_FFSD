@@ -11,7 +11,10 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-
+<Route path="/seller" element={<SellerLayout />}>
+        <Route index element={<SellerDashboard />} />
+        <Route path="dashboard" element={<SellerDashboard />} />
+      </Route>
             <Route
                 path="*"
                 element={
@@ -20,7 +23,7 @@ function App() {
                     </div>
                 }
             />
-        </Routes>
+        </Routes>   
     );
 }
 

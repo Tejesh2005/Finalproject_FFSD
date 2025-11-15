@@ -46,3 +46,65 @@ router.get('/dashboard', mechanicMiddleware, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', data: {} });
   }
 });
+
+
+/* ---------- Pending Tasks (dynamic from AuctionRequest) ---------- */
+router.get('/pending-tasks', mechanicMiddleware, async (req, res) => {
+  try {
+    const pendingTasks = await AuctionRequest.find({
+      status: 'pending',
+      assignedMechanic: req.user._id
+    }).populate('sellerId', 'firstName lastName');
+
+    const tasks = pendingTasks.map(ar => ({
+      _id: ar._id,
+      vehicle: ar,
+      owner: `${ar.sellerId.firstName} ${ar.sellerId.lastName}`
+    }));
+
+    res.json({ success: true, message: 'Pending tasks', data: { tasks } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error', data: { tasks: [] } });
+  }
+});
+
+/* ---------- Accept Pending Task ---------- */
+router.post('/pending-tasks/:id/accept', mechanicMiddleware, async (req, res) => {
+  try {
+    const task = await AuctionRequest.findOneAndUpdate(
+      { _id: req.params.id, status: 'pending', assignedMechanic: req.user._id },
+      { status: 'assignedMechanic' },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(400).json({ success: false, message: 'Task not found or not pending' });
+    }
+
+    res.json({ success: true, message: 'Task accepted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error accepting task' });
+  }
+});
+
+/* ---------- Decline Pending Task ---------- */
+router.post('/pending-tasks/:id/decline', mechanicMiddleware, async (req, res) => {
+  try {
+    const task = await AuctionRequest.findOneAndUpdate(
+      { _id: req.params.id, status: 'pending', assignedMechanic: req.user._id },
+      { status: 'rejected' },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(400).json({ success: false, message: 'Task not found or not pending' });
+    }
+
+    res.json({ success: true, message: 'Task declined' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error declining task' });
+  }
+});

@@ -108,3 +108,33 @@ router.post('/pending-tasks/:id/decline', mechanicMiddleware, async (req, res) =
     res.status(500).json({ success: false, message: 'Error declining task' });
   }
 });
+
+/* ---------- Current Tasks ---------- */
+router.get('/current-tasks', mechanicMiddleware, async (req, res) => {
+  try {
+    const assignedVehicles = await AuctionRequest.find({
+      assignedMechanic: req.user._id,
+      status: 'assignedMechanic'
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, message: 'Current tasks', data: { assignedVehicles } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error', data: { assignedVehicles: [] } });
+  }
+});
+
+/* ---------- Past Tasks ---------- */
+router.get('/past-tasks', mechanicMiddleware, async (req, res) => {
+  try {
+    const completedTasks = await AuctionRequest.find({
+      assignedMechanic: req.user._id,
+      reviewStatus: 'completed'
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, message: 'Past tasks', data: { completedTasks } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error', data: { completedTasks: [] } });
+  }
+});

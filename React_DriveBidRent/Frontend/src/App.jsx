@@ -8,10 +8,12 @@ import Signup from './pages/auth/Signup';
 // Buyer
 import BuyerLayout from './pages/buyer/BuyerLayout';
 import BuyerDashboard from './pages/buyer/Dashboard';
+import BuyerProfile from './pages/buyer/Profile';   
 
 // Seller
 import SellerLayout from './pages/seller/SellerLayout';
 import SellerDashboard from './pages/seller/Dashboard';
+import SellerProfile from './pages/seller/Profile';  
 
 function App() {
     return (
@@ -23,6 +25,7 @@ function App() {
             <Route path="/buyer" element={<BuyerLayout />}>
                 <Route index element={<BuyerDashboard />} />
                 <Route path="dashboard" element={<BuyerDashboard />} />
+                <Route path="profile" element={<BuyerProfile />} />
             </Route>
 
             <Route path="/seller" element={<SellerLayout />}>

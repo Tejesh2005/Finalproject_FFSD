@@ -317,5 +317,3 @@ export const getAboutUs = async () => {
     return {};
   }
 };
-
-// Remove the React hooks from this file and create separate custom hooks

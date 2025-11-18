@@ -11,6 +11,7 @@ connectDB();
 // === Middlewares ===
 const sellerMiddleware = require("./middlewares/seller.middleware");
 const auctionManagerMiddleware = require("./middlewares/auction_manager.middleware");
+import buyerMiddleware from "./middlewares/buyer.middleware.js";
 
 // === Routes ===
 const sellerRoutes = require("./routes/seller.routes");
@@ -46,8 +47,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // === API ROUTES ===
 
-// Seller Dashboard API (Protected)
+
 app.use("/api/seller", sellerMiddleware, sellerRoutes);
+app.use("/api/buyer", buyerMiddleware, buyerRoutes);
 
 // Auction Manager API (Protected)
 app.use("/api/auction-manager", auctionManagerMiddleware, auctionManagerRoutes);

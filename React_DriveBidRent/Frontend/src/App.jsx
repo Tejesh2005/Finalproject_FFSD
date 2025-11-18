@@ -14,6 +14,7 @@ import BuyerProfile from './pages/buyer/Profile';
 import SellerLayout from './pages/seller/SellerLayout';
 import SellerDashboard from './pages/seller/Dashboard';
 import SellerProfile from './pages/seller/Profile';  
+import Wishlist from './pages/buyer/Wishlist'; 
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                 <Route index element={<BuyerDashboard />} />
                 <Route path="dashboard" element={<BuyerDashboard />} />
                 <Route path="profile" element={<BuyerProfile />} />
+                <Route path="wishlist" element={<Wishlist />} />
             </Route>
 
             <Route path="/seller" element={<SellerLayout />}>

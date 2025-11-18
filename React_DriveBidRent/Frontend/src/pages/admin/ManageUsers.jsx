@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import adminServices from '../../services/admin.services';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import LoadingSpinner from './components/LoadingSpinner';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ManageUsers = () => {
   const [data, setData] = useState({
     pendingMechanics: [],
     approvedMechanics: [],
     buyers: [],
-    sellers: []
+    sellers: [],
+    reportedUsers: [],
+    blockedUsers: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,13 +19,17 @@ const ManageUsers = () => {
     pendingMechanic: '',
     approvedMechanic: '',
     buyer: '',
-    seller: ''
+    seller: '',
+    reportedUser: '',
+    blockedUser: ''
   });
   const [showAll, setShowAll] = useState({
     pendingMechanics: false,
     approvedMechanics: false,
     buyers: false,
-    sellers: false
+    sellers: false,
+    reportedUsers: false,
+    blockedUsers: false
   });
   const [alerts, setAlerts] = useState([]);
   const navigate = useNavigate();
@@ -76,13 +80,22 @@ const ManageUsers = () => {
         res = await adminServices.deleteBuyer(id);
       } else if (action === 'deleteSeller') {
         res = await adminServices.deleteSeller(id);
+      } else if (action === 'block') {
+        res = await adminServices.blockUser(id);
       }
 
       if (res.success) {
-        showAlert(res.message);
+        if (action !== 'block') {
+          showAlert(res.message);
+        }
         // Refresh data
         const refreshed = await adminServices.getManageUsers();
         if (refreshed.success) setData(refreshed.data);
+        
+        // Update selected user in modal if blocking/unblocking
+        if (action === 'block' && selectedUser && selectedUser._id === id) {
+          setSelectedUser(prev => ({ ...prev, isBlocked: res.data.isBlocked }));
+        }
       } else {
         showAlert(res.message, 'danger');
       }
@@ -184,6 +197,101 @@ const ManageUsers = () => {
       <div className="container p-8 max-w-6xl mx-auto">
         <h1 className="text-center text-4xl font-bold text-orange-500 mb-8">Manage Users</h1>
 
+        {/* Reported Users Section - Shows at the top */}
+        {data.reportedUsers.length > 0 && (
+          <div className="card bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200">
+            <h2 className="text-2xl font-semibold text-red-600 mb-6">Reported Users (Payment Failures)</h2>
+            <div className="search-bar mb-4">
+              <input
+                type="text"
+                placeholder="Search reported users..."
+                className="w-full p-2.5 border border-gray-300 rounded font-medium text-base"
+                onChange={(e) => handleSearch('reportedUser', e.target.value)}
+              />
+            </div>
+            <ul className="list-none p-0">
+              {filterUsers(data.reportedUsers, searchTerms.reportedUser)
+                .slice(0, showAll.reportedUsers ? undefined : 5)
+                .map(user => (
+                  <li key={user._id} className="p-4 border-b border-gray-200 flex justify-between items-center">
+                    <div className="flex-grow">
+                      <div className="font-bold text-gray-800">{user.firstName} {user.lastName} ({user.email})</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Reported: {new Date(user.reportedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="action-buttons flex gap-2.5">
+                      <button
+                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white font-semibold transition"
+                        onClick={() => openModal(user)}
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+            {filterUsers(data.reportedUsers, searchTerms.reportedUser).length > 5 && (
+              <div className="show-more flex justify-center mt-4">
+                <button 
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded flex items-center gap-1 transition" 
+                  onClick={() => toggleShowMore('reportedUsers')}
+                >
+                  {showAll.reportedUsers ? 'Show Less' : 'Show More'} <span className="arrow">{showAll.reportedUsers ? '▲' : '▼'}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Blocked Users Section */}
+        {data.blockedUsers.length > 0 && (
+          <div className="card bg-white p-6 rounded-lg shadow-md mb-8 border border-red-300">
+            <h2 className="text-2xl font-semibold text-red-600 mb-6">Blocked Users</h2>
+            <div className="search-bar mb-4">
+              <input
+                type="text"
+                placeholder="Search blocked users..."
+                className="w-full p-2.5 border border-gray-300 rounded font-medium text-base"
+                onChange={(e) => handleSearch('blockedUser', e.target.value)}
+              />
+            </div>
+            <ul className="list-none p-0">
+              {filterUsers(data.blockedUsers, searchTerms.blockedUser)
+                .slice(0, showAll.blockedUsers ? undefined : 5)
+                .map(user => (
+                  <li key={user._id} className="p-4 border-b border-gray-200 flex justify-between items-center">
+                    <div className="flex-grow">
+                      <div className="font-bold text-gray-800">{user.firstName} {user.lastName} ({user.email})</div>
+                      <div className="text-xs text-red-600 mt-1">
+                        Blocked: {new Date(user.blockedAt).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs text-gray-500">User Type: {user.userType}</div>
+                    </div>
+                    <div className="action-buttons flex gap-2.5">
+                      <button
+                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white font-semibold transition"
+                        onClick={() => openModal(user)}
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+            {filterUsers(data.blockedUsers, searchTerms.blockedUser).length > 5 && (
+              <div className="show-more flex justify-center mt-4">
+                <button 
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded flex items-center gap-1 transition" 
+                  onClick={() => toggleShowMore('blockedUsers')}
+                >
+                  {showAll.blockedUsers ? 'Show Less' : 'Show More'} <span className="arrow">{showAll.blockedUsers ? '▲' : '▼'}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="card bg-white p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-2xl font-semibold text-orange-500 mb-6">Pending Mechanics</h2>
           {renderUserList(data.pendingMechanics, 'pendingMechanic', true, true)}
@@ -215,6 +323,15 @@ const ManageUsers = () => {
               <p><strong>Last Name:</strong> {selectedUser.lastName}</p>
               <p><strong>Email:</strong> {selectedUser.email}</p>
               <p><strong>User Type:</strong> {selectedUser.userType}</p>
+              {selectedUser.isReported && (
+                <>
+                  <p className="col-span-2 bg-red-50 p-3 rounded border border-red-200">
+                    <strong className="text-red-600">Report Reason:</strong> 
+                    <span className="block mt-1 text-gray-700">{selectedUser.reportReason}</span>
+                  </p>
+                  <p><strong>Reported Date:</strong> {new Date(selectedUser.reportedAt).toLocaleDateString()}</p>
+                </>
+              )}
               {selectedUser.userType === 'mechanic' && (
                 <>
                   <p><strong>Approved Status:</strong> {selectedUser.approved_status}</p>
@@ -227,6 +344,26 @@ const ManageUsers = () => {
               <p><strong>Phone:</strong> {selectedUser.phone}</p>
               <p><strong>Address:</strong> {selectedUser.doorNo}, {selectedUser.street}, {selectedUser.city}, {selectedUser.state}</p>
               {selectedUser.googleAddressLink && <p><strong>Google Address:</strong> <a href={selectedUser.googleAddressLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">View on Google Maps</a></p>}
+            </div>
+            
+            {/* Block/Unblock Button */}
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => handleAction('block', selectedUser._id)}
+                className={`px-6 py-2.5 rounded font-semibold text-white transition ${
+                  selectedUser.isBlocked 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : 'bg-red-600 hover:bg-red-700'
+                }`}
+              >
+                {selectedUser.isBlocked ? 'Unblock User' : 'Block User'}
+              </button>
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 hover:bg-gray-600 px-6 py-2.5 rounded font-semibold text-white transition"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

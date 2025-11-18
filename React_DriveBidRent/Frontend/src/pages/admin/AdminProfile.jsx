@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import adminServices from "../../services/admin.services";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import LoadingSpinner from "./components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
+import useProfile from "../../hooks/useProfile";
 
 const AdminProfile = () => {
-  const [admin, setAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { profile: admin, loading, refresh } = useProfile();
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     currentPassword: "",
@@ -19,24 +17,9 @@ const AdminProfile = () => {
   const [alert, setAlert] = useState({ message: "", type: "" });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await adminServices.getAdminProfile();
-        if (res.success) {
-          setAdmin(res.data);
-        } else {
-          setError(res.message);
-        }
-      } catch (err) {
-        setError("Failed to load profile");
-        if (err.response?.status === 401) navigate("/login");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [navigate]);
+
+  // Note: profile is fetched automatically via useProfile hook from Redux
+  // No manual fetch needed here
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,6 +51,10 @@ const AdminProfile = () => {
     e.preventDefault();
     const { currentPassword, newPassword, confirmPassword } = formData;
 
+    if (currentPassword === newPassword) {
+      showAlert("New password cannot be the same as current password", "error");
+      return;
+    }
     if (newPassword !== confirmPassword) {
       showAlert("New passwords do not match", "error");
       return;
@@ -84,6 +71,7 @@ const AdminProfile = () => {
         setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
         setPasswordStrength("Password must be at least 8 characters, include uppercase, number, special character");
         setPasswordMatch("");
+        refresh();
       } else {
         showAlert(res.message || "Password update failed", "error");
       }
@@ -99,6 +87,8 @@ const AdminProfile = () => {
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="error-message" style={{ textAlign: "center", color: "#c62828", marginTop: "2rem" }}>{error}</div>;
+  // If profile hasn't been loaded yet (no admin object), show spinner instead of rendering and risking an exception
+  if (!admin) return <LoadingSpinner />;
 
   return (
     <>

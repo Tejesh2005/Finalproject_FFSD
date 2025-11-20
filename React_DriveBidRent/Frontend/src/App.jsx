@@ -9,6 +9,7 @@ import Signup from './pages/auth/Signup';
 import BuyerLayout from './pages/buyer/BuyerLayout';
 import BuyerDashboard from './pages/buyer/Dashboard';
 import BuyerProfile from './pages/buyer/Profile';   
+import RentalDetails from './pages/buyer/RentalDetails';
 
 // Seller
 import SellerLayout from './pages/seller/SellerLayout';
@@ -28,6 +29,7 @@ function App() {
                 <Route path="dashboard" element={<BuyerDashboard />} />
                 <Route path="profile" element={<BuyerProfile />} />
                 <Route path="wishlist" element={<Wishlist />} />
+                <Route path="rentals/:id" element={<RentalDetails />} />
             </Route>
 
             <Route path="/seller" element={<SellerLayout />}>

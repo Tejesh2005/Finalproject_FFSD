@@ -16,6 +16,7 @@ import SellerLayout from './pages/seller/SellerLayout';
 import SellerDashboard from './pages/seller/Dashboard';
 import SellerProfile from './pages/seller/Profile';  
 import Wishlist from './pages/buyer/Wishlist'; 
+import AddRental from './pages/seller/AddRental';
 
 function App() {
     return (

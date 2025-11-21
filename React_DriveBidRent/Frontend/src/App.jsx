@@ -35,6 +35,7 @@ function App() {
             </Route>
 
             <Route path="/seller" element={<SellerLayout />}>
+                <Route path="view-bids/:id" element={<ViewBids />} />
                 <Route index element={<SellerDashboard />} />
                 <Route path="dashboard" element={<SellerDashboard />} />
             </Route>

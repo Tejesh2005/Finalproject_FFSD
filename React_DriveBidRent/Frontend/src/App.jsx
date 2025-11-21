@@ -17,6 +17,7 @@ import SellerDashboard from './pages/seller/Dashboard';
 import SellerProfile from './pages/seller/Profile';  
 import Wishlist from './pages/buyer/Wishlist'; 
 import AddRental from './pages/seller/AddRental';
+import AuctionDetailsSeller from './pages/seller/AuctionDetails';
 
 function App() {
     return (

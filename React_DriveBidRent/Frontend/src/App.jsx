@@ -16,14 +16,15 @@ import AdminProfile from './pages/admin/AdminProfile';
 // Buyer
 import BuyerLayout from './pages/buyer/BuyerLayout';
 import BuyerDashboard from './pages/buyer/Dashboard';
-import BuyerProfile from './pages/buyer/Profile';   
+import BuyerProfile from './pages/buyer/Profile';
 import RentalDetails from './pages/buyer/RentalDetails';
+import BookRental from './pages/buyer/BookRental';
 
 // Seller
 import SellerLayout from './pages/seller/SellerLayout';
 import SellerDashboard from './pages/seller/Dashboard';
-import SellerProfile from './pages/seller/Profile';  
-import Wishlist from './pages/buyer/Wishlist'; 
+import SellerProfile from './pages/seller/Profile';
+import Wishlist from './pages/buyer/Wishlist';
 import AddRental from './pages/seller/AddRental';
 import AuctionDetailsSeller from './pages/seller/AuctionDetails';
 
@@ -35,14 +36,14 @@ function App() {
             <Route path="/signup" element={<Signup />} />
 
             {/* === ADMIN SPA === */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="manage-users" element={<ManageUsers />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="manage-earnings" element={<ManageEarnings />} />
-        <Route path="admin-profile" element={<AdminProfile />} />
-      </Route>
+            <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="manage-users" element={<ManageUsers />} />
+                <Route path="analytics" element={<Analytics />} />
+                <Route path="manage-earnings" element={<ManageEarnings />} />
+                <Route path="admin-profile" element={<AdminProfile />} />
+            </Route>
 
             <Route path="/buyer" element={<BuyerLayout />}>
                 <Route index element={<BuyerDashboard />} />
@@ -50,6 +51,8 @@ function App() {
                 <Route path="profile" element={<BuyerProfile />} />
                 <Route path="wishlist" element={<Wishlist />} />
                 <Route path="rentals/:id" element={<RentalDetails />} />
+                <Route path="rentals/:id/book" element={<BookRental />} />
+
             </Route>
 
             <Route path="/seller" element={<SellerLayout />}>

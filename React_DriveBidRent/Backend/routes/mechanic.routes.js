@@ -1,15 +1,15 @@
-// Backend/routes/mechanic.routes.js
-const express = require('express');
+// routes/mechanic.routes.js
+import express from 'express';
+import AuctionRequest from '../models/AuctionRequest.js';
+import User from '../models/User.js';
+import mechanicMiddleware from '../middlewares/mechanic.middleware.js';
+
 const router = express.Router();
-const AuctionRequest = require('../models/AuctionRequest');
-const User = require('../models/User');
-const mechanicMiddleware = require('../middlewares/mechanic.middleware');
 
 /* ---------- Dashboard (index) ---------- */
 router.get('/dashboard', mechanicMiddleware, async (req, res) => {
   try {
     const user = req.user;
-
     if (user.approved_status !== 'Yes') {
       return res.json({
         success: true,
@@ -47,8 +47,7 @@ router.get('/dashboard', mechanicMiddleware, async (req, res) => {
   }
 });
 
-
-/* ---------- Pending Tasks (dynamic from AuctionRequest) ---------- */
+/* ---------- Pending Tasks ---------- */
 router.get('/pending-tasks', mechanicMiddleware, async (req, res) => {
   try {
     const pendingTasks = await AuctionRequest.find({
@@ -69,7 +68,7 @@ router.get('/pending-tasks', mechanicMiddleware, async (req, res) => {
   }
 });
 
-/* ---------- Accept Pending Task ---------- */
+/* ---------- Accept / Decline Task ---------- */
 router.post('/pending-tasks/:id/accept', mechanicMiddleware, async (req, res) => {
   try {
     const task = await AuctionRequest.findOneAndUpdate(
@@ -77,11 +76,7 @@ router.post('/pending-tasks/:id/accept', mechanicMiddleware, async (req, res) =>
       { status: 'assignedMechanic' },
       { new: true }
     );
-
-    if (!task) {
-      return res.status(400).json({ success: false, message: 'Task not found or not pending' });
-    }
-
+    if (!task) return res.status(400).json({ success: false, message: 'Task not found or not pending' });
     res.json({ success: true, message: 'Task accepted' });
   } catch (err) {
     console.error(err);
@@ -89,7 +84,6 @@ router.post('/pending-tasks/:id/accept', mechanicMiddleware, async (req, res) =>
   }
 });
 
-/* ---------- Decline Pending Task ---------- */
 router.post('/pending-tasks/:id/decline', mechanicMiddleware, async (req, res) => {
   try {
     const task = await AuctionRequest.findOneAndUpdate(
@@ -97,11 +91,7 @@ router.post('/pending-tasks/:id/decline', mechanicMiddleware, async (req, res) =
       { status: 'rejected' },
       { new: true }
     );
-
-    if (!task) {
-      return res.status(400).json({ success: false, message: 'Task not found or not pending' });
-    }
-
+    if (!task) return res.status(400).json({ success: false, message: 'Task not found or not pending' });
     res.json({ success: true, message: 'Task declined' });
   } catch (err) {
     console.error(err);
@@ -109,14 +99,13 @@ router.post('/pending-tasks/:id/decline', mechanicMiddleware, async (req, res) =
   }
 });
 
-/* ---------- Current Tasks ---------- */
+/* ---------- Current / Past Tasks ---------- */
 router.get('/current-tasks', mechanicMiddleware, async (req, res) => {
   try {
     const assignedVehicles = await AuctionRequest.find({
       assignedMechanic: req.user._id,
       status: 'assignedMechanic'
     }).sort({ createdAt: -1 });
-
     res.json({ success: true, message: 'Current tasks', data: { assignedVehicles } });
   } catch (err) {
     console.error(err);
@@ -124,17 +113,82 @@ router.get('/current-tasks', mechanicMiddleware, async (req, res) => {
   }
 });
 
-/* ---------- Past Tasks ---------- */
 router.get('/past-tasks', mechanicMiddleware, async (req, res) => {
   try {
     const completedTasks = await AuctionRequest.find({
       assignedMechanic: req.user._id,
       reviewStatus: 'completed'
     }).sort({ createdAt: -1 });
-
     res.json({ success: true, message: 'Past tasks', data: { completedTasks } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server error', data: { completedTasks: [] } });
   }
 });
+
+/* ---------- Vehicle Details & Review ---------- */
+router.get('/vehicle-details/:id', mechanicMiddleware, async (req, res) => {
+  try {
+    const vehicle = await AuctionRequest.findById(req.params.id)
+      .populate('sellerId', 'firstName lastName phone doorNo street city state googleAddressLink');
+    if (!vehicle) return res.status(404).json({ success: false, message: 'Vehicle not found' });
+    res.json({
+      success: true,
+      message: 'Vehicle details',
+      data: { vehicle, seller: vehicle.sellerId }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.post('/submit-review/:id', mechanicMiddleware, async (req, res) => {
+  try {
+    const { mechanicalCondition, bodyCondition, recommendations, conditionRating } = req.body;
+    await AuctionRequest.findByIdAndUpdate(req.params.id, {
+      mechanicReview: { mechanicalCondition, bodyCondition, recommendations, conditionRating },
+      reviewStatus: 'completed'
+    });
+    res.json({ success: true, message: 'Review submitted', redirect: '/mechanic/dashboard' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error submitting review' });
+  }
+});
+
+/* ---------- Profile ---------- */
+router.get('/profile', mechanicMiddleware, (req, res) => {
+  res.json({ success: true, message: 'Profile data', data: { user: req.user } });
+});
+
+router.post('/change-password', mechanicMiddleware, async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ success: false, message: 'All fields required' });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ success: false, message: 'Passwords do not match' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password too short' });
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const match = await user.comparePassword(oldPassword);
+    if (!match) return res.status(400).json({ success: false, message: 'Incorrect old password' });
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ success: true, message: 'Password changed' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+export default router;

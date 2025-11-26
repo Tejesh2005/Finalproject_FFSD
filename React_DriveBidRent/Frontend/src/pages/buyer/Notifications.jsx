@@ -142,8 +142,16 @@ export default function Notifications() {
         </button>
       </div>
 
-
-
+      {/* Message Alert */}
+      {message && (
+        <div className={`mb-6 p-4 rounded-lg border transition-all duration-300 ${
+          messageType === 'success'
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+            : 'bg-red-50 text-red-800 border-red-200'
+        }`}>
+          {message}
+        </div>
+      )}
 
       {/* Notifications List */}
       <div className="space-y-4">
@@ -198,7 +206,12 @@ export default function Notifications() {
               </div>
             </div>
           ))
-        ):
+        ) : (
+          <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+            <h3 className="text-2xl font-bold text-orange-600 mb-3">No Notifications</h3>
+            <p className="text-gray-600">You don't have any notifications yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );

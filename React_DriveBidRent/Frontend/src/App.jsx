@@ -20,7 +20,9 @@ import BuyerProfile from './pages/buyer/Profile';
 import RentalDetails from './pages/buyer/RentalDetails';
 import BookRental from './pages/buyer/BookRental';
 import PurchasesList from './pages/buyer/PurchasesList';
-import MyBids from './pages/buyer/MyBids';  
+import MyBids from './pages/buyer/MyBids'; 
+import PurchaseDetails from './pages/buyer/PurchaseDetails';
+
 
 // Seller
 import SellerLayout from './pages/seller/SellerLayout';
@@ -55,6 +57,7 @@ function App() {
                 <Route path="wishlist" element={<Wishlist />} />
                 <Route path="rentals/:id" element={<RentalDetails />} />
                 <Route path="rentals/:id/book" element={<BookRental />} />
+                <Route path="purchases/:id" element={<PurchaseDetails />} />
                 <Route path="my-bids" element={<MyBids />} />
             </Route>
 

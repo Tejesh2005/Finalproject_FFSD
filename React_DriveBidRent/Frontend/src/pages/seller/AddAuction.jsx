@@ -139,3 +139,78 @@ const AddAuction = () => {
                 required
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
               >
+                <option value="">Select</option>
+                <option value="petrol">Petrol</option>
+                <option value="diesel">Diesel</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Transmission</label>
+              <select
+                name="transmission"
+                value={formData['transmission']}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+              >
+                <option value="">Select</option>
+                <option value="manual">Manual</option>
+                <option value="automatic">Automatic</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Condition</label>
+              <select
+                name="vehicle-condition"
+                value={formData['vehicle-condition']}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+              >
+                <option value="">Select</option>
+                <option value="excellent">Excellent</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Auction Date</label>
+              <input
+                type="date"
+                name="auction-date"
+                value={formData['auction-date']}
+                onChange={handleChange}
+                min={new Date().toISOString().split('T')[0]}
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+              />
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Starting Bid (₹)</label>
+              <input
+                type="number"
+                name="starting-bid"
+                value={formData['starting-bid']}
+                onChange={handleChange}
+                min="0"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 disabled:opacity-70 transition-all duration-200 shadow-md hover:shadow-lg"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Auction'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AddAuction;

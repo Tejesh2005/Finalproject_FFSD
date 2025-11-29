@@ -11,7 +11,7 @@ export default function ChatListAuctionManager({ onSelect, selectedId }) {
   })();
   const currentUserId = storedUser?._id || storedUser?.id || null;
 
-  useEffect(() => {
+  useEffect(() =>  { 
     (async () => {
       try {
         const res = await axiosInstance.get('/chat/my-chats');

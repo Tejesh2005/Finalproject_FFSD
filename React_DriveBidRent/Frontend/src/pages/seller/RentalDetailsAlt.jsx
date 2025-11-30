@@ -94,4 +94,78 @@ const RentalDetailsAlt = () => {
               {rental.status === 'unavailable' && rental.buyerId ? (
                 <div className="space-y-2 text-sm">
                   <p><strong>Renter:</strong> {rental.buyerId.firstName} {rental.buyerId.lastName}</p>
-           
+                  <p><strong>Email:</strong> {rental.buyerId.email}</p>
+                  <p><strong>Phone:</strong> {rental.buyerId.phone}</p>
+                  <p><strong>Pickup:</strong> {formattedPickupDate}</p>
+                  <p><strong>Drop:</strong> {formattedDropDate}</p>
+                  <p><strong>Money Received:</strong> ₹{moneyReceived?.toFixed(2) || 'N/A'}</p>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No rental information available.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Specifications */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b-2 border-orange-600 pb-2">
+              Vehicle Specifications
+            </h2>
+
+            <div className="space-y-4 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">Year</span>
+                <span>{rental.year}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">AC</span>
+                <span>{rental.AC === 'available' ? 'Available' : 'Not Available'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">Capacity</span>
+                <span>{rental.capacity} passengers</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">Condition</span>
+                <span className="capitalize">{rental.condition}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">Fuel Type</span>
+                <span className="capitalize">{rental.fuelType}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">Transmission</span>
+                <span className="capitalize">{rental.transmission}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-600">Driver</span>
+                <span>
+                  {rental.driverAvailable ? `Yes (₹${rental.driverRate}/day)` : 'No'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-gray-600">Status</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  rental.status === 'available' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {rental.status}
+                </span>
+              </div>
+            </div>
+
+            <Link
+              to="/seller/view-rentals"
+              className="mt-6 inline-block bg-orange-600 text-white px-6 py-2 rounded-md hover:bg-orange-700 transition"
+            >
+              ← Back to Rentals
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RentalDetailsAlt;

@@ -23,6 +23,7 @@ import PurchasesList from './pages/buyer/PurchasesList';
 import MyBids from './pages/buyer/MyBids'; 
 import PurchaseDetails from './pages/buyer/PurchaseDetails';
 import Notifications from './pages/buyer/Notifications';
+import AuctionDetails from './pages/buyer/AuctionDetails';
 
 
 // Seller
@@ -59,6 +60,7 @@ function App() {
                 <Route path="rentals/:id" element={<RentalDetails />} />
                 <Route path="rentals/:id/book" element={<BookRental />} />
                 <Route path="purchases/:id" element={<PurchaseDetails />} />
+                <Route path="auctions/:id" element={<AuctionDetails />} />
                 <Route path="my-bids" element={<MyBids />} />
                 <Route path="notifications" element={<Notifications />} />
             </Route>

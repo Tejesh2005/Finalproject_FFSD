@@ -22,6 +22,7 @@ import BookRental from './pages/buyer/BookRental';
 import PurchasesList from './pages/buyer/PurchasesList';
 import MyBids from './pages/buyer/MyBids'; 
 import PurchaseDetails from './pages/buyer/PurchaseDetails';
+import Notifications from './pages/buyer/Notifications';
 
 
 // Seller
@@ -59,6 +60,7 @@ function App() {
                 <Route path="rentals/:id/book" element={<BookRental />} />
                 <Route path="purchases/:id" element={<PurchaseDetails />} />
                 <Route path="my-bids" element={<MyBids />} />
+                <Route path="notifications" element={<Notifications />} />
             </Route>
 
             <Route path="/seller" element={<SellerLayout />}>

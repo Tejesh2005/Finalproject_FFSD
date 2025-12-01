@@ -19,6 +19,7 @@ import BuyerDashboard from './pages/buyer/Dashboard';
 import BuyerProfile from './pages/buyer/Profile';
 import RentalDetails from './pages/buyer/RentalDetails';
 import BookRental from './pages/buyer/BookRental';
+import BidPage from './pages/buyer/BidPage';
 import PurchasesList from './pages/buyer/PurchasesList';
 import MyBids from './pages/buyer/MyBids'; 
 import PurchaseDetails from './pages/buyer/PurchaseDetails';
@@ -62,6 +63,7 @@ function App() {
                 <Route path="purchases/:id" element={<PurchaseDetails />} />
                 <Route path="auctions/:id" element={<AuctionDetails />} />
                 <Route path="my-bids" element={<MyBids />} />
+                <Route path="auctions/:id/bid" element={<BidPage />} />
                 <Route path="notifications" element={<Notifications />} />
             </Route>
 

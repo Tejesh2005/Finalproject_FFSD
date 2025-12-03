@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/axiosInstance.util';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ViewEarnings = () => {
   const [totalAuctionEarnings, setTotalAuctionEarnings] = useState(0);
@@ -30,13 +31,7 @@ const ViewEarnings = () => {
     fetchEarnings();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading earnings...</div>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   if (error) {
     return (

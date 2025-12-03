@@ -52,21 +52,19 @@ const UpdateRental = () => {
             vehicleImage: rental.vehicleImage || null
           });
 
-          // Check if rental is completed
-          if (rental.dropDate && rental.buyerId) {
+          // Check if rental is currently active (not yet returned)
+          if (rental.buyerId && rental.dropDate) {
             const currentDate = new Date();
             currentDate.setHours(0, 0, 0, 0);
-            const pickupDate = new Date(rental.pickupDate);
-            pickupDate.setHours(0, 0, 0, 0);
             const dropDate = new Date(rental.dropDate);
             dropDate.setHours(0, 0, 0, 0);
             
-            // Check if rental is active or upcoming (current date <= drop date and rental exists)
-            const isRentalPending = currentDate <= dropDate;
-            setIsRentalActive(isRentalPending);
+            // Rental is active if current date is before or on drop date
+            const isActive = currentDate <= dropDate;
+            setIsRentalActive(isActive);
             
-            // Show return button only after drop date
-            setShowReturnButton(currentDate > dropDate && rental.status === 'unavailable');
+            // Show return button if rental period ended but not marked as returned
+            setShowReturnButton(currentDate > dropDate);
           }
         } else {
           setError(response.data.message);
@@ -180,23 +178,39 @@ const UpdateRental = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-orange-600 mb-8">Update Rental Vehicle</h1>
-        {error && <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6 text-center font-medium">{error}</div>}
-        {success && <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-6 text-center font-medium">{success}</div>}
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Update Rental Vehicle</h1>
+        
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6">
+            <p className="font-medium">{error}</p>
+          </div>
+        )}
+        
+        {success && (
+          <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded mb-6">
+            <p className="font-medium">{success}</p>
+          </div>
+        )}
+        
         {isRentalActive && (
-          <div className="bg-yellow-100 border-2 border-yellow-400 text-yellow-800 p-4 rounded-lg mb-6 text-center font-semibold">
-            ⚠️ This vehicle is currently rented. You cannot update its details until the rental period ends. Please return the car first to make any changes.
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded mb-6">
+            <p className="font-medium">⚠️ This vehicle is currently rented and cannot be modified until the rental period ends.</p>
+          </div>
+        )}
+        
+        {showReturnButton && (
+          <div className="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded mb-6">
+            <p className="font-medium">✓ Rental period ended. Mark as returned to make it available for new bookings, or update the details below.</p>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-lg space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow space-y-6">
           {/* Read-Only Section */}
-          <div className={`bg-blue-50 p-6 rounded-lg border border-blue-200 ${isRentalActive ? 'opacity-50 pointer-events-none' : ''}`}>
-            <h2 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
-              <span className="inline-block mr-2 px-3 py-1 bg-blue-200 rounded-full text-sm font-semibold">Fixed Details</span>
-              These details cannot be changed
+          <div className={`p-6 border-b ${isRentalActive ? 'opacity-50 pointer-events-none' : ''}`}>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Vehicle Information <span className="text-sm font-normal text-gray-500">(Cannot be changed)</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -207,7 +221,7 @@ const UpdateRental = () => {
                   type="text"
                   value={readOnlyData['vehicle-name']}
                   disabled
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 text-gray-700 cursor-not-allowed"
                 />
               </div>
 
@@ -218,7 +232,7 @@ const UpdateRental = () => {
                   type="number"
                   value={readOnlyData['vehicle-year']}
                   disabled
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 text-gray-700 cursor-not-allowed"
                 />
               </div>
 
@@ -229,7 +243,7 @@ const UpdateRental = () => {
                   type="number"
                   value={readOnlyData['vehicle-capacity']}
                   disabled
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 text-gray-700 cursor-not-allowed"
                 />
               </div>
 
@@ -240,7 +254,7 @@ const UpdateRental = () => {
                   type="text"
                   value={readOnlyData['vehicle-fuel-type'] ? readOnlyData['vehicle-fuel-type'].charAt(0).toUpperCase() + readOnlyData['vehicle-fuel-type'].slice(1) : ''}
                   disabled
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 text-gray-700 cursor-not-allowed"
                 />
               </div>
 
@@ -251,7 +265,7 @@ const UpdateRental = () => {
                   type="text"
                   value={readOnlyData['vehicle-transmission'] ? readOnlyData['vehicle-transmission'].charAt(0).toUpperCase() + readOnlyData['vehicle-transmission'].slice(1) : ''}
                   disabled
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 text-gray-700 cursor-not-allowed"
                 />
               </div>
 
@@ -262,7 +276,7 @@ const UpdateRental = () => {
                   <img
                     src={readOnlyData.vehicleImage}
                     alt="Vehicle"
-                    className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                    className="w-full h-32 object-cover rounded border border-gray-300"
                   />
                 )}
               </div>
@@ -270,10 +284,9 @@ const UpdateRental = () => {
           </div>
 
           {/* Editable Section */}
-          <div className={`bg-green-50 p-6 rounded-lg border border-green-200 ${isRentalActive ? 'opacity-50 pointer-events-none' : ''}`}>
-            <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center">
-              <span className="inline-block mr-2 px-3 py-1 bg-green-200 rounded-full text-sm font-semibold">Editable Details</span>
-              Update the details below
+          <div className={`p-6 ${isRentalActive ? 'opacity-50 pointer-events-none' : ''}`}>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Rental Details <span className="text-sm font-normal text-gray-500">(You can update these)</span>
             </h2>
 
             <div className="space-y-6">
@@ -285,7 +298,7 @@ const UpdateRental = () => {
                   value={formData['vehicle-ac']}
                   onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="">Select AC Availability</option>
                   <option value="available">Available</option>
@@ -301,7 +314,7 @@ const UpdateRental = () => {
                   value={formData['vehicle-condition']}
                   onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="">Select Condition</option>
                   <option value="excellent">Excellent</option>
@@ -322,7 +335,7 @@ const UpdateRental = () => {
                   min="1"
                   step="0.01"
                   placeholder="Enter daily rental cost"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 
@@ -334,7 +347,7 @@ const UpdateRental = () => {
                   value={formData['driver-available']}
                   onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="">Select Driver Availability</option>
                   <option value="yes">Yes</option>
@@ -355,7 +368,7 @@ const UpdateRental = () => {
                     min="1"
                     step="0.01"
                     placeholder="Enter driver daily rate"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
               )}
@@ -368,36 +381,38 @@ const UpdateRental = () => {
                   value={formData['availability']}
                   onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="">Select Availability</option>
-                  <option value="available">Available (Show in Rentals)</option>
-                  <option value="unavailable">Unavailable (Hidden from Rentals)</option>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
                 </select>
-                <p className="text-sm text-gray-600 mt-2 bg-yellow-50 p-2 rounded">
-                  <strong>Note:</strong> Set to "Available" to show this vehicle in the rental listings for buyers. Set to "Unavailable" to hide it (e.g., during maintenance or updates).
+                <p className="text-sm text-gray-600 mt-1">
+                  Set to "Available" to show this vehicle in rental listings.
                 </p>
               </div>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting || isRentalActive}
-            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 disabled:opacity-70 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            {isRentalActive ? 'Cannot Update - Vehicle is Rented' : (isSubmitting ? 'Updating...' : 'Update Rental')}
-          </button>
-          {showReturnButton && (
+          <div className="p-6 bg-gray-50 space-y-3">
+            {showReturnButton && (
+              <button
+                type="button"
+                onClick={handleMarkAsReturned}
+                disabled={isSubmitting}
+                className="w-full bg-green-600 text-white font-medium py-3 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Processing...' : 'Mark as Returned & Make Available'}
+              </button>
+            )}
             <button
-              type="button"
-              onClick={handleMarkAsReturned}
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-3 rounded-lg hover:from-green-600 hover:to-green-700 disabled:opacity-70 transition-all duration-200 shadow-md hover:shadow-lg mt-3"
+              type="submit"
+              disabled={isSubmitting || isRentalActive}
+              className="w-full bg-orange-600 text-white font-medium py-3 rounded hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Processing...' : '✓ Mark as Returned & Make Available'}
+              {isRentalActive ? 'Cannot Update - Vehicle is Rented' : (isSubmitting ? 'Updating...' : 'Update Rental Details')}
             </button>
-          )}
+          </div>
         </form>
       </div>
     </div>

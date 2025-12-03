@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance.util';
 
 const AddRental = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     'vehicle-name': '',
     'vehicle-year': '',
@@ -82,19 +84,10 @@ const AddRental = () => {
       });
       if (response.data.success) {
         setSuccess('Rental added successfully!');
-        setFormData({
-          'vehicle-name': '',
-          'vehicle-year': '',
-          'vehicle-ac': '',
-          'vehicle-capacity': '',
-          'vehicle-condition': '',
-          'vehicle-fuel-type': '',
-          'vehicle-transmission': '',
-          'rental-cost': '',
-          'driver-available': '',
-          'driver-rate': '',
-          vehicleImage: null
-        });
+        // Redirect to view rentals page after successful submission
+        setTimeout(() => {
+          navigate('/seller/view-rentals');
+        }, 1000);
       } else {
         setError(response.data.message);
       }

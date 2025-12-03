@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import CarCard from './components/CarCard';
 import { getAuctions, getWishlist, addToWishlist, removeFromWishlist } from '../../services/buyer.services';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function AuctionsList() {
   const [auctions, setAuctions] = useState([]);
@@ -32,6 +33,13 @@ export default function AuctionsList() {
   useEffect(() => {
     fetchAuctions();
     fetchWishlist();
+    
+    // Set up polling for real-time auction updates every 2 seconds
+    const intervalId = setInterval(() => {
+      fetchAuctions();
+    }, 2000);
+    
+    return () => clearInterval(intervalId);
   }, [debouncedSearch, condition, fuelType, transmission, minPrice, maxPrice]);
 
   const fetchAuctions = async () => {
@@ -99,13 +107,7 @@ export default function AuctionsList() {
     setSearchParams({});
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-3xl font-bold text-orange-500 animate-pulse">Loading auctions...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-white">

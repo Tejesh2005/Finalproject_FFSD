@@ -1,13 +1,15 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { authServices } from '../../../services/auth.services';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../../redux/slices/authSlice';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = async () => {
     try {
-      await authServices.logout();
+      dispatch(logoutUser());
     } catch (err) {
       console.error('Logout error:', err);
     } finally {

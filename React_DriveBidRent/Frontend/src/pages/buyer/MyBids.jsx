@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { getMyBids } from "../../services/buyer.services";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { getMyBids } from '../../services/buyer.services';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function MyBids() {
   const [auctionsWithBids, setAuctionsWithBids] = useState([]);
@@ -8,17 +9,27 @@ export default function MyBids() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchMyBids();
+    // Initial fetch with loading state
+    fetchMyBids(true);
+    
+    // Set up polling for real-time bid updates every 1 second (without loading state)
+    const intervalId = setInterval(() => {
+      if (!error) {
+        fetchMyBids(false);
+      }
+    }, 1000);
+    
+    return () => clearInterval(intervalId);
   }, []);
 
-  const fetchMyBids = async () => {
+  const fetchMyBids = async (isInitial = false) => {
     try {
       const data = await getMyBids();
       setAuctionsWithBids(data);
     } catch (error) {
       setError("Failed to load your bids.");
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   };
 
@@ -35,14 +46,7 @@ export default function MyBids() {
     }
   };
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-3xl font-bold text-orange-500">
-          Loading your bids...
-        </p>
-      </div>
-    );
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-white">

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CarCard from './components/CarCard';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { getRentals, getWishlist, addToWishlist, removeFromWishlist } from '../../services/buyer.services';
 
 export default function RentalsList() {
@@ -31,6 +32,13 @@ export default function RentalsList() {
   useEffect(() => {
     fetchRentals();
     fetchWishlist();
+    
+    // Set up polling for real-time rental updates every 2 seconds
+    const intervalId = setInterval(() => {
+      fetchRentals();
+    }, 2000);
+    
+    return () => clearInterval(intervalId);
   }, [debouncedSearch, fuelType, transmission, capacity, city]);
 
   const fetchRentals = async () => {
@@ -96,13 +104,7 @@ export default function RentalsList() {
     setSearchParams({});
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-3xl font-bold text-orange-500 animate-pulse">Loading rentals...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-white">
@@ -239,6 +241,7 @@ export default function RentalsList() {
                     key={rental._id}
                     item={rental}
                     type="rental"
+                    returnPath="/buyer/rentals"
                     isInWishlist={wishlist.rentals?.some(item => item._id === rental._id)}
                     onToggleWishlist={() => toggleWishlist(rental._id, 'rental')}
                   />

@@ -1,35 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getWishlist, removeFromWishlist } from '../../services/buyer.services';
+import LoadingSpinner from '../components/LoadingSpinner';
+import useWishlist from '../../hooks/useWishlist';
+
 
 export default function Wishlist() {
-  const [wishlist, setWishlist] = useState({ auctions: [], rentals: [] });
-  const [loading, setLoading] = useState(true);
+  const { auctions, rentals, loading, removeFromWishlist, loadWishlist } = useWishlist();
 
-  useEffect(() => { fetchWishlist(); }, []);
+  useEffect(() => {
+    loadWishlist();
+  }, [loadWishlist]);
 
-  async function fetchWishlist() {
-    try {
-      const data = await getWishlist();
-      setWishlist({ auctions: data.auctions || [], rentals: data.rentals || [] });
-    } catch (e) {
-      console.error('fetchWishlist error', e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function removeFromWishlistHandler(id, type) {
-    try {
-      await removeFromWishlist(id, type);
-      setWishlist(prev => ({
-        auctions: type === 'auction' ? prev.auctions.filter(a => (a._id || a.id) !== id) : prev.auctions,
-        rentals: type === 'rental' ? prev.rentals.filter(r => (r._id || r.id) !== id) : prev.rentals
-      }));
-    } catch (e) {
-      console.error('removeFromWishlist error', e);
-      alert('Failed to remove item.');
-    }
+  function removeFromWishlistHandler(id, type) {
+    removeFromWishlist(id, type);
   }
 
   function isAuctionEnded(auction) {
@@ -44,11 +27,7 @@ export default function Wishlist() {
     return false;
   }
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <p className="text-3xl font-bold text-orange-500">Loading your wishlist...</p>
-    </div>
-  );
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-white">
@@ -66,11 +45,11 @@ export default function Wishlist() {
       <section className="py-16 max-w-7xl mx-auto px-4">
         <h2 className="text-4xl font-bold text-orange-500 mb-8 text-left">Wishlist - Auctions</h2>
 
-        {wishlist.auctions.length === 0 ? (
+        {auctions.length === 0 ? (
           <p className="text-center text-xl text-gray-600 py-10">No auctions in your wishlist yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {wishlist.auctions.map((auction, idx) => {
+            {auctions.map((auction, idx) => {
               const id = auction?._id || auction?.id || `auction-${idx}`;
               const ended = isAuctionEnded(auction);
               const auctionDateObj = auction?.auctionDate ? new Date(auction.auctionDate) : null;
@@ -122,11 +101,11 @@ export default function Wishlist() {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-4xl font-bold text-orange-500 mb-8 text-left">Wishlist - Rentals</h2>
 
-          {wishlist.rentals.length === 0 ? (
+          {rentals.length === 0 ? (
             <p className="text-center text-xl text-gray-600 py-10">No rentals in your wishlist yet.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {wishlist.rentals.map((rental, idx) => {
+              {rentals.map((rental, idx) => {
                 const id = rental?._id || rental?.id || `rental-${idx}`;
                 return (
                   <div key={id} className="bg-white border border-orange-500 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 flex flex-col">
@@ -148,8 +127,20 @@ export default function Wishlist() {
                       </div>
 
                       <div className="mt-6 space-y-3">
-                        <Link to={`/buyer/rentals/${id}`} className="block w-full bg-orange-500 text-white text-center py-3 rounded-lg font-medium hover:bg-orange-600 transition shadow-md">More Details</Link>
-                        <Link to={`/buyer/rentals/${id}/book`} className="block w-full bg-green-600 text-white text-center py-3 rounded-lg font-medium hover:bg-green-700 transition shadow-md">Rent It</Link>
+                        <Link
+                          to={`/buyer/rentals/${id}`}
+                          state={{ from: '/buyer/wishlist' }}
+                          className="block w-full bg-orange-500 text-white text-center py-3 rounded-lg font-medium hover:bg-orange-600 transition shadow-md"
+                        >
+                          More Details
+                        </Link>
+                        <Link
+                          to={`/buyer/rentals/${id}`}
+                          state={{ from: '/buyer/wishlist', openRentModal: true }}
+                          className="block w-full bg-green-600 text-white text-center py-3 rounded-lg font-medium hover:bg-green-700 transition shadow-md"
+                        >
+                          Rent It
+                        </Link>
                       </div>
                     </div>
                   </div>

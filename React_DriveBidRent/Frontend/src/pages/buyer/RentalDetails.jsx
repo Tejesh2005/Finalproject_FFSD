@@ -7,6 +7,7 @@ import PaymentModal from './components/modals/PaymentModal';
 import ProcessingModal from './components/modals/ProcessingModal';
 import SuccessModal from './components/modals/SuccessModal';
 import ReviewModal from './components/modals/ReviewModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function RentalDetails() {
     const { id } = useParams();
@@ -150,16 +151,7 @@ export default function RentalDetails() {
     const redirectToDashboard = () => navigate("/buyer");
     const redirectBack = () => navigate(originPath);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-white">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-700 font-medium">Loading rental details...</p>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <LoadingSpinner />;
 
     if (error || !rental) {
         return (

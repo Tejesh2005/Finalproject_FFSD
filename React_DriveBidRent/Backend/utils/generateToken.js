@@ -1,17 +1,18 @@
-const jwt = require("jsonwebtoken");
+// utils/generateToken.js
+import jwt from 'jsonwebtoken';
 
 const generateToken = (user) => {
   return jwt.sign(
-    { 
-      id: user._id, 
-      userType: user.userType, 
-      email: user.email 
-    }, 
-    process.env.JWT_SECRET, 
+    {
+      id: user._id,
+      userType: user.userType,
+      email: user.email
+    },
+    process.env.JWT_SECRET || 'fallback_secret_for_dev', // fallback for dev
     {
       expiresIn: "7d",
     }
   );
 };
 
-module.exports = generateToken;
+export default generateToken;

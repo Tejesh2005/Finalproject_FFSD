@@ -1,6 +1,11 @@
-const { cloudinary } = require('../config/cloudinary');
+// utils/fileUpload.js
+import { cloudinary } from '../config/cloudinary.js';
 
-const deleteFromCloudinary = async (public_id) => {
+/**
+ * Delete image from Cloudinary by public_id
+ * @param {string} public_id - Cloudinary public ID of the image
+ */
+export const deleteFromCloudinary = async (public_id) => {
   try {
     if (public_id) {
       await cloudinary.uploader.destroy(public_id);
@@ -10,7 +15,13 @@ const deleteFromCloudinary = async (public_id) => {
   }
 };
 
-const uploadToCloudinary = async (fileBuffer, folder = 'drivebidrent') => {
+/**
+ * Upload image buffer to Cloudinary
+ * @param {Buffer} fileBuffer - Raw image buffer
+ * @param {string} folder - Cloudinary folder (default: 'drivebidrent')
+ * @returns {Promise<Object>} Cloudinary upload result
+ */
+export const uploadToCloudinary = async (fileBuffer, folder = 'drivebidrent') => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -25,9 +36,7 @@ const uploadToCloudinary = async (fileBuffer, folder = 'drivebidrent') => {
         }
       }
     );
-    
+
     uploadStream.end(fileBuffer);
   });
 };
-
-module.exports = { deleteFromCloudinary, uploadToCloudinary };

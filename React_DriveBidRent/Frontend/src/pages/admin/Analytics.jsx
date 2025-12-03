@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import adminServices from "../../services/admin.services";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import LoadingSpinner from "./components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Analytics = () => {
   const [data, setData] = useState(null);

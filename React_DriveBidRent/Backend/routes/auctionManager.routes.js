@@ -13,7 +13,7 @@ import {
 } from '../controllers/auctionManager/pending.controller.js';
 import { getApproved } from '../controllers/auctionManager/approved.controller.js';
 import { getAssignMechanic, assignMechanic } from '../controllers/auctionManager/assignMechanic.controller.js';
-import { startAuction, stopAuction, viewBids } from '../controllers/auctionManager/auction.controller.js';
+import { startAuction, stopAuction, viewBids, reAuction } from '../controllers/auctionManager/auction.controller.js';
 import { getProfile, updatePhone, changePassword } from '../controllers/auctionManager/profile.controller.js';
 
 const router = express.Router();
@@ -44,6 +44,7 @@ router.post('/assign-mechanic/:id', assignMechanic);
 router.post('/start-auction/:id', startAuction);
 router.post('/stop-auction/:id', stopAuction);
 router.get('/view-bids/:id', viewBids);
+router.post('/re-auction/:id', reAuction);
 
 // === Profile ===
 router.get('/profile', getProfile);

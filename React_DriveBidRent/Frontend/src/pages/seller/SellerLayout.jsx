@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Footer from '../components/Footer';
 import axiosInstance from '../../utils/axiosInstance.util';
 
 const SellerLayout = () => {

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
+  // Recent chats removed from dashboard — keep chats on chat pages only
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-6xl mx-auto">
@@ -61,6 +62,8 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Recent Chats removed: chats live on chat pages only */}
     </div>
   );
 };

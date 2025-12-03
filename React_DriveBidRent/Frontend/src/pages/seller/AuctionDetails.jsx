@@ -1,30 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axiosInstance from '../../utils/axiosInstance.util';
+import useSellerAuctions from '../../hooks/useSellerAuctions';
 
 const AuctionDetails = () => {
   const { id } = useParams();
-  const [auction, setAuction] = useState(null);
-  const [error, setError] = useState(null);
+  const { currentAuction: auction, loading, error, loadAuctionById } = useSellerAuctions();
 
   const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
   const formatDate = (date) => date ? new Date(date).toLocaleDateString() : 'Not specified';
+  const formatDateTime = (date) => date ? new Date(date).toLocaleString() : 'Not specified';
 
   useEffect(() => {
-    const fetchAuction = async () => {
-      try {
-        const response = await axiosInstance.get(`/seller/auction-details/${id}`);
-        if (response.data.success) {
-          setAuction(response.data.data);
-        } else {
-          setError(response.data.message);
-        }
-      } catch (err) {
-        setError('Failed to load auction details');
-      }
-    };
-    fetchAuction();
-  }, [id]);
+    loadAuctionById(id);
+  }, [id, loadAuctionById]);
 
   if (error) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -36,93 +24,177 @@ const AuctionDetails = () => {
       </div>
     </div>
   );
-  
-  if (!auction) return (
+
+  if (loading || !auction) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-xl text-gray-600">Loading...</div>
     </div>
   );
 
+  const isAuctionEnded = auction.started_auction === 'ended' || auction.auction_stopped;
+  const hasWinner = auction.winnerId && isAuctionEnded;
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <Link to="/seller/view-auctions" className="inline-flex items-center text-orange-600 hover:text-orange-700 mb-6 font-medium">
           &larr; Back to All Auctions
         </Link>
-        
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6">
-            <h1 className="text-3xl font-bold">{auction.vehicleName || 'Vehicle Details'}</h1>
-          </div>
-          
-          <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8">
-            <div className="md:w-1/2">
-              <img 
-                src={auction.vehicleImage || 'https://via.placeholder.com/500x350?text=No+Image'} 
-                alt={auction.vehicleName || 'Vehicle image'} 
-                className="w-full h-auto rounded-lg shadow-md"
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Car Image Component */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <img
+                src={auction.vehicleImage || 'https://via.placeholder.com/800x500?text=No+Image'}
+                alt={auction.vehicleName || 'Vehicle image'}
+                className="w-full h-96 object-cover"
               />
-              <div className="mt-6">
-                <h2 className="text-2xl font-bold text-orange-600 mb-2">{auction.vehicleName || 'Unnamed Vehicle'}</h2>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-medium">Status:</span>
-                  <span className={`font-bold ${
-                    auction.status === 'pending' ? 'text-yellow-600' :
-                    auction.status === 'approved' ? 'text-green-600' :
-                    auction.status === 'rejected' ? 'text-red-600' :
-                    auction.status === 'assignedMechanic' ? 'text-blue-600' : 'text-gray-600'
-                  }`}>
+              <div className="p-6">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{auction.vehicleName || 'Unnamed Vehicle'}</h1>
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-600 font-medium">Status:</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${auction.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      auction.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        auction.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                          auction.status === 'assignedMechanic' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
                     {capitalize(auction.status || 'pending')}
                   </span>
                 </div>
-                {auction.status === 'pending' && (
-                  <p className="text-yellow-600 font-medium">Your request is under review</p>
-                )}
               </div>
             </div>
-            
-            <div className="md:w-1/2">
+          </div>
+
+          {/* Car Details Component */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Vehicle Details</h2>
               <div className="space-y-4">
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="font-medium text-gray-700">Year:</span>
-                  <span className="text-gray-900">{auction.year || 'Not specified'}</span>
+                  <span className="text-gray-900 font-semibold">{auction.year || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="font-medium text-gray-700">Mileage:</span>
-                  <span className="text-gray-900">{auction.mileage ? `${auction.mileage} km` : 'Not specified'}</span>
+                  <span className="text-gray-900 font-semibold">{auction.mileage ? `${auction.mileage.toLocaleString()} km` : 'N/A'}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="font-medium text-gray-700">Fuel Type:</span>
-                  <span className="text-gray-900">{capitalize(auction.fuelType || 'Not specified')}</span>
+                  <span className="text-gray-900 font-semibold">{capitalize(auction.fuelType || 'N/A')}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="font-medium text-gray-700">Transmission:</span>
-                  <span className="text-gray-900">{capitalize(auction.transmission || 'Not specified')}</span>
+                  <span className="text-gray-900 font-semibold">{capitalize(auction.transmission || 'N/A')}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-gray-200">
+                <div className="flex justify-between py-3">
                   <span className="font-medium text-gray-700">Condition:</span>
-                  <span className="text-gray-900">{capitalize(auction.condition || 'Not specified')}</span>
-                </div>
-                <div className="flex justify-between py-3 border-b border-gray-200">
-                  <span className="font-medium text-gray-700">Auction Date:</span>
-                  <span className="text-gray-900">{formatDate(auction.auctionDate)}</span>
-                </div>
-                <div className="flex justify-between py-3 border-b border-gray-200">
-                  <span className="font-medium text-gray-700">Starting Bid:</span>
-                  <span className="text-gray-900">{auction.startingBid ? `₹${auction.startingBid.toLocaleString('en-IN')}` : 'Not specified'}</span>
+                  <span className="text-gray-900 font-semibold">{capitalize(auction.condition || 'N/A')}</span>
                 </div>
               </div>
-              
-              {(auction.status === 'approved' || auction.status === 'assignedMechanic') && (
-                <Link 
-                  to={`/seller/view-bids/${auction._id}`} 
+            </div>
+          </div>
+
+          {/* Auction Details Component */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Auction Details</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-sm text-gray-600 font-medium">Auction Date</span>
+                    <p className="text-lg font-semibold text-gray-900">{formatDate(auction.auctionDate)}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600 font-medium">Starting Bid</span>
+                    <p className="text-2xl font-bold text-orange-600">
+                      ₹{auction.startingBid ? auction.startingBid.toLocaleString('en-IN') : 'N/A'}
+                    </p>
+                  </div>
+                  {auction.started_auction !== 'no' && (
+                    <div>
+                      <span className="text-sm text-gray-600 font-medium">Auction Status</span>
+                      <p className={`text-lg font-semibold ${auction.started_auction === 'yes' ? 'text-green-600' : 'text-blue-600'
+                        }`}>
+                        {auction.started_auction === 'yes' ? 'Active' : 'Ended'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  {auction.currentBid && (
+                    <>
+                      <div>
+                        <span className="text-sm text-gray-600 font-medium">Current Highest Bid</span>
+                        <p className="text-2xl font-bold text-green-600">
+                          ₹{auction.currentBid.bidAmount ? auction.currentBid.bidAmount.toLocaleString('en-IN') : 'N/A'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-gray-600 font-medium">Current Bidder</span>
+                        <p className="text-lg font-semibold text-gray-900">
+                          {auction.currentBid.buyerId?.firstName} {auction.currentBid.buyerId?.lastName}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                  {!auction.currentBid && auction.started_auction !== 'no' && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-yellow-800 font-medium">No bids placed yet</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {(auction.status === 'approved' || auction.status === 'assignedMechanic') && auction.started_auction !== 'no' && (
+                <Link
+                  to={`/seller/view-bids/${auction._id}`}
                   className="inline-block mt-6 bg-orange-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors duration-200 shadow-md hover:shadow-lg"
                 >
-                  View Bids
+                  View All Bids
                 </Link>
               )}
             </div>
           </div>
+
+          {/* Buyer Details Component (if auction completed) */}
+          {hasWinner && (
+            <div className="lg:col-span-1">
+              <div className="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-lg p-6 border-2 border-green-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h2 className="text-2xl font-bold text-green-800">Auction Winner</h2>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-sm text-gray-600 font-medium">Winner Name</span>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {auction.winnerId?.firstName} {auction.winnerId?.lastName}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600 font-medium">Email</span>
+                    <p className="text-gray-900">{auction.winnerId?.email || 'N/A'}</p>
+                  </div>
+                  {auction.winnerId?.phone && (
+                    <div>
+                      <span className="text-sm text-gray-600 font-medium">Phone</span>
+                      <p className="text-gray-900">{auction.winnerId.phone}</p>
+                    </div>
+                  )}
+                  <div className="pt-4 border-t border-green-200">
+                    <span className="text-sm text-gray-600 font-medium">Final Purchase Price</span>
+                    <p className="text-2xl font-bold text-green-700">
+                      ₹{auction.finalPurchasePrice ? auction.finalPurchasePrice.toLocaleString('en-IN') : 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,60 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axiosInstance from '../../utils/axiosInstance.util';
+import useSellerAuctions from '../../hooks/useSellerAuctions';
 
 const ViewBids = () => {
   const { id } = useParams();
-  const [bids, setBids] = useState([]);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const { bids, bidsError: error, loadBids } = useSellerAuctions();
+  const pollingIntervalRef = useRef(null);
 
   useEffect(() => {
-    const fetchBids = async () => {
-      try {
-        const response = await axiosInstance.get(`/seller/view-bids/${id}`);
-        if (response.data.success) {
-          setBids(response.data.data);
-        } else {
-          setError(response.data.message);
-        }
-      } catch (err) {
-        setError('Failed to load bids');
+    // Initial fetch
+    loadBids(id);
+    
+    // Set up polling for real-time bid updates every 1 second
+    pollingIntervalRef.current = setInterval(() => {
+      if (!error) {
+        loadBids(id);
+      }
+    }, 1000);
+    
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
       }
     };
-    fetchBids();
-  }, [id]);
+  }, [id, loadBids, error]);
 
-  const handleAcceptBid = async (bidId) => {
-    try {
-      const response = await axiosInstance.put(`/seller/accept-bid/${bidId}`);
-      if (response.data.success) {
-        setSuccess('Bid accepted successfully!');
-        setBids(bids.map(bid => 
-          bid._id === bidId ? { ...bid, status: 'accepted' } : bid
-        ));
-      } else {
-        setError(response.data.message);
-      }
-    } catch (err) {
-      setError('Failed to accept bid');
-    }
-  };
-
-  const handleRejectBid = async (bidId) => {
-    try {
-      const response = await axiosInstance.put(`/seller/reject-bid/${bidId}`);
-      if (response.data.success) {
-        setSuccess('Bid rejected successfully!');
-        setBids(bids.map(bid => 
-          bid._id === bidId ? { ...bid, status: 'rejected' } : bid
-        ));
-      } else {
-        setError(response.data.message);
-      }
-    } catch (err) {
-      setError('Failed to reject bid');
-    }
-  };
 
   const formatDate = (date) => date ? new Date(date).toLocaleDateString() : 'Not specified';
 
@@ -76,19 +46,14 @@ const ViewBids = () => {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-4xl font-bold text-orange-600">Vehicle Bids</h1>
-          <Link 
-            to="/seller/view-auctions" 
+          <Link
+            to="/seller/view-auctions"
             className="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-200"
           >
             Back to Auctions
           </Link>
         </div>
 
-        {success && (
-          <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-6 text-center font-medium">
-            {success}
-          </div>
-        )}
 
         {bids.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
@@ -100,15 +65,14 @@ const ViewBids = () => {
               <div key={bid._id} className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800">Bid by: {bid.bidderName}</h3>
-                    <p className="text-gray-600">Email: {bid.bidderEmail}</p>
+                    <h3 className="text-xl font-bold text-gray-800">Bid by: {bid.buyerId?.firstName} {bid.buyerId?.lastName}</h3>
+                    <p className="text-gray-600">Email: {bid.buyerId?.email}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    bid.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${bid.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                     bid.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                    bid.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {bid.status.charAt(0).toUpperCase() + bid.status.slice(1)}
+                      bid.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                    {bid.status ? bid.status.charAt(0).toUpperCase() + bid.status.slice(1) : 'Pending'}
                   </span>
                 </div>
 
@@ -119,28 +83,9 @@ const ViewBids = () => {
                       ₹{bid.bidAmount?.toLocaleString('en-IN')}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Bid Date:</span>
-                    <span className="font-medium">{formatDate(bid.bidDate)}</span>
-                  </div>
                 </div>
 
-                {bid.status === 'pending' && (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleAcceptBid(bid._id)}
-                      className="flex-1 bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors duration-200"
-                    >
-                      Accept Bid
-                    </button>
-                    <button
-                      onClick={() => handleRejectBid(bid._id)}
-                      className="flex-1 bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700 transition-colors duration-200"
-                    >
-                      Reject Bid
-                    </button>
-                  </div>
-                )}
+
               </div>
             ))}
           </div>

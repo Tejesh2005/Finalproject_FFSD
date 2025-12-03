@@ -1,11 +1,15 @@
 // client/src/pages/seller/components/Navbar.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { authServices } from '../../../services/auth.services';
+import { useDispatch } from 'react-redux';
+import axiosInstance from '../../../utils/axiosInstance.util';
+import { logoutUser } from '../../../redux/slices/authSlice';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
 
   // Get current user from cookie or fallback
@@ -13,10 +17,8 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const result = await authServices.logout();
-      if (result.success) {
-        navigate('/', { replace: true });
-      }
+      dispatch(logoutUser());
+      navigate('/', { replace: true });
     } catch (err) {
       console.error('Logout failed:', err);
       navigate('/', { replace: true });
@@ -25,12 +27,59 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path);
 
+  useEffect(() => {
+    let mounted = true;
+    const loadChats = async () => {
+      try {
+        const r = await axiosInstance.get('/chat/my-chats');
+        if (!mounted) return;
+        const chats = r.data?.data || [];
+        const sum = chats.reduce((acc, c) => acc + (c.unreadCount || c.unread || 0), 0);
+        setChatUnreadCount(sum);
+      } catch (err) {
+        // ignore
+      }
+    };
+    loadChats();
+    const id = setInterval(loadChats, 5000);
+    return () => { mounted = false; clearInterval(id); };
+  }, []);
+
+  // update unread badge when a chat is read elsewhere
+  useEffect(() => {
+    const handler = (e) => {
+      try {
+        const { updated } = e.detail || {};
+        setChatUnreadCount(prev => Math.max(0, prev - (updated || 0)));
+      } catch (err) {}
+    };
+    window.addEventListener('chatRead', handler);
+    return () => window.removeEventListener('chatRead', handler);
+  }, []);
+
+  // update chat unread badge when a chat is deleted
+  useEffect(() => {
+    const onDeleted = async () => {
+      try {
+        const r = await axiosInstance.get('/chat/my-chats');
+        const chats = r.data?.data || [];
+        const sum = chats.reduce((acc, c) => acc + (c.unreadCount || c.unread || 0), 0);
+        setChatUnreadCount(sum);
+      } catch (err) {
+        console.error('Failed to refresh chat count after deletion:', err);
+      }
+    };
+    window.addEventListener('chatDeleted', onDeleted);
+    return () => window.removeEventListener('chatDeleted', onDeleted);
+  }, []);
+
   const navLinks = [
     { to: '/seller/dashboard', label: 'Dashboard' },
     { to: '/seller/add-auction', label: 'Add Auction' },
     { to: '/seller/view-auctions', label: 'View Auctions' },
     { to: '/seller/add-rental', label: 'Add Rental' },
     { to: '/seller/view-rentals', label: 'View Rentals' },
+    { to: '/seller/chats', label: 'Chat' },
     { to: '/seller/view-earnings', label: 'Earnings' },
     { to: '/seller/profile', label: 'Profile' },
   ];
@@ -57,6 +106,9 @@ const Navbar = () => {
                 }`}
               >
                 {label}
+                {to === '/seller/chats' && chatUnreadCount > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center bg-red-500 text-white text-xs rounded-full h-5 w-5">{chatUnreadCount}</span>
+                )}
               </Link>
             ))}
           </div>
@@ -105,6 +157,9 @@ const Navbar = () => {
                   }`}
                 >
                   {label}
+                  {to === '/seller/chats' && chatUnreadCount > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center bg-red-500 text-white text-xs rounded-full h-5 w-5">{chatUnreadCount}</span>
+                  )}
                 </Link>
               ))}
 

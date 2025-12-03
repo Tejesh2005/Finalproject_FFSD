@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { getAuctionById, placeBid, getProfile } from '../../services/buyer.services';
+import { getAuctionById, placeBid } from '../../services/buyer.services';
+import useProfile from '../../hooks/useProfile';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function BidPage() {
   const { id } = useParams();
@@ -12,13 +14,23 @@ export default function BidPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { profile, loading: profileLoading } = useProfile();
 
   useEffect(() => {
-    fetchAuctionData();
-    checkAuth();
+    // Initial fetch with loading state
+    fetchAuctionData(true);
+    
+    // Set up polling for real-time bid updates every 1 second (without loading state)
+    const intervalId = setInterval(() => {
+      fetchAuctionData(false);
+    }, 1000);
+    
+    return () => clearInterval(intervalId);
+    // profile hook will fetch 'me' automatically; update isLoggedIn when available
+    // checkAuth();
   }, [id]);
 
-  const fetchAuctionData = async () => {
+  const fetchAuctionData = async (isInitial = false) => {
     try {
       const data = await getAuctionById(id);
       setAuction(data.auction);
@@ -27,18 +39,14 @@ export default function BidPage() {
     } catch (error) {
       console.error('Error fetching auction data:', error);
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   };
 
-  const checkAuth = async () => {
-    try {
-      const user = await getProfile();
-      setIsLoggedIn(!!user);
-    } catch (error) {
-      setIsLoggedIn(false);
-    }
-  };
+  useEffect(() => {
+    if (profile === undefined) return; // still loading maybe
+    setIsLoggedIn(!!profile);
+  }, [profile, profileLoading]);
 
   const handleBidSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +77,7 @@ export default function BidPage() {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (!auction) return <div className="text-center py-10">Auction not found</div>;
 
   if (!isLoggedIn) {
@@ -77,11 +85,11 @@ export default function BidPage() {
   }
 
   return (
-    <div className="container">
+    <div className="container max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       {/* Auction Details Section */}
-      <div className="auction-details">
-        <img src={auction.vehicleImage} alt={auction.vehicleName} />
-        <h1>{auction.vehicleName}</h1>
+      <div className="auction-details bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 lg:p-8 shadow-md mb-6 sm:mb-8">
+        <img src={auction.vehicleImage} alt={auction.vehicleName} className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4" />
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 mb-4">{auction.vehicleName}</h1>
         <p><strong>Seller:</strong> {auction.sellerId?.firstName} {auction.sellerId?.lastName}</p>
         <p><strong>Year:</strong> {auction.year}</p>
         <p><strong>Condition:</strong> {auction.condition?.charAt(0)?.toUpperCase() + auction.condition?.slice(1)}</p>

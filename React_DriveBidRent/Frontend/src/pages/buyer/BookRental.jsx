@@ -5,6 +5,7 @@ import DatePickerModal from './components/modals/DatePickerModal';
 import PaymentModal from './components/modals/PaymentModal';
 import ProcessingModal from './components/modals/ProcessingModal';
 import SuccessModal from './components/modals/SuccessModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function BookRental() {
   const { id } = useParams();
@@ -55,7 +56,7 @@ export default function BookRental() {
       };
 
       const result = await bookRental(bookingData);
-      
+
       if (result.success) {
         setShowProcessingModal(false);
         setShowSuccessModal(true);
@@ -74,19 +75,19 @@ export default function BookRental() {
     navigate('/buyer/purchases');
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (!rental) return <div className="text-center py-10">Rental not found</div>;
 
   return (
-    <div className="rental-details">
-      <div className="rental-container">
+    <div className="rental-details max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="rental-container grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         {/* Vehicle Image and Basic Details */}
-        <div className="vehicle-image">
-          <img src={rental.vehicleImage} alt={rental.vehicleName} />
+        <div className="vehicle-image bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-md">
+          <img src={rental.vehicleImage} alt={rental.vehicleName} className="w-full h-64 sm:h-80 object-cover" />
         </div>
-        <div className="vehicle-info">
-          <h1>{rental.vehicleName}</h1>
-          <p className="rental-cost">Cost/day: <strong>₹{rental.costPerDay}</strong></p>
+        <div className="vehicle-info bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 mb-4">{rental.vehicleName}</h1>
+          <p className="rental-cost text-lg sm:text-xl mb-4">Cost/day: <strong className="text-orange-600">₹{rental.costPerDay}</strong></p>
           <div className="vehicle-specs">
             <p><strong>Year:</strong> {rental.year}</p>
             <p><strong>AC:</strong> {rental.AC === 'available' ? 'Yes' : 'No'}</p>
@@ -96,8 +97,8 @@ export default function BookRental() {
         </div>
 
         {/* Rental Summary */}
-        <div className="rental-summary">
-          <h2>Rental Summary</h2>
+        <div className="rental-summary bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md lg:col-span-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-orange-600 mb-4">Rental Summary</h2>
           <p><strong>Vehicle:</strong> {rental.vehicleName}</p>
           <p><strong>Cost/day:</strong> ₹{rental.costPerDay}</p>
           <p><strong>Pickup Date:</strong> <span id="summary-pickup-date">
@@ -119,25 +120,27 @@ export default function BookRental() {
       </div>
 
       {/* Modals */}
-      <DatePickerModal 
+      <DatePickerModal
         isOpen={showDateModal}
         onClose={() => navigate('/buyer/rentals')}
         onProceed={handleDateSelection}
         rental={rental}
       />
 
-      <PaymentModal 
+      <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onPayment={handlePayment}
-        amount={totalCost}
+        onProcessPayment={handlePayment}
+        totalCost={totalCost}
+        selectedPaymentMethod="upi"
+        onPaymentMethodSelect={() => { }}
       />
 
-      <ProcessingModal 
+      <ProcessingModal
         isOpen={showProcessingModal}
       />
 
-      <SuccessModal 
+      <SuccessModal
         isOpen={showSuccessModal}
         onClose={handleSuccessClose}
         seller={rental.seller}

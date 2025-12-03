@@ -7,10 +7,10 @@ import {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  getProfile,
   updateProfile,
   changePassword
 } from '../services/buyer.services';
+import useProfileHook from './useProfile';
 
 // Wishlist Hook
 export const useWishlist = () => {
@@ -125,32 +125,16 @@ export const useNotifications = () => {
   };
 };
 
-// Profile Hook
+// Profile Hook (bridged to Redux)
 export const useProfile = () => {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      setLoading(true);
-      const data = await getProfile();
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { profile, loading, error, refresh } = useProfileHook();
 
   const updateProfileData = async (profileData) => {
     try {
       const result = await updateProfile(profileData);
-      if (result.success) {
-        setProfile(prev => ({ ...prev, ...profileData }));
+      if (result?.success) {
+        // refresh redux profile after successful update
+        refresh();
       }
       return result;
     } catch (error) {
@@ -174,6 +158,6 @@ export const useProfile = () => {
     loading,
     updateProfile: updateProfileData,
     changePassword: changeUserPassword,
-    refreshProfile: fetchProfile
+    refreshProfile: refresh
   };
 };

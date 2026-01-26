@@ -131,7 +131,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Routes
+
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/seller", sellerMiddleware, sellerRoutes);
@@ -142,7 +142,7 @@ app.use("/api/admin", adminMiddleware, adminRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/inspection-chat', inspectionChatRoutes);
 
-// Serve client in production
+
 if (process.env.NODE_ENV === "production") {
   const clientDistPath = path.join(__dirname, "..", "client", "dist");
   (async () => {
@@ -166,12 +166,12 @@ if (process.env.NODE_ENV === "production") {
   })();
 }
 
-// 404 handler for unmatched API routes
+
 app.use("/api", (req, res) => {
   res.status(404).json({ success: false, message: "API route not found" });
 });
 
-// Global error handler
+
 app.use((err, req, res, next) => {
   console.error("Unhandled Error:", err);
   res.status(500).json({ success: false, message: "Internal Server Error" });
